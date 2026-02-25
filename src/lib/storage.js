@@ -71,11 +71,32 @@ function storage_set(key, value) {
 async function load_sites() {
   const sites = await storage_get(STORAGE_KEY);
   if (sites && Array.isArray(sites) && sites.length > 0) {
+    // Migration: ensure all items have an id
+    let needs_save = false;
+    for (const item of sites) {
+      if (!item.id) {
+        item.id = crypto.randomUUID();
+        needs_save = true;
+      }
+      // Also migrate children inside folders
+      if (item.type === 'folder' && item.children) {
+        for (const child of item.children) {
+          if (!child.id) {
+            child.id = crypto.randomUUID();
+            needs_save = true;
+          }
+        }
+      }
+    }
+    if (needs_save) {
+      await storage_set(STORAGE_KEY, sites);
+    }
     return sites;
   }
   // First run: seed with defaults and persist
-  await storage_set(STORAGE_KEY, DEFAULT_SITES);
-  return DEFAULT_SITES;
+  const seeded = DEFAULT_SITES.map((s) => ({ ...s, id: crypto.randomUUID() }));
+  await storage_set(STORAGE_KEY, seeded);
+  return seeded;
 }
 
 async function save_sites(sites) {
@@ -84,7 +105,7 @@ async function save_sites(sites) {
 
 async function add_site(site) {
   const sites = await load_sites();
-  sites.push(site);
+  sites.push({ ...site, id: site.id || crypto.randomUUID() });
   await save_sites(sites);
   return sites;
 }
@@ -96,15 +117,7 @@ async function remove_site(url) {
   return filtered;
 }
 
-async function update_site(original_url, updated_site) {
-  const sites = await load_sites();
-  const index = sites.findIndex((s) => s.url === original_url);
-  if (index !== -1) {
-    sites[index] = { ...sites[index], ...updated_site };
-  }
-  await save_sites(sites);
-  return sites;
-}
+
 
 /**
  * 4. Folder operations
@@ -130,35 +143,7 @@ async function remove_folder(folder_id) {
   return filtered;
 }
 
-async function update_folder(folder_id, updated) {
-  const sites = await load_sites();
-  const index = sites.findIndex((s) => s.id === folder_id);
-  if (index !== -1) {
-    sites[index] = { ...sites[index], ...updated };
-  }
-  await save_sites(sites);
-  return sites;
-}
 
-async function add_site_to_folder(folder_id, site) {
-  const sites = await load_sites();
-  const folder = sites.find((s) => s.id === folder_id);
-  if (folder && folder.type === 'folder') {
-    folder.children.push(site);
-  }
-  await save_sites(sites);
-  return sites;
-}
-
-async function remove_site_from_folder(folder_id, site_url) {
-  const sites = await load_sites();
-  const folder = sites.find((s) => s.id === folder_id);
-  if (folder && folder.type === 'folder') {
-    folder.children = folder.children.filter((c) => c.url !== site_url);
-  }
-  await save_sites(sites);
-  return sites;
-}
 
 async function get_all_data() {
   const data = {};
@@ -190,12 +175,34 @@ async function get_all_data() {
 }
 
 async function set_all_data(data) {
-  const keys = Object.keys(data);
+  // Validate data structure
+  if (typeof data !== 'object' || Array.isArray(data)) {
+    throw new Error('Invalid data format');
+  }
+
+  const keys = Object.keys(data).filter((k) => k.startsWith('tabibe-'));
+
+  if (keys.length === 0 || keys.length > 50) {
+    throw new Error('Invalid key count');
+  }
+
+  // Validate tabibe-sites if present
+  if (data['tabibe-sites']) {
+    try {
+      const sites = typeof data['tabibe-sites'] === 'string'
+        ? JSON.parse(data['tabibe-sites'])
+        : data['tabibe-sites'];
+      if (!Array.isArray(sites)) {
+        throw new Error('tabibe-sites must be an array');
+      }
+    } catch {
+      throw new Error('Invalid sites data');
+    }
+  }
+
   const chrome_data = {};
 
   for (const key of keys) {
-    if (!key.startsWith('tabibe-')) continue;
-
     const value = data[key];
     
     // 1. Set to localStorage
@@ -223,19 +230,12 @@ async function set_all_data(data) {
 }
 
 export {
-  DEFAULT_SITES,
-  storage_get,
-  storage_set,
   get_all_data,
   set_all_data,
   load_sites,
   save_sites,
   add_site,
   remove_site,
-  update_site,
   add_folder,
   remove_folder,
-  update_folder,
-  add_site_to_folder,
-  remove_site_from_folder,
 };

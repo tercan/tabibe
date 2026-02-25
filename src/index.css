@@ -86,6 +86,7 @@ ol {
   --font-family-heading:
     "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
   --font-family-mono: "JetBrains Mono", "Fira Code", "Consolas", monospace;
+  --font-size-xxs: 0.625rem;
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
   --font-size-base: 1rem;
@@ -303,6 +304,9 @@ body.no-scroll {
 
 .speed-dial-grid > li {
   position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 .speed-dial-item {
@@ -318,9 +322,6 @@ body.no-scroll {
   max-width: 7rem;
 }
 
-.speed-dial-item:hover {
-}
-
 .speed-dial-item--dragging {
   opacity: 0.3;
   transform: scale(0.9);
@@ -332,10 +333,9 @@ body.no-scroll {
   transition: transform var(--transition-fast);
 }
 
-.speed-dial-drop-target .speed-dial-icon {
+.speed-dial-drop-target .speed-dial-icon-wrapper {
   border-color: var(--color-primary);
   border-style: dashed;
-  box-shadow: 0 0 0 0.25rem rgba(var(--color-primary-rgb, 26, 115, 232), 0.2);
 }
 
 .speed-dial-grid li[draggable="true"] {
@@ -885,7 +885,7 @@ body.no-scroll {
   padding: var(--space-xl);
   display: flex;
   flex-direction: column;
-  gap: var(--space-2xl);
+  gap: var(--space-lg);
 }
 
 .settings-group {
@@ -977,7 +977,7 @@ body.no-scroll {
   width: 2.5rem;
   height: 1.25rem;
   background-color: var(--color-border);
-  border-radius: 1rem;
+  border-radius: .125rem;
   position: relative;
   cursor: pointer;
   transition: background-color var(--transition-base);
@@ -993,7 +993,7 @@ body.no-scroll {
   width: 1rem;
   height: 1rem;
   background-color: white;
-  border-radius: 50%;
+  border-radius: .125rem;
   top: 0.125rem;
   left: 0.125rem;
   transition: transform var(--transition-base);
@@ -1002,6 +1002,49 @@ body.no-scroll {
 
 .settings-toggle input:checked::before {
   transform: translateX(1.25rem);
+}
+
+.settings-about {
+  background-color: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  padding: var(--space-sm) 0 var(--space-sm);
+  margin-top: var(--space-md);
+  text-align: center;
+}
+
+.settings-about-title {
+  display: inline-block;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-xs);
+  padding-bottom: var(--space-xs);
+}
+
+.settings-about-version,
+.settings-about-link {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-regular);
+  transition: color var(--transition-fast);
+}
+
+.settings-about-author {
+  color: var(--color-text-muted);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  letter-spacing: -0.0375rem;
+}
+
+.settings-author-link {
+  color: var(--color-text-muted);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  transition: color var(--transition-fast);
+}
+
+.settings-about-link:hover,
+.settings-author-link:hover {
+  color: var(--color-text);
 }
 
 .settings-bg-presets {
@@ -1106,5 +1149,29 @@ body.no-scroll {
   .footer-center {
     order: 1;
     width: 100%;
+  }
+}
+
+/**
+ * 8. Animations
+ */
+
+@keyframes fade_in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide_up {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

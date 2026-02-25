@@ -1,18 +1,9 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from '../hooks/useTranslation.jsx';
+import CloseIcon from './icons/CloseIcon.jsx';
 
-/**
- * 1. CloseIcon SVG
- */
-function CloseIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <line x1="18" y1="6" x2="6" y2="18" />
-      <line x1="6" y1="6" x2="18" y2="18" />
-    </svg>
-  );
-}
+
 
 /**
  * 2. Folder component — opens a modal (via portal) with speed dial items.
@@ -46,8 +37,18 @@ function Folder({
         set_is_open(false);
       }
     }
-    document.addEventListener('keydown', handle_keydown);
-    return () => document.removeEventListener('keydown', handle_keydown);
+
+    if (is_open) {
+      document.addEventListener('keydown', handle_keydown);
+      document.body.classList.add('no-scroll');
+    } else {
+      document.body.classList.remove('no-scroll');
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handle_keydown);
+      document.body.classList.remove('no-scroll');
+    };
   }, [is_open]);
 
   function toggle_folder(event) {
@@ -63,8 +64,8 @@ function Folder({
 
   const modal_content = is_open
     ? createPortal(
-        <div className="folder-overlay" onClick={handle_overlay_click} role="dialog" aria-modal="true" aria-label={folder.name}>
-          <div className="folder-modal">
+        <div className="folder-overlay" onClick={handle_overlay_click} aria-hidden="true">
+          <div className="folder-modal" role="dialog" aria-modal="true" aria-label={folder.name}>
             <header className="folder-header">
               <h2 className="folder-title">{folder.name}</h2>
               <button className="settings-close" onClick={() => set_is_open(false)} aria-label={t('modal_cancel')}>
@@ -75,7 +76,7 @@ function Folder({
             <ul className="folder-grid">
               {folder.children && folder.children.length > 0 ? (
                 folder.children.map((site) => (
-                  <li key={site.url}>
+                  <li key={site.id}>
                     <div
                       className="speed-dial-item"
                       role="link"
@@ -96,7 +97,7 @@ function Folder({
                     >
                       <div className="speed-dial-icon-wrapper">
                         <img
-                          className={`speed-dial-icon${icon_style === 'simple' && (!site.icon_slug || !get_icon_src(site).includes('simpleicons.org')) ? ' speed-dial-icon--fallback' : ''}`}
+                          className={`speed-dial-icon${icon_style === 'simple' ? (site.icon_slug ? ' speed-dial-icon--simple' : ' speed-dial-icon--fallback') : ''}`}
                           src={get_icon_src(site)}
                           alt=""
                           aria-hidden="true"

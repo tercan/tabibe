@@ -55,11 +55,12 @@ function App() {
   const [search_engine, set_search_engine] = useState(() => get_setting('search-engine', 'google'));
   const [show_clock, set_show_clock] = useState(() => get_setting('show-clock', true));
   const [show_search, set_show_search] = useState(() => get_setting('show-search', true));
-  const [show_note, set_show_note] = useState(() => get_setting('show-note', true));
+
   const [note_panel_open, set_note_panel_open] = useState(false);
   const [note_pinned, set_note_pinned] = useState(() => get_setting('note-pinned', false));
   const [bg_color, set_bg_color] = useState(() => get_setting('bg-color', ''));
   const [bg_image, set_bg_image] = useState(() => get_setting('bg-image', ''));
+  const [show_memory, set_show_memory] = useState(() => get_setting('show-memory', false));
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -109,11 +110,21 @@ function App() {
     });
   }
 
-  function handle_toggle_note() {
-    set_show_note((prev) => {
-      set_setting('show-note', !prev);
-      return !prev;
-    });
+
+  function handle_toggle_memory() {
+    if (!show_memory && typeof chrome !== 'undefined' && chrome.permissions) {
+      chrome.permissions.request({ permissions: ['system.memory'] }, (granted) => {
+        if (granted) {
+          set_show_memory(true);
+          set_setting('show-memory', true);
+        }
+      });
+    } else {
+      set_show_memory((prev) => {
+        set_setting('show-memory', !prev);
+        return !prev;
+      });
+    }
   }
 
   function handle_toggle_note_panel() {
@@ -143,10 +154,23 @@ function App() {
   }
 
   function handle_change_bg_image(data_url) {
-    set_bg_image(data_url);
+    // Convert dataURL to blob URL for safer usage
+    try {
+      const arr = data_url.split(',');
+      const mime = arr[0].match(/:(.*?);/)[1];
+      const bstr = atob(arr[1]);
+      const u8 = new Uint8Array(bstr.length);
+      for (let i = 0; i < bstr.length; i++) {
+        u8[i] = bstr.charCodeAt(i);
+      }
+      const blob = new Blob([u8], { type: mime });
+      const blob_url = URL.createObjectURL(blob);
+      set_bg_image(blob_url);
+    } catch {
+      set_bg_image(data_url);
+    }
+    // Always persist the dataURL version (blob URLs don't survive reload)
     set_setting('bg-image', data_url);
-    // When an image is uploaded, we stay in current theme or default to dark for better readability
-    // User can still toggle manually via the footer if needed.
   }
 
   function handle_reset_bg() {
@@ -175,14 +199,12 @@ function App() {
       {show_clock && <Clock />}
       {show_search && <SearchBar search_engine={search_engine} />}
       <SpeedDial icon_style={icon_style} theme={theme} />
-      {show_note && (
-        <NotePanel 
-          is_open={note_panel_open} 
-          is_pinned={note_pinned} 
-          on_close={() => set_note_panel_open(false)} 
-          on_toggle_pin={handle_toggle_note_pin}
-        />
-      )}
+      <NotePanel 
+        is_open={note_panel_open} 
+        is_pinned={note_pinned} 
+        on_close={() => set_note_panel_open(false)} 
+        on_toggle_pin={handle_toggle_note_pin}
+      />
       <Footer
         theme={theme}
         on_toggle_theme={toggle_theme}
@@ -190,6 +212,7 @@ function App() {
         on_toggle_icon_style={toggle_icon_style}
         on_open_settings={() => set_settings_open(true)}
         on_open_notes={() => set_note_panel_open(true)}
+        show_memory={show_memory}
       />
       <SettingsPanel
         is_open={settings_open}
@@ -200,8 +223,8 @@ function App() {
         on_toggle_clock={handle_toggle_clock}
         show_search={show_search}
         on_toggle_search={handle_toggle_search}
-        note_pinned={note_pinned}
-        on_toggle_note_pin={handle_toggle_note_pin}
+        show_memory={show_memory}
+        on_toggle_memory={handle_toggle_memory}
         bg_color={bg_color}
         bg_image={bg_image}
         on_change_bg_color={handle_change_bg_color}

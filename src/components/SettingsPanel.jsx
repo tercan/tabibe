@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useTranslation } from '../hooks/useTranslation.jsx';
 import { get_all_data, set_all_data } from '../lib/storage.js';
+import CloseIcon from './icons/CloseIcon.jsx';
 
 /**
  * 1. Search engine definitions
@@ -13,28 +14,7 @@ const SEARCH_ENGINES = [
   { id: 'yandex', name: 'Yandex', url: 'https://yandex.com/search/?text=' },
 ];
 
-/**
- * 2. CloseIcon component
- */
 
-function CloseIcon() {
-  return (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <line x1="18" y1="6" x2="6" y2="18" />
-      <line x1="6" y1="6" x2="18" y2="18" />
-    </svg>
-  );
-}
 
 /**
  * 3. SettingsPanel component
@@ -66,6 +46,8 @@ function SettingsPanel({
   on_toggle_clock,
   show_search,
   on_toggle_search,
+  show_memory,
+  on_toggle_memory,
   bg_color,
   bg_image,
   on_change_bg_color,
@@ -80,7 +62,13 @@ function SettingsPanel({
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
-    const date = new Date().toISOString().split('T')[0];
+    const now = new Date();
+    const date = now.getFullYear().toString()
+      + String(now.getMonth() + 1).padStart(2, '0')
+      + String(now.getDate()).padStart(2, '0')
+      + '-'
+      + String(now.getHours()).padStart(2, '0')
+      + String(now.getMinutes()).padStart(2, '0');
     link.href = url;
     link.download = `tabibe-backup-${date}.json`;
     document.body.appendChild(link);
@@ -92,6 +80,14 @@ function SettingsPanel({
   async function handle_import(event) {
     const file = event.target.files[0];
     if (!file) return;
+
+    // File size validation (max 5MB)
+    const MAX_FILE_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_FILE_SIZE) {
+      alert(t('settings_import_error'));
+      event.target.value = '';
+      return;
+    }
 
     const reader = new FileReader();
     reader.onload = async (e) => {
@@ -115,9 +111,8 @@ function SettingsPanel({
 
         alert(t('settings_import_success'));
         window.location.reload();
-      } catch (err) {
+      } catch {
         alert(t('settings_import_error'));
-        console.error('Import error:', err);
       }
     };
     reader.readAsText(file);
@@ -207,12 +202,20 @@ function SettingsPanel({
                 onChange={on_toggle_clock}
               />
             </label>
-            <label className="settings-toggle">
+          <label className="settings-toggle">
               <span className="settings-toggle-label">{t('settings_show_search')}</span>
               <input
                 type="checkbox"
                 checked={show_search}
                 onChange={on_toggle_search}
+              />
+            </label>
+            <label className="settings-toggle">
+              <span className="settings-toggle-label">{t('settings_show_memory')}</span>
+              <input
+                type="checkbox"
+                checked={show_memory}
+                onChange={on_toggle_memory}
               />
             </label>
           </div>
@@ -274,6 +277,18 @@ function SettingsPanel({
             </div>
           </div>
           {/* /.settings-group */}
+
+          <div className="settings-about">
+            <p className="settings-about-title">
+              <a href="https://tercan.github.io/tabibe/" target="_blank" rel="noopener noreferrer" className="settings-about-link">
+                Tabibe <span>v0.1.0</span>
+              </a>
+            </p>
+            <p className="settings-about-author">
+              {t('settings_about_developer')}: <a href="https://tercan.net" target="_blank" rel="noopener noreferrer" className="settings-author-link">Tercan Keskin</a>
+            </p>
+          </div>
+          {/* /.settings-about */}
         </div>
         {/* /.settings-body */}
       </aside>

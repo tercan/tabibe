@@ -63,8 +63,8 @@ const en = {
   settings_layout: 'Layout',
   settings_show_clock: 'Show clock',
   settings_show_search: 'Show search bar',
-  settings_show_note: 'Show notes',
-  settings_note_pin: 'Pin as sidebar',
+  settings_show_memory: 'Show memory status',
+
 
   /* Background */
   settings_background: 'Background',
@@ -77,6 +77,8 @@ const en = {
   settings_import: 'Import Data',
   settings_import_success: 'Data imported successfully. Reloading...',
   settings_import_error: 'Invalid backup file.',
+  settings_about_by: 'by',
+  settings_about_developer: 'Developer',
 };
 
 export default en;

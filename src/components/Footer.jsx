@@ -105,7 +105,7 @@ function NoteIcon() {
  * 2. Footer component
  */
 
-function Footer({ theme, on_toggle_theme, icon_style, on_toggle_icon_style, on_open_settings, on_open_notes }) {
+function Footer({ theme, on_toggle_theme, icon_style, on_toggle_icon_style, on_open_settings, on_open_notes, show_memory }) {
   const { t, locale } = useTranslation();
   const [tab_count, set_tab_count] = useState(0);
   const [window_count, set_window_count] = useState(0);
@@ -116,28 +116,50 @@ function Footer({ theme, on_toggle_theme, icon_style, on_toggle_icon_style, on_o
     function update_counts() {
       if (typeof chrome !== 'undefined' && chrome.tabs) {
         chrome.tabs.query({}, (tabs) => {
+          if (chrome.runtime.lastError) return;
           set_tab_count(tabs.length);
         });
         chrome.windows.getAll({}, (windows) => {
+          if (chrome.runtime.lastError) return;
           set_window_count(windows.length);
         });
       }
 
-      if (typeof chrome !== 'undefined' && chrome.system && chrome.system.memory) {
+      if (show_memory && typeof chrome !== 'undefined' && chrome.system && chrome.system.memory) {
         chrome.system.memory.getInfo((info) => {
+          if (chrome.runtime.lastError) return;
           const used_gb = ((info.capacity - info.availableCapacity) / (1024 ** 3)).toFixed(1);
           const total_gb = (info.capacity / (1024 ** 3)).toFixed(0);
           set_memory_info(`${used_gb}/${total_gb} GB`);
         });
+      } else if (!show_memory) {
+        set_memory_info(null);
       }
     }
 
     update_counts();
 
-    // Refresh counts every 5 seconds
-    const interval_id = setInterval(update_counts, 5000);
-    return () => clearInterval(interval_id);
-  }, []);
+    // Refresh counts every 30 seconds
+    let interval_id = setInterval(update_counts, 30000);
+
+    // Pause polling when tab is hidden
+    function handle_visibility() {
+      if (document.hidden) {
+        clearInterval(interval_id);
+        interval_id = null;
+      } else {
+        update_counts();
+        interval_id = setInterval(update_counts, 30000);
+      }
+    }
+
+    document.addEventListener('visibilitychange', handle_visibility);
+
+    return () => {
+      if (interval_id) clearInterval(interval_id);
+      document.removeEventListener('visibilitychange', handle_visibility);
+    };
+  }, [show_memory]);
 
   return (
     <footer className="footer">

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from '../hooks/useTranslation.jsx';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
-import { load_sites, save_sites, add_site, remove_site, update_site, add_folder, remove_folder } from '../lib/storage.js';
+import { load_sites, save_sites, add_site, add_folder, remove_folder } from '../lib/storage.js';
 import SiteModal from './SiteModal.jsx';
 import ContextMenu from './ContextMenu.jsx';
 import Folder from './Folder.jsx';
@@ -14,9 +14,12 @@ const TRANSPARENT_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAE
 
 function get_favicon_url(site_url) {
   try {
-    // We pass the full URL to the API to preserve the protocol (http/https).
-    // The hostname property alone strips the protocol.
-    return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(site_url)}&sz=64`;
+    const parsed = new URL(site_url);
+    // Only http/https URLs have valid favicons
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+      return '';
+    }
+    return `https://www.google.com/s2/favicons?domain=${parsed.origin}&sz=64`;
   } catch {
     return '';
   }
@@ -65,15 +68,53 @@ function SpeedDial({ icon_style, theme }) {
       set_is_loading(false);
     });
 
-    // Fetch Simple Icons whitelist to prevent 404s
-    fetch('https://api.iconify.design/collection?prefix=simple-icons')
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.uncategorized) {
-          set_simple_icons_whitelist(new Set(data.uncategorized));
+    // Fetch Simple Icons whitelist with cache (TTL: 30 days)
+    const CACHE_KEY = 'tabibe-icon-whitelist';
+    const CACHE_TTL = 30 * 24 * 60 * 60 * 1000; // 30 days
+
+    function apply_whitelist(list) {
+      set_simple_icons_whitelist(new Set(list));
+    }
+
+    function fetch_and_cache() {
+      fetch('https://api.iconify.design/collection?prefix=simple-icons')
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.uncategorized) {
+            apply_whitelist(data.uncategorized);
+            const cache_data = { list: data.uncategorized, timestamp: Date.now() };
+            if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+              chrome.storage.local.set({ [CACHE_KEY]: cache_data });
+            } else {
+              localStorage.setItem(CACHE_KEY, JSON.stringify(cache_data));
+            }
+          }
+        })
+        .catch(() => {});
+    }
+
+    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+      chrome.storage.local.get([CACHE_KEY], (result) => {
+        const cached = result[CACHE_KEY];
+        if (cached && cached.list && (Date.now() - cached.timestamp) < CACHE_TTL) {
+          apply_whitelist(cached.list);
+        } else {
+          fetch_and_cache();
         }
-      })
-      .catch(err => console.error('Failed to fetch icon whitelist:', err));
+      });
+    } else {
+      try {
+        const raw = localStorage.getItem(CACHE_KEY);
+        if (raw) {
+          const cached = JSON.parse(raw);
+          if (cached && cached.list && (Date.now() - cached.timestamp) < CACHE_TTL) {
+            apply_whitelist(cached.list);
+            return;
+          }
+        }
+      } catch { /* empty */ }
+      fetch_and_cache();
+    }
   }, []);
 
   /**
@@ -115,48 +156,62 @@ function SpeedDial({ icon_style, theme }) {
    * 4. Icon helpers
    */
 
+  const DEFAULT_ICON = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6c757d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>')}`;
+
   function get_icon_src(site) {
     if (!site || site.type === 'folder') return TRANSPARENT_PIXEL;
 
-    // Only attempt Simple Icons if the slug is in the whitelist
-    if (icon_style === 'simple' && site.icon_slug) {
-      if (simple_icons_whitelist.has(site.icon_slug)) {
+    const has_valid_slug = site.icon_slug && simple_icons_whitelist.has(site.icon_slug);
+
+    if (icon_style === 'simple') {
+      // Priority 1: icon_slug confirmed in Simple Icons
+      if (has_valid_slug) {
         return get_simple_icon_url(site.icon_slug, theme);
       }
-      // If slug exists but not in whitelist, we skip immediately to favicon
-      // to avoid 404 network request in console.
+      // Priority 2: No valid slug — try favicon (will be grayscale via CSS)
+      if (site.url) {
+        return get_favicon_url(site.url);
+      }
+      // Priority 3: No URL either — default icon
+      return DEFAULT_ICON;
     }
-    
+
+    // Favicon mode
+    // Priority 1: icon_slug confirmed in Simple Icons
+    if (has_valid_slug) {
+      return get_simple_icon_url(site.icon_slug, theme);
+    }
+    // Priority 2: favicon
     if (site.url) {
       return get_favicon_url(site.url);
     }
 
-    return TRANSPARENT_PIXEL;
+    return DEFAULT_ICON;
   }
 
   function handle_icon_error(event, site) {
     const img = event.target;
-    const current_src = img.src;
 
-    // Preventive check: If we already tried everything or it's already the pixel, stop.
-    if (current_src === TRANSPARENT_PIXEL || img.dataset.iconError === 'final') return;
+    // Preventive check: If we already tried everything, stop.
+    if (img.dataset.iconError === 'final') return;
 
-    // Phase 1: Simple Icon failed -> Try Google Favicon
-    if (icon_style === 'simple' && site.icon_slug) {
-      const simple_url = get_simple_icon_url(site.icon_slug, theme);
-      if (current_src.includes(simple_url) || current_src.includes('simpleicons.org')) {
-        const favicon = get_favicon_url(site.url);
-        if (favicon && current_src !== favicon) {
-          img.src = favicon;
-          img.classList.add('speed-dial-icon--fallback');
-          img.dataset.iconError = 'favicon-attempt';
-          return;
-        }
+    if (icon_style === 'simple') {
+      // Simple mode: simple icon failed → try favicon (grayscale)
+      if (img.dataset.iconError !== 'favicon-attempt' && site.url) {
+        img.src = get_favicon_url(site.url);
+        img.classList.add('speed-dial-icon--fallback');
+        img.dataset.iconError = 'favicon-attempt';
+        return;
       }
+      // Favicon also failed — show default icon
+      img.src = DEFAULT_ICON;
+      img.classList.remove('speed-dial-icon--fallback');
+      img.dataset.iconError = 'final';
+      return;
     }
 
-    // Phase 2: Favicon failed (either from direct style or as fallback) -> Transparent Pixel
-    img.src = TRANSPARENT_PIXEL;
+    // Favicon mode: favicon or simple icon failed → show default icon
+    img.src = DEFAULT_ICON;
     img.classList.add('speed-dial-icon--fallback');
     img.dataset.iconError = 'final';
   }
@@ -375,7 +430,7 @@ function SpeedDial({ icon_style, theme }) {
         let found = false;
         
         // Check root
-        const root_index = sites_list.findIndex((s) => s.url === editing_site.url);
+        const root_index = sites_list.findIndex((s) => s.id === editing_site.id);
         if (root_index !== -1) {
           sites_list[root_index] = { ...sites_list[root_index], ...data };
           found = true;
@@ -383,7 +438,7 @@ function SpeedDial({ icon_style, theme }) {
           // Check folders
           for (const folder of sites_list) {
             if (folder.type === 'folder' && folder.children) {
-              const child_index = folder.children.findIndex((s) => s.url === editing_site.url);
+              const child_index = folder.children.findIndex((s) => s.id === editing_site.id);
               if (child_index !== -1) {
                 folder.children[child_index] = { ...folder.children[child_index], ...data };
                 found = true;
@@ -414,7 +469,7 @@ function SpeedDial({ icon_style, theme }) {
       const sites_list = await load_sites();
       
       // Try root first
-      const root_filtered = sites_list.filter((s) => s.url !== item.url);
+      const root_filtered = sites_list.filter((s) => s.id !== item.id);
       if (root_filtered.length !== sites_list.length) {
         await save_sites(root_filtered);
         set_sites(root_filtered);
@@ -426,7 +481,7 @@ function SpeedDial({ icon_style, theme }) {
       for (const folder of sites_list) {
         if (folder.type === 'folder' && folder.children) {
           const original_len = folder.children.length;
-          folder.children = folder.children.filter((c) => c.url !== item.url);
+          folder.children = folder.children.filter((c) => c.id !== item.id);
           if (folder.children.length !== original_len) {
             changed = true;
             break;
@@ -447,7 +502,7 @@ function SpeedDial({ icon_style, theme }) {
     
     if (folder && folder.type === 'folder') {
       // Remove from folder
-      folder.children = folder.children.filter((c) => c.url !== site.url);
+      folder.children = folder.children.filter((c) => c.id !== site.id);
       // Add to root
       sites_list.push(site);
       await save_sites(sites_list);
@@ -497,7 +552,7 @@ function SpeedDial({ icon_style, theme }) {
 
           return (
             <li
-              key={item.url}
+              key={item.id}
               draggable="true"
               onDragStart={(e) => handle_drag_start(e, index)}
               onDragEnter={(e) => handle_drag_enter(e, index)}
@@ -518,7 +573,7 @@ function SpeedDial({ icon_style, theme }) {
               >
                 <div className="speed-dial-icon-wrapper">
                   <img
-                    className={`speed-dial-icon${icon_style === 'simple' && (!item.icon_slug || !simple_icons_whitelist.has(item.icon_slug)) ? ' speed-dial-icon--fallback' : ''}`}
+                    className={`speed-dial-icon${icon_style === 'simple' ? (item.icon_slug ? ' speed-dial-icon--simple' : ' speed-dial-icon--fallback') : ''}`}
                     src={get_icon_src(item)}
                     alt=""
                     aria-hidden="true"

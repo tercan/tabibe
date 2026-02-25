@@ -63,8 +63,8 @@ const tr = {
   settings_layout: 'Görünüm',
   settings_show_clock: 'Saati göster',
   settings_show_search: 'Arama çubuğunu göster',
-  settings_show_note: 'Notları göster',
-  settings_note_pin: 'Kenar çubuğu olarak sabitle',
+  settings_show_memory: 'Bellek durumunu göster',
+
   settings_background: 'Arka Plan',
   settings_bg_upload: 'Görsel yükle',
   settings_bg_reset: 'Sıfırla',
@@ -75,6 +75,8 @@ const tr = {
   settings_import: 'İçe Aktar',
   settings_import_success: 'Veriler başarıyla içe aktarıldı. Uygulama yenileniyor...',
   settings_import_error: 'Geçersiz yedek dosyası.',
+  settings_about_by: 'tarafından',
+  settings_about_developer: 'Geliştirici',
 };
 
 export default tr;

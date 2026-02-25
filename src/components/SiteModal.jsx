@@ -100,9 +100,9 @@ function SiteModal({ site, mode = 'site', on_save, on_close }) {
 
     set_error('');
 
-    // Auto-derive icon slug from domain if not provided
+    // Auto-derive icon slug from domain only for new sites
     let final_slug = trimmed_slug;
-    if (!final_slug) {
+    if (!final_slug && !is_edit) {
       try {
         const domain = new URL(final_url).hostname;
         final_slug = domain.replace(/^www\./, '').split('.')[0].toLowerCase();

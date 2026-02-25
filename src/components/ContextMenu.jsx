@@ -34,8 +34,20 @@ function ContextMenu({ x, y, on_edit, on_delete, on_remove_from_folder, on_close
   useEffect(() => {
     if (menu_ref.current) {
       menu_ref.current.focus();
+
+      // Adjust position if overflowing viewport
+      const rect = menu_ref.current.getBoundingClientRect();
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      if (rect.right > vw) {
+        menu_ref.current.style.left = `${x - rect.width}px`;
+      }
+      if (rect.bottom > vh) {
+        menu_ref.current.style.top = `${y - rect.height}px`;
+      }
     }
-  }, []);
+  }, [x, y]);
 
   return (
     <div

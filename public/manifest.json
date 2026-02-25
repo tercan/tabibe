@@ -9,7 +9,9 @@
   },
   "permissions": [
     "storage",
-    "tabs",
+    "tabs"
+  ],
+  "optional_permissions": [
     "system.memory"
   ],
   "icons": {
