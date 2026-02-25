@@ -17,7 +17,7 @@ Tabibe, yeni sekme deneyimini kişisel bir kontrol ve üretkenlik alanına dön�
 - Arka plan kişiselleştirme (renk, yerel görsel)
 - Çoklu simge modu (Favicon / Simple Icons)
 - Veri yedekleme ve geri yükleme (JSON)
-- Çoklu dil desteği (Türkçe, English)
+- 10 dil desteği: Türkçe, English, Español, Portugûes, Русский, العربية, हिन्दी, বাংলা, 中文, 日本語
 
 ### Tasarım Felsefesi
 

@@ -15,7 +15,8 @@ Versiyon numaralandırması [Semantic Versioning](https://semver.org/lang/tr/) p
 - Sürükle-bırak ile site sıralama ve klasörleme desteği eklendi
 - Site ekleme/düzenleme modalı (SiteModal) eklendi
 - Sağ tık bağlam menüsü (ContextMenu) eklendi
-- Çoklu dil desteği (TR/EN) eklendi
+- Çoklu dil desteği (TR, EN, ZH, ES, HI, AR, PT, BN, RU, JA) eklendi
+- GPL v3 lisans dosyası eklendi
 - Responsive tasarım breakpoint'leri tanımlandı
 - Paylaşımlı `CloseIcon` bileşeni oluşturuldu
 - Site benzersiz ID sistemi (UUID) ve geriye dönük migration eklendi
