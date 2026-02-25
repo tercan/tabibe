@@ -1,6 +1,14 @@
 import { createContext, useContext, useMemo } from 'react';
 import en from '../locales/en.js';
 import tr from '../locales/tr.js';
+import zh from '../locales/zh.js';
+import es from '../locales/es.js';
+import hi from '../locales/hi.js';
+import ar from '../locales/ar.js';
+import pt from '../locales/pt.js';
+import bn from '../locales/bn.js';
+import ru from '../locales/ru.js';
+import ja from '../locales/ja.js';
 
 /**
  * Supported locales and their translation maps
@@ -9,6 +17,14 @@ import tr from '../locales/tr.js';
 const LOCALE_MAP = {
   en,
   tr,
+  zh,
+  es,
+  hi,
+  ar,
+  pt,
+  bn,
+  ru,
+  ja,
 };
 
 const DEFAULT_LOCALE = 'en';
