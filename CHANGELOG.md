@@ -4,6 +4,14 @@ Bu dosya, projede yapılan tüm önemli değişiklikleri belgelemektedir.
 Format [Keep a Changelog](https://keepachangelog.com/tr/1.0.0/) standardına dayanmaktadır.
 Versiyon numaralandırması [Semantic Versioning](https://semver.org/lang/tr/) prensiplerine uymaktadır.
 
+## [0.1.1] - 2026-02-25 17:45
+
+### Added
+
+- `docs/` klasörüne proje tasarım sistemine uygun (koyu tema, keskin köşeler) modern tanıtım sayfası (landing page) eklendi
+- Tanıtım sayfası için İngilizce ve Türkçe dil desteği eklendi
+- `package.json` ve `manifest.json` versiyon numaraları `0.1.1` olarak güncellendi
+
 ## [0.1.0] - 2026-02-25 15:24
 
 ### Added
