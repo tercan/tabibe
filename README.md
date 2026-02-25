@@ -4,19 +4,20 @@ Chromium tabanlı tarayıcılar için modern, minimalist ve yüksek performansl�
 
 ## Hakkında
 
-Tabibe, yeni sekme deneyimini kişisel bir kontrol ve üretkenlik alanına dönüştüren açılış sayfası eklentisidir. Flat tasarım felsefesi, modüler widget altyapısı ve performans odaklı mimarisi ile kullanıcıya tam özelleştirme kontrolü sunar.
+Tabibe, yeni sekme deneyimini kişisel bir kontrol ve üretkenlik alanına dönüştüren açılış sayfası eklentisidir. Flat tasarım felsefesi, modüler bileşen altyapısı ve performans odaklı mimarisi ile kullanıcıya tam özelleştirme kontrolü sunar.
 
 ### Temel Özellikler
 
 - Saat ve tarih widget'ı
 - Hızlı erişim (speed dial) ızgarası
-- Arama çubuğu
-- Sürükle-bırak widget yönetimi
+- Arama çubuğu (Google, Bing, DuckDuckGo, Yandex)
+- Not paneli (sabitlenebilir)
+- Sürükle-bırak ile site sıralama ve klasörleme
 - Light ve dark tema desteği
 - Arka plan kişiselleştirme (renk, yerel görsel)
-- Komut paleti (Ctrl + K)
-- Çoklu dashboard desteği
-- Opsiyonel bulut senkronizasyonu
+- Çoklu simge modu (Favicon / Simple Icons)
+- Veri yedekleme ve geri yükleme (JSON)
+- Çoklu dil desteği (Türkçe, English)
 
 ### Tasarım Felsefesi
 
@@ -31,7 +32,7 @@ Tabibe, yeni sekme deneyimini kişisel bir kontrol ve üretkenlik alanına dön�
 - **Build Aracı:** Vite
 - **Stil Mimarisi:** Vanilla CSS
 - **Eklenti Manifestosu:** Chrome Extension Manifest V3
-- **Veri Katmanı:** chrome.storage.local / IndexedDB
+- **Veri Katmanı:** chrome.storage.local / localStorage
 
 ## Geliştirme
 
@@ -61,10 +62,6 @@ npm run dev
 2. Chromium tabanlı tarayıcıda `chrome://extensions` adresine gidin
 3. "Geliştirici modu"nu etkinleştirin
 4. "Paketlenmemiş öğe yükle" ile `dist/` klasörünü seçin
-
-## Katkıda Bulunma
-
-Tabibe açık kaynak bir projedir ve topluluk katkılarına açıktır. Katkıda bulunmak için lütfen `CONTRIBUTING.md` dosyasını inceleyin.
 
 ## Lisans
 
