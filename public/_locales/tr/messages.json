@@ -1,0 +1,10 @@
+{
+  "extension_name": {
+    "message": "Tabibe",
+    "description": "Eklentinin adı"
+  },
+  "extension_description": {
+    "message": "Chromium tabanlı tarayıcılar için modern ve minimalist yeni sekme açılış sayfası eklentisi.",
+    "description": "Eklentinin açıklaması"
+  }
+}
