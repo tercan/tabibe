@@ -1,63 +1,65 @@
 # Tabibe
 
-Chromium tabanlı tarayıcılar için modern, minimalist ve yüksek performanslı yeni sekme (new tab) açılış sayfası eklentisi.
+Language: English | [Türkçe](docs/tr/README.md)
 
-**Güncel sürüm:** `0.3.0`
+A modern, minimalist, and high-performance new tab extension for Chromium-based browsers.
 
-## Hakkında
+**Current version:** `0.3.0`
 
-Tabibe, yeni sekme deneyimini kişisel bir kontrol ve üretkenlik alanına dönüştüren açılış sayfası eklentisidir. Hızlı erişim, klasörler, notlar, arama, tema, arka plan ve yedekleme özelliklerini tek ekranda sade bir üretkenlik alanı olarak birleştirir.
+## About
 
-### Temel Özellikler
+Tabibe turns the new tab experience into a personal control and productivity space. It combines quick access, folders, notes, search, themes, background customization, and backup tools into a clean single-screen workflow.
 
-- Saat ve tarih görünümü
-- Arama çubuğu (Google, Bing, DuckDuckGo, Yandex)
-- Hızlı erişim ızgarası ile site ve klasör yönetimi
-- Site ve klasör ekleme, düzenleme, silme ve geri alma akışları
-- Klasör içinden site ekleme, klasör düzenleme ve güvenli klasör silme karar ekranı
-- Ana ekran, klasör içi ve klasörden ana ekrana sürükle-bırak desteği
-- Sürükle-bırak sırasında daha anlaşılır hedef ve taşıma animasyonları
-- Çoklu not sistemi: başlık, içerik, arama, aktif/arşiv görünümü ve sabitleme
-- Boş not kaydını engelleyen not kontrolü
-- Not silme için onay ekranı ve geri alma bildirimi
-- Açık/koyu tema desteği
-- Açık/koyu arka plan renk grupları ve seçili renge göre otomatik tema geçişi
-- Tema değiştirirken eşlenik arka plan rengini otomatik seçme
-- Yerel arka plan görseli yükleme
-- Favicon ve Simple Icons simge modları
-- Simple Icons karşılığı olmayan siteler için favicon tabanlı siyah-beyaz hibrit simge görünümü
-- Tüm uygulama verileri için JSON import/export desteği (siteler, klasörler, ayarlar ve çoklu notlar dahil)
-- 10 arayüz dili desteği: Türkçe, English, Español, Português, Русский, العربية, हिन्दी, বাংলা, 中文, 日本語
-- Günlük alıntı sözler: Türkçe ve İngilizce havuz; diğer arayüz dillerinde İngilizce fallback kullanılır
+### Core Features
 
-### Tasarım Felsefesi
+- Clock and date view
+- Search bar with Google, Bing, DuckDuckGo, and Yandex
+- Quick access grid for site and folder management
+- Add, edit, delete, and undo flows for sites and folders
+- Add sites from inside folders, edit folders in place, and use a safe folder deletion decision screen
+- Drag and drop on the main screen, inside folders, and from folders back to the main screen
+- Clearer drop targets and move animations during drag and drop
+- Multi-note system with title, content, search, active/archive views, and pinning
+- Empty-note prevention
+- Note deletion confirmation with undo support
+- Light and dark theme support
+- Light/dark background color groups with automatic theme switching
+- Matched background color switching when toggling themes
+- Local background image upload
+- Favicon and Simple Icons icon modes
+- Favicon-based black-and-white hybrid icon fallback when a site is not available in Simple Icons
+- JSON import/export for all app data, including sites, folders, settings, and multi-note data
+- 10 UI languages: Türkçe, English, Español, Português, Русский, العربية, हिन्दी, বাংলা, 中文, 日本語
+- Daily quotes: Turkish and English quote pools; other UI languages fall back to English quotes
 
-- Modern ve minimalist flat tasarım
-- Keskin köşeler (sharp corners)
-- Solid renkler, gradient yok
-- Net ve okunabilir tipografi
+### Design Philosophy
 
-## Teknoloji Yığını
+- Modern and minimalist flat design
+- Sharp corners
+- Solid colors, no gradients
+- Clear and readable typography
 
-- **UI Kütüphanesi:** React
-- **Build Aracı:** Vite
-- **Stil Mimarisi:** Vanilla CSS
-- **Eklenti Manifestosu:** Chrome Extension Manifest V3
-- **Veri Katmanı:** chrome.storage.local / localStorage
+## Technology Stack
 
-## Veri ve Gizlilik
+- **UI Library:** React
+- **Build Tool:** Vite
+- **Styling:** Vanilla CSS
+- **Extension Manifest:** Chrome Extension Manifest V3
+- **Data Layer:** chrome.storage.local / localStorage
 
-Tabibe verileri kullanıcının tarayıcısında saklar. Siteler, klasörler, notlar, ayarlar ve arka plan tercihleri `chrome.storage.local` veya yerel geliştirme ortamında `localStorage` üzerinden yönetilir. Import/export işlemleri JSON dosyasıyla yerel olarak yapılır.
+## Data and Privacy
 
-## Geliştirme
+Tabibe stores data in the user's browser. Sites, folders, notes, settings, and background preferences are managed through `chrome.storage.local`, with `localStorage` used in local development. Import/export is handled locally through JSON files.
 
-### Gereksinimler
+## Development
+
+### Requirements
 
 - Node.js (v18+)
-- npm veya yarn
-- Chromium tabanlı tarayıcı (Chrome, Edge, Brave, Opera vb.)
+- npm or yarn
+- Chromium-based browser such as Chrome, Edge, Brave, or Opera
 
-### Kurulum
+### Installation
 
 ```bash
 git clone https://github.com/tercan/tabibe.git
@@ -65,19 +67,19 @@ cd tabibe
 npm install
 ```
 
-### Geliştirme sunucusu
+### Development Server
 
 ```bash
 npm run dev
 ```
 
-### Eklenti olarak yükleme
+### Load as an Extension
 
-1. Projeyi build edin: `npm run build`
-2. Chromium tabanlı tarayıcıda `chrome://extensions` adresine gidin
-3. "Geliştirici modu"nu etkinleştirin
-4. "Paketlenmemiş öğe yükle" ile `dist/` klasörünü seçin
+1. Build the project: `npm run build`
+2. Open `chrome://extensions` in a Chromium-based browser
+3. Enable "Developer mode"
+4. Use "Load unpacked" and select the `dist/` folder
 
-## Lisans
+## License
 
-Bu proje [GPL v3](LICENSE) lisansı altında yayınlanmıştır.
+This project is released under the [GPL v3](LICENSE) license.
