@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from '../hooks/useTranslation.jsx';
 import { get_daily_quote } from '../data/quotes.js';
 
-const APP_VERSION = '0.1.0';
-
 /**
  * 1. SVG icon components
  */
@@ -111,6 +109,9 @@ function Footer({ theme, on_toggle_theme, icon_style, on_toggle_icon_style, on_o
   const [window_count, set_window_count] = useState(0);
   const [memory_info, set_memory_info] = useState(null);
   const quote = get_daily_quote(locale);
+  const icon_style_label = icon_style === 'simple'
+    ? t('footer_icon_style_simple')
+    : t('footer_icon_style_favicon');
 
   useEffect(() => {
     function update_counts() {
@@ -210,8 +211,8 @@ function Footer({ theme, on_toggle_theme, icon_style, on_toggle_icon_style, on_o
         <button
           className="footer-button"
           onClick={on_toggle_icon_style}
-          aria-label={t('footer_icon_style')}
-          title={t('footer_icon_style')}
+          aria-label={icon_style_label}
+          title={icon_style_label}
         >
           <IconStyleIcon />
         </button>

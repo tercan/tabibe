@@ -6,12 +6,22 @@ import SpeedDial from './components/SpeedDial.jsx';
 import NotePanel from './components/NotePanel.jsx';
 import SettingsPanel from './components/SettingsPanel.jsx';
 import Footer from './components/Footer.jsx';
+import {
+  getBackgroundPresetTheme,
+  getEquivalentBackgroundPresetColor,
+} from './lib/backgroundPresets.js';
 
 /**
  * 1. Theme detection and management
  */
 
 function get_initial_theme() {
+  const savedBgColor = localStorage.getItem('tabibe-bg-color');
+  const savedBgImage = localStorage.getItem('tabibe-bg-image');
+  const presetTheme = savedBgImage ? null : getBackgroundPresetTheme(savedBgColor);
+
+  if (presetTheme) return presetTheme;
+
   const saved = localStorage.getItem('tabibe-theme');
   if (saved === 'dark' || saved === 'light') return saved;
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -71,6 +81,21 @@ function App() {
     localStorage.setItem('tabibe-icon-style', icon_style);
   }, [icon_style]);
 
+  useEffect(() => {
+    if (bg_image) return;
+
+    const presetTheme = getBackgroundPresetTheme(bg_color);
+    if (presetTheme && presetTheme !== theme) {
+      applyTheme(presetTheme);
+    }
+  }, [bg_color, bg_image]);
+
+  function applyTheme(nextTheme) {
+    document.documentElement.setAttribute('data-theme', nextTheme);
+    localStorage.setItem('tabibe-theme', nextTheme);
+    set_theme(nextTheme);
+  }
+
   function reset_background() {
     set_bg_color('');
     set_bg_image('');
@@ -79,12 +104,17 @@ function App() {
   }
 
   function toggle_theme() {
-    set_theme((prev) => {
-      const next = prev === 'dark' ? 'light' : 'dark';
-      // Reset background when manually toggling theme to ensure contrast
-      reset_background();
-      return next;
-    });
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+
+    if (!bg_image) {
+      const nextBgColor = getEquivalentBackgroundPresetColor(bg_color, nextTheme);
+      if (nextBgColor && nextBgColor !== bg_color) {
+        set_bg_color(nextBgColor);
+        set_setting('bg-color', nextBgColor);
+      }
+    }
+
+    applyTheme(nextTheme);
   }
 
   function toggle_icon_style() {
@@ -138,19 +168,14 @@ function App() {
     });
   }
 
-  function handle_change_bg_color(color) {
+  function handle_change_bg_color(color, nextTheme) {
     set_bg_color(color);
     set_bg_image('');
     set_setting('bg-color', color);
     set_setting('bg-image', '');
 
-    // Auto-theme switching logic
-    const light_colors = ['#f8f9fa', '#e3f2fd', '#e8f5e9', '#fff3e0', '#fce4ec', '#f3e5f5'];
-    if (light_colors.includes(color)) {
-      set_theme('light');
-    } else {
-      set_theme('dark');
-    }
+    const presetTheme = nextTheme || getBackgroundPresetTheme(color);
+    if (presetTheme) applyTheme(presetTheme);
   }
 
   function handle_change_bg_image(data_url) {
@@ -194,8 +219,14 @@ function App() {
     return style;
   }
 
+  const new_tab_class_name = [
+    'new-tab',
+    note_pinned ? 'new-tab--pinned' : '',
+    bg_image ? 'new-tab--custom-background' : '',
+  ].filter(Boolean).join(' ');
+
   return (
-    <main className={`new-tab ${note_pinned ? 'new-tab--pinned' : ''}`} lang={locale} style={get_bg_style()}>
+    <main className={new_tab_class_name} lang={locale} style={get_bg_style()}>
       {show_clock && <Clock />}
       {show_search && <SearchBar search_engine={search_engine} />}
       <SpeedDial icon_style={icon_style} theme={theme} />

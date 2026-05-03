@@ -200,6 +200,27 @@ async function set_all_data(data) {
     }
   }
 
+  // Validate tabibe-notes if present
+  if (data['tabibe-notes']) {
+    try {
+      const notes = typeof data['tabibe-notes'] === 'string'
+        ? JSON.parse(data['tabibe-notes'])
+        : data['tabibe-notes'];
+
+      if (!Array.isArray(notes)) {
+        throw new Error('tabibe-notes must be an array');
+      }
+
+      notes.forEach((note) => {
+        if (!note || typeof note !== 'object' || Array.isArray(note)) {
+          throw new Error('Invalid note item');
+        }
+      });
+    } catch {
+      throw new Error('Invalid notes data');
+    }
+  }
+
   const chrome_data = {};
 
   for (const key of keys) {

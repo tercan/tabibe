@@ -1,7 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from '../hooks/useTranslation.jsx';
+import useFocusTrap from '../hooks/useFocusTrap.jsx';
 import { get_all_data, set_all_data } from '../lib/storage.js';
+import { BACKGROUND_PRESET_GROUPS } from '../lib/backgroundPresets.js';
 import CloseIcon from './icons/CloseIcon.jsx';
+
+const APP_VERSION = import.meta.env.VITE_APP_VERSION;
 
 /**
  * 1. Search engine definitions
@@ -19,23 +23,6 @@ const SEARCH_ENGINES = [
 /**
  * 3. SettingsPanel component
  */
-
-const BG_PRESETS = [
-  // 6 Light Colors
-  '#f8f9fa', // Default Light
-  '#e3f2fd', // Light Blue
-  '#e8f5e9', // Light Green
-  '#fff3e0', // Light Orange
-  '#fce4ec', // Light Pink
-  '#f3e5f5', // Light Purple
-  // 6 Dark Colors
-  '#181828', // Default Dark
-  '#1a237e', // Indigo
-  '#1b5e20', // Forest Green
-  '#4a148c', // Deep Purple
-  '#212121', // Jet Black
-  '#263238', // Blue Grey
-];
 
 function SettingsPanel({
   is_open,
@@ -56,25 +43,40 @@ function SettingsPanel({
 }) {
   const { t } = useTranslation();
   const panel_ref = useRef(null);
+  const close_button_ref = useRef(null);
+  const reload_timer_ref = useRef(null);
+  const [status, set_status] = useState(null);
+
+  useFocusTrap({
+    containerRef: panel_ref,
+    isActive: is_open,
+    initialFocusRef: close_button_ref,
+    onEscape: on_close,
+  });
 
   async function handle_export() {
-    const data = await get_all_data();
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    const now = new Date();
-    const date = now.getFullYear().toString()
-      + String(now.getMonth() + 1).padStart(2, '0')
-      + String(now.getDate()).padStart(2, '0')
-      + '-'
-      + String(now.getHours()).padStart(2, '0')
-      + String(now.getMinutes()).padStart(2, '0');
-    link.href = url;
-    link.download = `tabibe-backup-${date}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    try {
+      const data = await get_all_data();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      const now = new Date();
+      const date = now.getFullYear().toString()
+        + String(now.getMonth() + 1).padStart(2, '0')
+        + String(now.getDate()).padStart(2, '0')
+        + '-'
+        + String(now.getHours()).padStart(2, '0')
+        + String(now.getMinutes()).padStart(2, '0');
+      link.href = url;
+      link.download = `tabibe-backup-${date}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      set_status({ type: 'success', message: t('settings_export_success') });
+    } catch {
+      set_status({ type: 'error', message: t('settings_export_error') });
+    }
   }
 
   async function handle_import(event) {
@@ -84,10 +86,12 @@ function SettingsPanel({
     // File size validation (max 5MB)
     const MAX_FILE_SIZE = 5 * 1024 * 1024;
     if (file.size > MAX_FILE_SIZE) {
-      alert(t('settings_import_error'));
+      set_status({ type: 'error', message: t('settings_import_file_too_large') });
       event.target.value = '';
       return;
     }
+
+    set_status({ type: 'loading', message: t('settings_importing') });
 
     const reader = new FileReader();
     reader.onload = async (e) => {
@@ -109,11 +113,16 @@ function SettingsPanel({
         // Apply data using unified set_all_data
         await set_all_data(data);
 
-        alert(t('settings_import_success'));
-        window.location.reload();
+        set_status({ type: 'success', message: t('settings_import_success') });
+        reload_timer_ref.current = setTimeout(() => {
+          window.location.reload();
+        }, 1200);
       } catch {
-        alert(t('settings_import_error'));
+        set_status({ type: 'error', message: t('settings_import_error') });
       }
+    };
+    reader.onerror = () => {
+      set_status({ type: 'error', message: t('settings_import_error') });
     };
     reader.readAsText(file);
     // Reset input so the same file can be uploaded again if needed
@@ -121,24 +130,19 @@ function SettingsPanel({
   }
 
   useEffect(() => {
-    function handle_keydown(event) {
-      if (event.key === 'Escape') {
-        on_close();
-      }
-    }
-
     if (is_open) {
-      document.addEventListener('keydown', handle_keydown);
       document.body.classList.add('no-scroll');
     } else {
       document.body.classList.remove('no-scroll');
     }
 
     return () => {
-      document.removeEventListener('keydown', handle_keydown);
       document.body.classList.remove('no-scroll');
+      if (reload_timer_ref.current) {
+        clearTimeout(reload_timer_ref.current);
+      }
     };
-  }, [is_open, on_close]);
+  }, [is_open]);
 
   function handle_overlay_click(event) {
     if (event.target === event.currentTarget) {
@@ -156,11 +160,13 @@ function SettingsPanel({
         role="dialog"
         aria-modal="true"
         aria-label={t('settings_title')}
+        tabIndex={-1}
       >
         <header className="settings-header">
           <h2 className="settings-title">{t('settings_title')}</h2>
           <button
             className="settings-close"
+            ref={close_button_ref}
             onClick={on_close}
             aria-label={t('modal_cancel')}
           >
@@ -223,16 +229,33 @@ function SettingsPanel({
 
           <div className="settings-group">
             <h3 className="settings-group-title">{t('settings_background')}</h3>
-            <div className="settings-bg-presets">
-              {BG_PRESETS.map((color) => (
-                <button
-                   key={color}
-                   className={`settings-bg-swatch${bg_color === color && !bg_image ? ' settings-bg-swatch--active' : ''}`}
-                   style={{ backgroundColor: color }}
-                   onClick={() => on_change_bg_color(color)}
-                   aria-label={color}
-                   title={color}
-                />
+            <div className="settings-bg-groups">
+              {BACKGROUND_PRESET_GROUPS.map((group) => (
+                <section
+                  className="settings-bg-group"
+                  key={group.id}
+                  aria-labelledby={`settings-bg-${group.id}`}
+                  data-theme-target={group.theme}
+                >
+                  <h4 className="settings-bg-group-title" id={`settings-bg-${group.id}`}>
+                    {t(group.labelKey)}
+                  </h4>
+                  <div className="settings-bg-presets">
+                    {group.colors.map((color) => (
+                      <button
+                        type="button"
+                        key={color}
+                        className={`settings-bg-swatch${bg_color === color && !bg_image ? ' settings-bg-swatch--active' : ''}`}
+                        style={{ backgroundColor: color }}
+                        onClick={() => on_change_bg_color(color, group.theme)}
+                        aria-label={`${t(group.labelKey)} ${color}`}
+                        aria-pressed={bg_color === color && !bg_image}
+                        title={color}
+                        data-theme-target={group.theme}
+                      />
+                    ))}
+                  </div>
+                </section>
               ))}
             </div>
             <div className="settings-bg-actions">
@@ -275,13 +298,22 @@ function SettingsPanel({
                 />
               </label>
             </div>
+            {status && (
+              <p
+                className={`settings-status settings-status--${status.type}`}
+                role="status"
+                aria-live="polite"
+              >
+                {status.message}
+              </p>
+            )}
           </div>
           {/* /.settings-group */}
 
           <div className="settings-about">
             <p className="settings-about-title">
               <a href="https://tercan.github.io/tabibe/" target="_blank" rel="noopener noreferrer" className="settings-about-link">
-                Tabibe <span>v0.1.0</span>
+                Tabibe <span>v{APP_VERSION}</span>
               </a>
             </p>
             <p className="settings-about-author">
