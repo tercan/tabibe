@@ -5,13 +5,20 @@
 const es = {
   /* Clock */
   clock_aria_label: 'Reloj y fecha',
-  day_names: [
-    'Domingo', 'Lunes', 'Martes', 'Miércoles',
-    'Jueves', 'Viernes', 'Sábado'
-  ],
+  day_names: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
   month_names: [
-    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre',
   ],
 
   /* Search bar */
@@ -38,10 +45,13 @@ const es = {
   folder_delete_modal_description: 'Estás a punto de eliminar "{name}". Contiene {count} sitio.',
   folder_delete_modal_empty_description: '"{name}" se eliminará. No contiene sitios guardados.',
   folder_delete_modal_move_title: 'Mover sitios a la pantalla principal',
-  folder_delete_modal_move_description: 'La carpeta se eliminará y sus sitios se conservarán en la pantalla principal.',
+  folder_delete_modal_move_description:
+    'La carpeta se eliminará y sus sitios se conservarán en la pantalla principal.',
   folder_delete_modal_delete_title: 'Eliminar con la carpeta',
-  folder_delete_modal_delete_description: 'La carpeta y todos los sitios que contiene se eliminarán.',
-  folder_delete_modal_empty_notice: 'Esta carpeta está vacía, así que solo se eliminará la carpeta.',
+  folder_delete_modal_delete_description:
+    'La carpeta y todos los sitios que contiene se eliminarán.',
+  folder_delete_modal_empty_notice:
+    'Esta carpeta está vacía, así que solo se eliminará la carpeta.',
   folder_delete_modal_empty_action: 'Eliminar carpeta',
 
   /* Note widget */
@@ -67,7 +77,8 @@ const es = {
   note_restore_item: 'Restaurar nota',
   note_delete_item: 'Eliminar nota',
   note_delete_confirm_title: '¿Eliminar nota?',
-  note_delete_confirm_description: 'Esta nota se eliminará. Aún podrás deshacerlo durante unos instantes.',
+  note_delete_confirm_description:
+    'Esta nota se eliminará. Aún podrás deshacerlo durante unos instantes.',
   note_delete_confirm_cancel: 'Cancelar',
   note_delete_confirm_action: 'Eliminar nota',
   note_untitled: 'Nota sin título',
@@ -148,6 +159,22 @@ const es = {
   settings_import_file_too_large: 'El archivo de respaldo es demasiado grande.',
   settings_export_success: 'Archivo de respaldo exportado.',
   settings_export_error: 'No se pudo exportar el archivo de respaldo.',
+  settings_import_undone: 'Se restauraron los datos anteriores.',
+  settings_import_preview_title: 'Revisar copia de seguridad',
+  settings_import_preview_summary:
+    'Se restaurarán {sites} sitios, {folders} carpetas, {folderSites} sitios en carpetas y {notes} notas.',
+  settings_import_apply: 'Restaurar copia',
+  settings_bg_processing: 'Preparando imagen...',
+  settings_bg_upload_success: 'Imagen de fondo guardada.',
+  settings_bg_unsupported_type: 'Usa una imagen PNG, JPEG, WebP o AVIF.',
+  settings_bg_upload_error: 'No se pudo procesar la imagen de fondo.',
+  app_storage_error: 'No se pudo guardar el cambio. Inténtalo de nuevo.',
+  note_save_saving: 'Guardando...',
+  note_save_saved: 'Guardado',
+  note_save_error: 'No se pudo guardar',
+  speed_dial_load_error: 'No se pudieron cargar los accesos rápidos.',
+  speed_dial_save_error: 'No se pudo guardar el cambio de acceso rápido.',
+  common_retry: 'Reintentar',
   settings_about_by: 'por',
   settings_about_developer: 'Desarrollador',
 };

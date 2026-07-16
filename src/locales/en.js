@@ -5,13 +5,20 @@
 const en = {
   /* Clock */
   clock_aria_label: 'Clock and date',
-  day_names: [
-    'Sunday', 'Monday', 'Tuesday', 'Wednesday',
-    'Thursday', 'Friday', 'Saturday'
-  ],
+  day_names: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
   month_names: [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ],
 
   /* Search bar */
@@ -36,9 +43,11 @@ const en = {
   folder_delete_modal_title: 'Delete folder',
   folder_delete_modal_unnamed_folder: 'Untitled folder',
   folder_delete_modal_description: 'You are about to delete "{name}". It contains {count} site.',
-  folder_delete_modal_empty_description: '"{name}" will be deleted. It does not contain any saved sites.',
+  folder_delete_modal_empty_description:
+    '"{name}" will be deleted. It does not contain any saved sites.',
   folder_delete_modal_move_title: 'Move sites to main screen',
-  folder_delete_modal_move_description: 'The folder will be deleted and its sites will stay on the main screen.',
+  folder_delete_modal_move_description:
+    'The folder will be deleted and its sites will stay on the main screen.',
   folder_delete_modal_delete_title: 'Delete with folder',
   folder_delete_modal_delete_description: 'The folder and all sites inside it will be deleted.',
   folder_delete_modal_empty_notice: 'This folder is empty, so only the folder will be deleted.',
@@ -131,7 +140,6 @@ const en = {
   settings_show_search: 'Show search bar',
   settings_show_memory: 'Show memory status',
 
-
   /* Background */
   settings_background: 'Background',
   settings_bg_light_colors: 'Light colors',
@@ -149,6 +157,22 @@ const en = {
   settings_import_file_too_large: 'Backup file is too large.',
   settings_export_success: 'Backup file exported.',
   settings_export_error: 'Backup file could not be exported.',
+  settings_import_undone: 'The previous data was restored.',
+  settings_import_preview_title: 'Review backup',
+  settings_import_preview_summary:
+    '{sites} sites, {folders} folders, {folderSites} folder sites, and {notes} notes will be restored.',
+  settings_import_apply: 'Restore backup',
+  settings_bg_processing: 'Preparing image...',
+  settings_bg_upload_success: 'Background image saved.',
+  settings_bg_unsupported_type: 'Use a PNG, JPEG, WebP, or AVIF image.',
+  settings_bg_upload_error: 'The background image could not be processed.',
+  app_storage_error: 'The change could not be saved. Please try again.',
+  note_save_saving: 'Saving...',
+  note_save_saved: 'Saved',
+  note_save_error: 'Could not save',
+  speed_dial_load_error: 'Quick access items could not be loaded.',
+  speed_dial_save_error: 'The quick access change could not be saved.',
+  common_retry: 'Try again',
   settings_about_by: 'by',
   settings_about_developer: 'Developer',
 };

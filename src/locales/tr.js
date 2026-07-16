@@ -5,19 +5,26 @@
 const tr = {
   /* Clock */
   clock_aria_label: 'Saat ve tarih',
-  day_names: [
-    'Pazar', 'Pazartesi', 'Salı', 'Çarşamba',
-    'Perşembe', 'Cuma', 'Cumartesi'
-  ],
+  day_names: ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'],
   month_names: [
-    'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
-    'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
+    'Ocak',
+    'Şubat',
+    'Mart',
+    'Nisan',
+    'Mayıs',
+    'Haziran',
+    'Temmuz',
+    'Ağustos',
+    'Eylül',
+    'Ekim',
+    'Kasım',
+    'Aralık',
   ],
 
   /* Search bar */
   search_aria_label: 'Arama',
   search_label: 'Arama',
-  search_placeholder: 'Google\'da ara...',
+  search_placeholder: "Google'da ara...",
   search_placeholder_dynamic: '{engine} ile ara...',
 
   /* Speed dial */
@@ -136,7 +143,7 @@ const tr = {
   settings_bg_dark_colors: 'Koyu renkler',
   settings_bg_upload: 'Görsel yükle',
   settings_bg_reset: 'Sıfırla',
-  
+
   /* Veri yönetimi */
   settings_data_management: 'Veri Yönetimi',
   settings_export: 'Dışa Aktar',
@@ -147,6 +154,22 @@ const tr = {
   settings_import_file_too_large: 'Yedek dosyası çok büyük.',
   settings_export_success: 'Yedek dosyası dışa aktarıldı.',
   settings_export_error: 'Yedek dosyası dışa aktarılamadı.',
+  settings_import_undone: 'Önceki veriler geri yüklendi.',
+  settings_import_preview_title: 'Yedeği gözden geçir',
+  settings_import_preview_summary:
+    '{sites} site, {folders} klasör, klasörlerde {folderSites} site ve {notes} not geri yüklenecek.',
+  settings_import_apply: 'Yedeği geri yükle',
+  settings_bg_processing: 'Görsel hazırlanıyor...',
+  settings_bg_upload_success: 'Arka plan görseli kaydedildi.',
+  settings_bg_unsupported_type: 'PNG, JPEG, WebP veya AVIF görsel kullanın.',
+  settings_bg_upload_error: 'Arka plan görseli işlenemedi.',
+  app_storage_error: 'Değişiklik kaydedilemedi. Lütfen tekrar deneyin.',
+  note_save_saving: 'Kaydediliyor...',
+  note_save_saved: 'Kaydedildi',
+  note_save_error: 'Kaydedilemedi',
+  speed_dial_load_error: 'Hızlı erişim öğeleri yüklenemedi.',
+  speed_dial_save_error: 'Hızlı erişim değişikliği kaydedilemedi.',
+  common_retry: 'Tekrar dene',
   settings_about_by: 'tarafından',
   settings_about_developer: 'Geliştirici',
 };

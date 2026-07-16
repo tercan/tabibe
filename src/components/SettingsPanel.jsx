@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { useTranslation } from '../hooks/useTranslation.jsx';
+import { useTranslation } from '../hooks/useTranslation.js';
 import useFocusTrap from '../hooks/useFocusTrap.jsx';
-import { get_all_data, set_all_data } from '../lib/storage.js';
+import { exportBackup, inspectBackup, restoreBackup, undoLastRestore } from '../lib/storage.js';
+import { prepareBackgroundImage } from '../lib/backgroundImage.js';
 import { BACKGROUND_PRESET_GROUPS } from '../lib/backgroundPresets.js';
 import CloseIcon from './icons/CloseIcon.jsx';
 
@@ -17,8 +18,6 @@ const SEARCH_ENGINES = [
   { id: 'duckduckgo', name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=' },
   { id: 'yandex', name: 'Yandex', url: 'https://yandex.com/search/?text=' },
 ];
-
-
 
 /**
  * 3. SettingsPanel component
@@ -46,6 +45,8 @@ function SettingsPanel({
   const close_button_ref = useRef(null);
   const reload_timer_ref = useRef(null);
   const [status, set_status] = useState(null);
+  const [pending_import, set_pending_import] = useState(null);
+  const [can_undo_import, set_can_undo_import] = useState(false);
 
   useFocusTrap({
     containerRef: panel_ref,
@@ -56,17 +57,18 @@ function SettingsPanel({
 
   async function handle_export() {
     try {
-      const data = await get_all_data();
+      const data = await exportBackup();
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       const now = new Date();
-      const date = now.getFullYear().toString()
-        + String(now.getMonth() + 1).padStart(2, '0')
-        + String(now.getDate()).padStart(2, '0')
-        + '-'
-        + String(now.getHours()).padStart(2, '0')
-        + String(now.getMinutes()).padStart(2, '0');
+      const date =
+        now.getFullYear().toString() +
+        String(now.getMonth() + 1).padStart(2, '0') +
+        String(now.getDate()).padStart(2, '0') +
+        '-' +
+        String(now.getHours()).padStart(2, '0') +
+        String(now.getMinutes()).padStart(2, '0');
       link.href = url;
       link.download = `tabibe-backup-${date}.json`;
       document.body.appendChild(link);
@@ -93,40 +95,65 @@ function SettingsPanel({
 
     set_status({ type: 'loading', message: t('settings_importing') });
 
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      try {
-        const data = JSON.parse(e.target.result);
-        
-        // Basic validation: must be an object and have at least one tabibe key
-        if (typeof data !== 'object' || Array.isArray(data)) {
-          throw new Error('Invalid format');
-        }
-
-        const keys = Object.keys(data);
-        const has_tabibe_keys = keys.some(key => key.startsWith('tabibe-'));
-        
-        if (!has_tabibe_keys) {
-          throw new Error('No valid keys found');
-        }
-
-        // Apply data using unified set_all_data
-        await set_all_data(data);
-
-        set_status({ type: 'success', message: t('settings_import_success') });
-        reload_timer_ref.current = setTimeout(() => {
-          window.location.reload();
-        }, 1200);
-      } catch {
-        set_status({ type: 'error', message: t('settings_import_error') });
-      }
-    };
-    reader.onerror = () => {
+    try {
+      const data = JSON.parse(await file.text());
+      const inspected = await inspectBackup(data);
+      set_pending_import({ data, summary: inspected.summary });
+      set_status(null);
+    } catch {
       set_status({ type: 'error', message: t('settings_import_error') });
-    };
-    reader.readAsText(file);
-    // Reset input so the same file can be uploaded again if needed
+    }
+
     event.target.value = '';
+  }
+
+  async function handle_confirm_import() {
+    if (!pending_import) return;
+    set_status({ type: 'loading', message: t('settings_importing') });
+
+    try {
+      await restoreBackup(pending_import.data);
+      set_pending_import(null);
+      set_can_undo_import(true);
+      set_status({ type: 'success', message: t('settings_import_success') });
+      reload_timer_ref.current = setTimeout(() => window.location.reload(), 1200);
+    } catch {
+      set_status({ type: 'error', message: t('settings_import_error') });
+    }
+  }
+
+  async function handle_undo_import() {
+    try {
+      const restored = await undoLastRestore();
+      if (!restored) return;
+      set_can_undo_import(false);
+      set_status({ type: 'success', message: t('settings_import_undone') });
+      reload_timer_ref.current = setTimeout(() => window.location.reload(), 800);
+    } catch {
+      set_status({ type: 'error', message: t('settings_import_error') });
+    }
+  }
+
+  async function handle_background_upload(event) {
+    const file = event.target.files[0];
+    event.target.value = '';
+    if (!file) return;
+
+    set_status({ type: 'loading', message: t('settings_bg_processing') });
+    try {
+      const dataUrl = await prepareBackgroundImage(file);
+      const saved = await on_change_bg_image(dataUrl);
+      if (saved === false) throw new Error('save_failed');
+      set_status({ type: 'success', message: t('settings_bg_upload_success') });
+    } catch (error) {
+      const message =
+        error?.code === 'unsupported_type'
+          ? t('settings_bg_unsupported_type')
+          : error?.code === 'file_too_large'
+            ? t('settings_import_file_too_large')
+            : t('settings_bg_upload_error');
+      set_status({ type: 'error', message });
+    }
   }
 
   useEffect(() => {
@@ -180,8 +207,8 @@ function SettingsPanel({
             <h3 className="settings-group-title">{t('settings_search_engine')}</h3>
             <div className="settings-options">
               {SEARCH_ENGINES.map((engine) => (
-                <label 
-                  key={engine.id} 
+                <label
+                  key={engine.id}
                   className={`settings-radio-modern${search_engine === engine.id ? ' settings-radio-modern--active' : ''}`}
                 >
                   <input
@@ -202,27 +229,15 @@ function SettingsPanel({
             <h3 className="settings-group-title">{t('settings_layout')}</h3>
             <label className="settings-toggle">
               <span className="settings-toggle-label">{t('settings_show_clock')}</span>
-              <input
-                type="checkbox"
-                checked={show_clock}
-                onChange={on_toggle_clock}
-              />
+              <input type="checkbox" checked={show_clock} onChange={on_toggle_clock} />
             </label>
-          <label className="settings-toggle">
+            <label className="settings-toggle">
               <span className="settings-toggle-label">{t('settings_show_search')}</span>
-              <input
-                type="checkbox"
-                checked={show_search}
-                onChange={on_toggle_search}
-              />
+              <input type="checkbox" checked={show_search} onChange={on_toggle_search} />
             </label>
             <label className="settings-toggle">
               <span className="settings-toggle-label">{t('settings_show_memory')}</span>
-              <input
-                type="checkbox"
-                checked={show_memory}
-                onChange={on_toggle_memory}
-              />
+              <input type="checkbox" checked={show_memory} onChange={on_toggle_memory} />
             </label>
           </div>
           {/* /.settings-group */}
@@ -263,16 +278,9 @@ function SettingsPanel({
                 {t('settings_bg_upload')}
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/png,image/jpeg,image/webp,image/avif"
                   className="visually-hidden"
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                      const reader = new FileReader();
-                      reader.onload = (ev) => on_change_bg_image(ev.target.result);
-                      reader.readAsDataURL(file);
-                    }
-                  }}
+                  onChange={handle_background_upload}
                 />
               </label>
               <button className="modal-button modal-button--cancel" onClick={on_reset_bg}>
@@ -307,17 +315,59 @@ function SettingsPanel({
                 {status.message}
               </p>
             )}
+            {pending_import && (
+              <div className="settings-import-preview" role="status">
+                <p className="settings-import-preview-title">
+                  {t('settings_import_preview_title')}
+                </p>
+                <p>{t('settings_import_preview_summary', pending_import.summary)}</p>
+                <div className="settings-bg-actions">
+                  <button
+                    type="button"
+                    className="modal-button modal-button--primary"
+                    onClick={handle_confirm_import}
+                  >
+                    {t('settings_import_apply')}
+                  </button>
+                  <button
+                    type="button"
+                    className="modal-button modal-button--cancel"
+                    onClick={() => set_pending_import(null)}
+                  >
+                    {t('modal_cancel')}
+                  </button>
+                </div>
+              </div>
+            )}
+            {can_undo_import && (
+              <button type="button" className="toast-action" onClick={handle_undo_import}>
+                {t('toast_undo')}
+              </button>
+            )}
           </div>
           {/* /.settings-group */}
 
           <div className="settings-about">
             <p className="settings-about-title">
-              <a href="https://tercan.github.io/tabibe/" target="_blank" rel="noopener noreferrer" className="settings-about-link">
+              <a
+                href="https://tercan.github.io/tabibe/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="settings-about-link"
+              >
                 Tabibe <span>v{APP_VERSION}</span>
               </a>
             </p>
             <p className="settings-about-author">
-              {t('settings_about_developer')}: <a href="https://tercan.net" target="_blank" rel="noopener noreferrer" className="settings-author-link">Tercan Keskin</a>
+              {t('settings_about_developer')}:{' '}
+              <a
+                href="https://tercan.net"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="settings-author-link"
+              >
+                Tercan Keskin
+              </a>
             </p>
           </div>
           {/* /.settings-about */}

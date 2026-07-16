@@ -1,6 +1,13 @@
-/**
- * 1. Default speed dial sites
- */
+import {
+  BACKUP_VERSION,
+  DataValidationError,
+  createBackupEnvelope,
+  createDefaultSettings,
+  normalizeAppState,
+  normalizeNotes,
+  normalizeSettings,
+  normalizeSites,
+} from '../domain/dataSchema.js';
 
 const DEFAULT_SITES = [
   { name: 'Google', url: 'https://www.google.com', icon_slug: 'google' },
@@ -23,240 +30,362 @@ const DEFAULT_SITES = [
   { name: 'Twitch', url: 'https://www.twitch.tv', icon_slug: 'twitch' },
 ];
 
-const STORAGE_KEY = 'tabibe-sites';
+const STATE_KEY = 'tabibe-state';
+const STAGING_KEY = 'tabibe-state-staging';
+const ROLLBACK_KEY = 'tabibe-state-rollback';
+const LEGACY_SITES_KEY = 'tabibe-sites';
+const LEGACY_NOTES_KEY = 'tabibe-notes';
+const LEGACY_NOTE_KEY = 'tabibe-note';
+const APP_VERSION = import.meta.env.VITE_APP_VERSION || '0.3.1';
 
-/**
- * 2. Storage adapter — chrome.storage.local with localStorage fallback
- */
+let writeQueue = Promise.resolve();
 
-function has_chrome_storage() {
-  return typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local;
+class StorageError extends Error {
+  constructor(code, cause) {
+    super(code);
+    this.name = 'StorageError';
+    this.code = code;
+    this.cause = cause;
+  }
 }
 
-function storage_get(key) {
-  return new Promise((resolve) => {
-    if (has_chrome_storage()) {
-      chrome.storage.local.get([key], (result) => {
-        resolve(result[key] || null);
+function hasChromeStorage() {
+  return Boolean(globalThis.chrome?.storage?.local);
+}
+
+function getSystemTheme() {
+  return globalThis.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function parseStoredValue(value) {
+  if (typeof value !== 'string') return value;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value;
+  }
+}
+
+function getChromeRuntimeError() {
+  return globalThis.chrome?.runtime?.lastError || null;
+}
+
+function storageGet(keys = null) {
+  if (hasChromeStorage()) {
+    return new Promise((resolve, reject) => {
+      chrome.storage.local.get(keys, (result) => {
+        const runtimeError = getChromeRuntimeError();
+        if (runtimeError) {
+          reject(new StorageError('storage_read_failed', runtimeError));
+          return;
+        }
+        resolve(result || {});
       });
-    } else {
-      // Fallback for dev server
-      try {
-        const raw = localStorage.getItem(key);
-        resolve(raw ? JSON.parse(raw) : null);
-      } catch {
-        resolve(null);
-      }
-    }
-  });
+    });
+  }
+
+  try {
+    const requestedKeys =
+      keys === null
+        ? Array.from({ length: localStorage.length }, (_, index) => localStorage.key(index))
+        : Array.isArray(keys)
+          ? keys
+          : [keys];
+    return Promise.resolve(
+      Object.fromEntries(
+        requestedKeys
+          .filter(Boolean)
+          .map((key) => [key, parseStoredValue(localStorage.getItem(key))]),
+      ),
+    );
+  } catch (error) {
+    return Promise.reject(new StorageError('storage_read_failed', error));
+  }
 }
 
-function storage_set(key, value) {
-  return new Promise((resolve) => {
-    if (has_chrome_storage()) {
-      chrome.storage.local.set({ [key]: value }, () => {
+function storageSet(values) {
+  if (hasChromeStorage()) {
+    return new Promise((resolve, reject) => {
+      chrome.storage.local.set(values, () => {
+        const runtimeError = getChromeRuntimeError();
+        if (runtimeError) {
+          reject(new StorageError('storage_write_failed', runtimeError));
+          return;
+        }
         resolve();
       });
-    } else {
+    });
+  }
+
+  try {
+    for (const [key, value] of Object.entries(values)) {
       localStorage.setItem(key, JSON.stringify(value));
-      resolve();
     }
-  });
+    return Promise.resolve();
+  } catch (error) {
+    return Promise.reject(new StorageError('storage_write_failed', error));
+  }
 }
 
-/**
- * 3. CRUD operations for speed dial sites
- */
-
-async function load_sites() {
-  const sites = await storage_get(STORAGE_KEY);
-  if (sites && Array.isArray(sites) && sites.length > 0) {
-    // Migration: ensure all items have an id
-    let needs_save = false;
-    for (const item of sites) {
-      if (!item.id) {
-        item.id = crypto.randomUUID();
-        needs_save = true;
-      }
-      // Also migrate children inside folders
-      if (item.type === 'folder' && item.children) {
-        for (const child of item.children) {
-          if (!child.id) {
-            child.id = crypto.randomUUID();
-            needs_save = true;
-          }
+function storageRemove(keys) {
+  const keyList = Array.isArray(keys) ? keys : [keys];
+  if (hasChromeStorage()) {
+    return new Promise((resolve, reject) => {
+      chrome.storage.local.remove(keyList, () => {
+        const runtimeError = getChromeRuntimeError();
+        if (runtimeError) {
+          reject(new StorageError('storage_remove_failed', runtimeError));
+          return;
         }
-      }
-    }
-    if (needs_save) {
-      await storage_set(STORAGE_KEY, sites);
-    }
-    return sites;
-  }
-  // First run: seed with defaults and persist
-  const seeded = DEFAULT_SITES.map((s) => ({ ...s, id: crypto.randomUUID() }));
-  await storage_set(STORAGE_KEY, seeded);
-  return seeded;
-}
-
-async function save_sites(sites) {
-  await storage_set(STORAGE_KEY, sites);
-}
-
-async function add_site(site) {
-  const sites = await load_sites();
-  sites.push({ ...site, id: site.id || crypto.randomUUID() });
-  await save_sites(sites);
-  return sites;
-}
-
-async function remove_site(url) {
-  const sites = await load_sites();
-  const filtered = sites.filter((s) => s.url !== url);
-  await save_sites(filtered);
-  return filtered;
-}
-
-
-
-/**
- * 4. Folder operations
- */
-
-async function add_folder(name) {
-  const sites = await load_sites();
-  const folder = {
-    type: 'folder',
-    id: `folder-${Date.now()}`,
-    name,
-    children: [],
-  };
-  sites.push(folder);
-  await save_sites(sites);
-  return sites;
-}
-
-async function remove_folder(folder_id) {
-  const sites = await load_sites();
-  const filtered = sites.filter((s) => s.id !== folder_id);
-  await save_sites(filtered);
-  return filtered;
-}
-
-
-
-async function get_all_data() {
-  const data = {};
-  
-  // 1. Get all from localStorage (settings, theme, etc.)
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key.startsWith('tabibe-')) {
-      data[key] = localStorage.getItem(key);
-    }
-  }
-
-  // 2. Get from chrome.storage.local (sites, folders, etc.)
-  if (has_chrome_storage()) {
-    return new Promise((resolve) => {
-      chrome.storage.local.get(null, (result) => {
-        // Only include tabibe- keys
-        Object.keys(result).forEach(key => {
-          if (key.startsWith('tabibe-')) {
-            data[key] = typeof result[key] === 'string' ? result[key] : JSON.stringify(result[key]);
-          }
-        });
-        resolve(data);
-      });
-    });
-  }
-
-  return data;
-}
-
-async function set_all_data(data) {
-  // Validate data structure
-  if (typeof data !== 'object' || Array.isArray(data)) {
-    throw new Error('Invalid data format');
-  }
-
-  const keys = Object.keys(data).filter((k) => k.startsWith('tabibe-'));
-
-  if (keys.length === 0 || keys.length > 50) {
-    throw new Error('Invalid key count');
-  }
-
-  // Validate tabibe-sites if present
-  if (data['tabibe-sites']) {
-    try {
-      const sites = typeof data['tabibe-sites'] === 'string'
-        ? JSON.parse(data['tabibe-sites'])
-        : data['tabibe-sites'];
-      if (!Array.isArray(sites)) {
-        throw new Error('tabibe-sites must be an array');
-      }
-    } catch {
-      throw new Error('Invalid sites data');
-    }
-  }
-
-  // Validate tabibe-notes if present
-  if (data['tabibe-notes']) {
-    try {
-      const notes = typeof data['tabibe-notes'] === 'string'
-        ? JSON.parse(data['tabibe-notes'])
-        : data['tabibe-notes'];
-
-      if (!Array.isArray(notes)) {
-        throw new Error('tabibe-notes must be an array');
-      }
-
-      notes.forEach((note) => {
-        if (!note || typeof note !== 'object' || Array.isArray(note)) {
-          throw new Error('Invalid note item');
-        }
-      });
-    } catch {
-      throw new Error('Invalid notes data');
-    }
-  }
-
-  const chrome_data = {};
-
-  for (const key of keys) {
-    const value = data[key];
-    
-    // 1. Set to localStorage
-    localStorage.setItem(key, value);
-
-    // 2. Prepare for chrome.storage.local
-    if (has_chrome_storage()) {
-      try {
-        // If it's a JSON string, try to parse it (sites list etc. are stored as objects in chrome.storage)
-        chrome_data[key] = JSON.parse(value);
-      } catch {
-        chrome_data[key] = value;
-      }
-    }
-  }
-
-  // 3. Persist to chrome.storage.local
-  if (has_chrome_storage() && Object.keys(chrome_data).length > 0) {
-    return new Promise((resolve) => {
-      chrome.storage.local.set(chrome_data, () => {
         resolve();
       });
     });
   }
+
+  try {
+    keyList.forEach((key) => localStorage.removeItem(key));
+    return Promise.resolve();
+  } catch (error) {
+    return Promise.reject(new StorageError('storage_remove_failed', error));
+  }
 }
+
+function createDefaultSites() {
+  return normalizeSites(DEFAULT_SITES.map((site) => ({ ...site, id: crypto.randomUUID() })));
+}
+
+function getLegacySettings(values) {
+  const readLegacy = (key, fallback) => {
+    const value = parseStoredValue(values[`tabibe-${key}`]);
+    return value === undefined || value === null ? fallback : value;
+  };
+
+  return normalizeSettings(
+    {
+      theme: readLegacy('theme', getSystemTheme()),
+      iconStyle: readLegacy('icon-style', 'favicon'),
+      searchEngine: readLegacy('search-engine', 'google'),
+      showClock: readLegacy('show-clock', true),
+      showSearch: readLegacy('show-search', true),
+      notePinned: readLegacy('note-pinned', false),
+      backgroundColor: readLegacy('bg-color', ''),
+      backgroundImage: readLegacy('bg-image', ''),
+      showMemory: readLegacy('show-memory', false),
+    },
+    getSystemTheme(),
+  );
+}
+
+function migrateLegacyNotes(values) {
+  const storedNotes = parseStoredValue(values[LEGACY_NOTES_KEY]);
+  if (Array.isArray(storedNotes)) return normalizeNotes(storedNotes);
+
+  const legacyNote = parseStoredValue(values[LEGACY_NOTE_KEY]);
+  if (typeof legacyNote !== 'string' || !legacyNote.trim()) return [];
+  const now = new Date().toISOString();
+  return normalizeNotes([
+    {
+      id: crypto.randomUUID(),
+      title: legacyNote.split('\n').find((line) => line.trim()) || '',
+      content: legacyNote,
+      createdAt: now,
+      updatedAt: now,
+    },
+  ]);
+}
+
+async function migrateLegacyState(values) {
+  const hasLegacySites =
+    Object.prototype.hasOwnProperty.call(values, LEGACY_SITES_KEY) &&
+    values[LEGACY_SITES_KEY] !== null;
+  const legacySites = hasLegacySites
+    ? parseStoredValue(values[LEGACY_SITES_KEY])
+    : createDefaultSites();
+  const state = normalizeAppState(
+    {
+      revision: 0,
+      sites: legacySites,
+      notes: migrateLegacyNotes(values),
+      settings: getLegacySettings(values),
+    },
+    { defaultSites: createDefaultSites(), systemTheme: getSystemTheme() },
+  );
+
+  await storageSet({ [STATE_KEY]: state });
+  return state;
+}
+
+async function loadState() {
+  const values = await storageGet(null);
+  if (!values[STATE_KEY]) return migrateLegacyState(values);
+  return normalizeAppState(values[STATE_KEY], {
+    defaultSites: createDefaultSites(),
+    systemTheme: getSystemTheme(),
+  });
+}
+
+async function saveState(state) {
+  const normalizedState = normalizeAppState(state, {
+    defaultSites: createDefaultSites(),
+    systemTheme: getSystemTheme(),
+  });
+  await storageSet({ [STATE_KEY]: normalizedState });
+  return structuredClone(normalizedState);
+}
+
+function updateState(updater) {
+  const operation = writeQueue.then(async () => {
+    const currentState = await loadState();
+    const draft = structuredClone(currentState);
+    const candidate = await updater(draft);
+    const nextState = candidate || draft;
+    nextState.revision = currentState.revision + 1;
+    return saveState(nextState);
+  });
+
+  writeQueue = operation.catch(() => undefined);
+  return operation;
+}
+
+async function loadSites() {
+  return structuredClone((await loadState()).sites);
+}
+
+async function saveSites(sites) {
+  const normalizedSites = normalizeSites(sites);
+  const state = await updateState((draft) => {
+    draft.sites = normalizedSites;
+    return draft;
+  });
+  return structuredClone(state.sites);
+}
+
+async function loadNotes() {
+  return structuredClone((await loadState()).notes);
+}
+
+async function saveNotes(notes) {
+  const normalizedNotes = normalizeNotes(notes);
+  const state = await updateState((draft) => {
+    draft.notes = normalizedNotes;
+    return draft;
+  });
+  return structuredClone(state.notes);
+}
+
+async function loadSettings() {
+  return structuredClone((await loadState()).settings);
+}
+
+async function saveSettings(patch) {
+  const state = await updateState((draft) => {
+    draft.settings = normalizeSettings({ ...draft.settings, ...patch }, getSystemTheme());
+    return draft;
+  });
+  return structuredClone(state.settings);
+}
+
+function parseLegacyBackup(data) {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) {
+    throw new DataValidationError('invalid_backup', 'backup');
+  }
+
+  const recognizedKeys = Object.keys(data).filter((key) => key.startsWith('tabibe-'));
+  if (recognizedKeys.length === 0 || recognizedKeys.length > 50) {
+    throw new DataValidationError('invalid_backup_keys', 'backup');
+  }
+
+  const sites = Object.prototype.hasOwnProperty.call(data, LEGACY_SITES_KEY)
+    ? parseStoredValue(data[LEGACY_SITES_KEY])
+    : [];
+  return normalizeAppState(
+    {
+      revision: 0,
+      sites,
+      notes: migrateLegacyNotes(data),
+      settings: getLegacySettings(data),
+    },
+    { systemTheme: getSystemTheme() },
+  );
+}
+
+function parseBackup(data) {
+  if (data?.backupVersion === BACKUP_VERSION && data.data) {
+    return normalizeAppState({ revision: 0, ...data.data }, { systemTheme: getSystemTheme() });
+  }
+  return parseLegacyBackup(data);
+}
+
+async function inspectBackup(data) {
+  const state = parseBackup(data);
+  return {
+    state,
+    summary: {
+      sites: state.sites.filter((item) => item.type !== 'folder').length,
+      folders: state.sites.filter((item) => item.type === 'folder').length,
+      folderSites: state.sites.reduce((total, item) => total + (item.children?.length || 0), 0),
+      notes: state.notes.length,
+    },
+  };
+}
+
+async function exportBackup() {
+  return createBackupEnvelope(await loadState(), APP_VERSION);
+}
+
+async function restoreBackup(data) {
+  const nextState = parseBackup(data);
+  const currentState = await loadState();
+  await storageSet({ [ROLLBACK_KEY]: currentState, [STAGING_KEY]: nextState });
+
+  const stagedValues = await storageGet([STAGING_KEY]);
+  const verifiedState = normalizeAppState(stagedValues[STAGING_KEY], {
+    systemTheme: getSystemTheme(),
+  });
+
+  try {
+    await storageSet({ [STATE_KEY]: verifiedState });
+    await storageRemove(STAGING_KEY);
+  } catch (error) {
+    await storageSet({ [STATE_KEY]: currentState });
+    await storageRemove(STAGING_KEY).catch(() => undefined);
+    throw error;
+  }
+
+  return structuredClone(verifiedState);
+}
+
+async function undoLastRestore() {
+  const values = await storageGet([ROLLBACK_KEY]);
+  if (!values[ROLLBACK_KEY]) return false;
+  await saveState(values[ROLLBACK_KEY]);
+  await storageRemove(ROLLBACK_KEY);
+  return true;
+}
+
+const load_sites = loadSites;
+const save_sites = saveSites;
+const get_all_data = exportBackup;
+const set_all_data = restoreBackup;
 
 export {
+  DEFAULT_SITES,
+  DataValidationError,
+  StorageError,
+  createDefaultSettings,
+  exportBackup,
   get_all_data,
-  set_all_data,
+  inspectBackup,
+  loadNotes,
+  loadSettings,
+  loadSites,
+  loadState,
   load_sites,
+  restoreBackup,
+  saveNotes,
+  saveSettings,
+  saveSites,
   save_sites,
-  add_site,
-  remove_site,
-  add_folder,
-  remove_folder,
+  set_all_data,
+  undoLastRestore,
 };

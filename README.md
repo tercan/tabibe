@@ -4,7 +4,7 @@ Language: English | [Türkçe](docs/tr/README.md)
 
 A modern, minimalist, and high-performance new tab extension for Chromium-based browsers.
 
-**Current version:** `0.3.0`
+**Current version:** `0.3.1`
 
 ## About
 
@@ -49,7 +49,7 @@ Tabibe turns the new tab experience into a personal control and productivity spa
 
 ## Data and Privacy
 
-Tabibe stores data in the user's browser. Sites, folders, notes, settings, and background preferences are managed through `chrome.storage.local`, with `localStorage` used in local development. Import/export is handled locally through JSON files.
+Tabibe stores data in the user's browser. Sites, folders, notes, settings, and background preferences are managed through a versioned state repository backed by `chrome.storage.local`, with `localStorage` used in local development. Import/export is handled locally through validated JSON files with preview, rollback, and undo support.
 
 ## Development
 
@@ -71,6 +71,14 @@ npm install
 
 ```bash
 npm run dev
+```
+
+### Quality Checks
+
+```bash
+npm run quality
+npm run test:e2e
+npm run audit
 ```
 
 ### Load as an Extension

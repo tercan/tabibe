@@ -5,13 +5,20 @@
 const ja = {
   /* Clock */
   clock_aria_label: '時計と日付',
-  day_names: [
-    '日曜日', '月曜日', '火曜日', '水曜日',
-    '木曜日', '金曜日', '土曜日'
-  ],
+  day_names: ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'],
   month_names: [
-    '1月', '2月', '3月', '4月', '5月', '6月',
-    '7月', '8月', '9月', '10月', '11月', '12月'
+    '1月',
+    '2月',
+    '3月',
+    '4月',
+    '5月',
+    '6月',
+    '7月',
+    '8月',
+    '9月',
+    '10月',
+    '11月',
+    '12月',
   ],
 
   /* Search bar */
@@ -35,7 +42,8 @@ const ja = {
   folder_drop_to_root_hint: 'メイン画面にドロップ',
   folder_delete_modal_title: 'フォルダを削除',
   folder_delete_modal_unnamed_folder: '無題のフォルダ',
-  folder_delete_modal_description: '「{name}」を削除しようとしています。{count}件のサイトが含まれています。',
+  folder_delete_modal_description:
+    '「{name}」を削除しようとしています。{count}件のサイトが含まれています。',
   folder_delete_modal_empty_description: '「{name}」は削除されます。保存されたサイトはありません。',
   folder_delete_modal_move_title: 'サイトをメイン画面へ移動',
   folder_delete_modal_move_description: 'フォルダを削除し、サイトはメイン画面に残します。',
@@ -148,6 +156,22 @@ const ja = {
   settings_import_file_too_large: 'バックアップファイルが大きすぎます。',
   settings_export_success: 'バックアップファイルをエクスポートしました。',
   settings_export_error: 'バックアップファイルをエクスポートできませんでした。',
+  settings_import_undone: '以前のデータを復元しました。',
+  settings_import_preview_title: 'バックアップを確認',
+  settings_import_preview_summary:
+    '{sites}件のサイト、{folders}個のフォルダー、フォルダー内の{folderSites}件のサイト、{notes}件のメモを復元します。',
+  settings_import_apply: 'バックアップを復元',
+  settings_bg_processing: '画像を準備しています...',
+  settings_bg_upload_success: '背景画像を保存しました。',
+  settings_bg_unsupported_type: 'PNG、JPEG、WebP、AVIF画像を使用してください。',
+  settings_bg_upload_error: '背景画像を処理できませんでした。',
+  app_storage_error: '変更を保存できませんでした。もう一度お試しください。',
+  note_save_saving: '保存中...',
+  note_save_saved: '保存済み',
+  note_save_error: '保存できませんでした',
+  speed_dial_load_error: 'クイックアクセス項目を読み込めませんでした。',
+  speed_dial_save_error: 'クイックアクセスの変更を保存できませんでした。',
+  common_retry: '再試行',
   settings_about_by: '作者',
   settings_about_developer: '開発者',
 };

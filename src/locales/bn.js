@@ -5,13 +5,20 @@
 const bn = {
   /* Clock */
   clock_aria_label: 'ঘড়ি এবং তারিখ',
-  day_names: [
-    'রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার',
-    'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার'
-  ],
+  day_names: ['রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার'],
   month_names: [
-    'জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন',
-    'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'
+    'জানুয়ারি',
+    'ফেব্রুয়ারি',
+    'মার্চ',
+    'এপ্রিল',
+    'মে',
+    'জুন',
+    'জুলাই',
+    'আগস্ট',
+    'সেপ্টেম্বর',
+    'অক্টোবর',
+    'নভেম্বর',
+    'ডিসেম্বর',
   ],
 
   /* Search bar */
@@ -148,6 +155,22 @@ const bn = {
   settings_import_file_too_large: 'ব্যাকআপ ফাইলটি খুব বড়।',
   settings_export_success: 'ব্যাকআপ ফাইল রপ্তানি হয়েছে।',
   settings_export_error: 'ব্যাকআপ ফাইল রপ্তানি করা যায়নি।',
+  settings_import_undone: 'আগের ডেটা পুনরুদ্ধার করা হয়েছে।',
+  settings_import_preview_title: 'ব্যাকআপ পর্যালোচনা করুন',
+  settings_import_preview_summary:
+    '{sites}টি সাইট, {folders}টি ফোল্ডার, ফোল্ডারে {folderSites}টি সাইট এবং {notes}টি নোট পুনরুদ্ধার হবে।',
+  settings_import_apply: 'ব্যাকআপ পুনরুদ্ধার করুন',
+  settings_bg_processing: 'ছবি প্রস্তুত হচ্ছে...',
+  settings_bg_upload_success: 'পটভূমির ছবি সংরক্ষিত হয়েছে।',
+  settings_bg_unsupported_type: 'PNG, JPEG, WebP বা AVIF ছবি ব্যবহার করুন।',
+  settings_bg_upload_error: 'পটভূমির ছবি প্রক্রিয়া করা যায়নি।',
+  app_storage_error: 'পরিবর্তনটি সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।',
+  note_save_saving: 'সংরক্ষণ হচ্ছে...',
+  note_save_saved: 'সংরক্ষিত',
+  note_save_error: 'সংরক্ষণ করা যায়নি',
+  speed_dial_load_error: 'দ্রুত প্রবেশ আইটেম লোড করা যায়নি।',
+  speed_dial_save_error: 'দ্রুত প্রবেশ পরিবর্তন সংরক্ষণ করা যায়নি।',
+  common_retry: 'আবার চেষ্টা করুন',
   settings_about_by: 'দ্বারা',
   settings_about_developer: 'ডেভেলপার',
 };

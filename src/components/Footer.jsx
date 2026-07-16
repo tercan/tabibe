@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useTranslation } from '../hooks/useTranslation.jsx';
+import { useTranslation } from '../hooks/useTranslation.js';
 import { get_daily_quote } from '../data/quotes.js';
 
 /**
@@ -92,7 +92,17 @@ function IconStyleIcon() {
 
 function NoteIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       <path d="M12 20h9" />
       <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
     </svg>
@@ -103,15 +113,22 @@ function NoteIcon() {
  * 2. Footer component
  */
 
-function Footer({ theme, on_toggle_theme, icon_style, on_toggle_icon_style, on_open_settings, on_open_notes, show_memory }) {
+function Footer({
+  theme,
+  on_toggle_theme,
+  icon_style,
+  on_toggle_icon_style,
+  on_open_settings,
+  on_open_notes,
+  show_memory,
+}) {
   const { t, locale } = useTranslation();
   const [tab_count, set_tab_count] = useState(0);
   const [window_count, set_window_count] = useState(0);
   const [memory_info, set_memory_info] = useState(null);
   const quote = get_daily_quote(locale);
-  const icon_style_label = icon_style === 'simple'
-    ? t('footer_icon_style_simple')
-    : t('footer_icon_style_favicon');
+  const icon_style_label =
+    icon_style === 'simple' ? t('footer_icon_style_simple') : t('footer_icon_style_favicon');
 
   useEffect(() => {
     function update_counts() {
@@ -129,8 +146,8 @@ function Footer({ theme, on_toggle_theme, icon_style, on_toggle_icon_style, on_o
       if (show_memory && typeof chrome !== 'undefined' && chrome.system && chrome.system.memory) {
         chrome.system.memory.getInfo((info) => {
           if (chrome.runtime.lastError) return;
-          const used_gb = ((info.capacity - info.availableCapacity) / (1024 ** 3)).toFixed(1);
-          const total_gb = (info.capacity / (1024 ** 3)).toFixed(0);
+          const used_gb = ((info.capacity - info.availableCapacity) / 1024 ** 3).toFixed(1);
+          const total_gb = (info.capacity / 1024 ** 3).toFixed(0);
           set_memory_info(`${used_gb}/${total_gb} GB`);
         });
       } else if (!show_memory) {
@@ -167,13 +184,33 @@ function Footer({ theme, on_toggle_theme, icon_style, on_toggle_icon_style, on_o
       <div className="footer-left">
         {tab_count > 0 && (
           <span className="footer-tabs">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
               <rect x="3" y="4" width="18" height="16" rx="2" />
               <path d="M3 8h18" />
               <path d="M9 4v4" />
             </svg>
             {tab_count}
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
               <rect x="2" y="4" width="16" height="14" rx="2" />
               <rect x="6" y="2" width="16" height="14" rx="2" />
             </svg>
@@ -182,7 +219,17 @@ function Footer({ theme, on_toggle_theme, icon_style, on_toggle_icon_style, on_o
         )}
         {memory_info && (
           <span className="footer-tabs">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
               <rect x="2" y="6" width="20" height="12" rx="2" />
               <path d="M6 6V4" />
               <path d="M10 6V4" />

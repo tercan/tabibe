@@ -1,0 +1,65 @@
+import { describe, expect, it } from 'vitest';
+import {
+  DataValidationError,
+  createDefaultSettings,
+  normalizeAppState,
+  normalizeSiteUrl,
+  normalizeSites,
+} from './dataSchema.js';
+
+describe('data schema', () => {
+  it('normalizes web URLs and rejects executable protocols', () => {
+    expect(normalizeSiteUrl('example.com')).toBe('https://example.com/');
+    expect(normalizeSiteUrl('chrome://settings')).toBe('chrome://settings');
+    expect(() => normalizeSiteUrl('javascript:alert(1)')).toThrow(DataValidationError);
+    expect(() => normalizeSiteUrl('data:text/html,test')).toThrow(DataValidationError);
+  });
+
+  it('preserves a deliberately empty site list', () => {
+    const state = normalizeAppState({
+      sites: [],
+      notes: [],
+      settings: createDefaultSettings('dark'),
+    });
+
+    expect(state.sites).toEqual([]);
+    expect(state.settings.theme).toBe('dark');
+  });
+
+  it('migrates legacy icon slugs and rejects nested folders', () => {
+    const [site] = normalizeSites([
+      {
+        id: 'site-1',
+        name: 'Example',
+        url: 'https://example.com',
+        icon_slug: ' Example ',
+      },
+    ]);
+
+    expect(site.icon).toEqual({ preference: 'auto', slug: 'example' });
+    expect(() =>
+      normalizeSites([
+        {
+          id: 'folder-1',
+          type: 'folder',
+          name: 'Folder',
+          children: [{ id: 'folder-2', type: 'folder', name: 'Nested', children: [] }],
+        },
+      ]),
+    ).toThrow('nested_folder');
+  });
+
+  it('filters empty notes while preserving meaningful notes', () => {
+    const state = normalizeAppState({
+      sites: [],
+      notes: [
+        { id: 'empty', title: ' ', content: '' },
+        { id: 'kept', title: '', content: 'Remember this' },
+      ],
+      settings: {},
+    });
+
+    expect(state.notes).toHaveLength(1);
+    expect(state.notes[0].id).toBe('kept');
+  });
+});

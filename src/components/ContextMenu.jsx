@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useTranslation } from '../hooks/useTranslation.jsx';
+import { useTranslation } from '../hooks/useTranslation.js';
 
 /**
  * 1. ContextMenu component — right-click menu for speed dial items
@@ -60,14 +60,20 @@ function ContextMenu({ x, y, on_edit, on_delete, on_remove_from_folder, on_close
       <button
         className="context-menu-item"
         role="menuitem"
-        onClick={() => { on_edit(); on_close(); }}
+        onClick={() => {
+          on_edit();
+          on_close();
+        }}
       >
         {t('context_edit')}
       </button>
       <button
         className="context-menu-item context-menu-item--danger"
         role="menuitem"
-        onClick={() => { on_delete(); on_close(); }}
+        onClick={() => {
+          on_delete();
+          on_close();
+        }}
       >
         {t('context_delete')}
       </button>
@@ -75,7 +81,10 @@ function ContextMenu({ x, y, on_edit, on_delete, on_remove_from_folder, on_close
         <button
           className="context-menu-item"
           role="menuitem"
-          onClick={() => { on_remove_from_folder(); on_close(); }}
+          onClick={() => {
+            on_remove_from_folder();
+            on_close();
+          }}
         >
           {t('context_remove_from_folder')}
         </button>

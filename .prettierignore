@@ -1,0 +1,8 @@
+coverage/
+dist/
+docs/
+documents/
+node_modules/
+public/brand-icons/
+release/
+package-lock.json

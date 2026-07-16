@@ -6,6 +6,31 @@ Bu dosya, projede yapılan tüm önemli değişiklikleri belgelemektedir.
 Format [Keep a Changelog](https://keepachangelog.com/tr/1.0.0/) standardına dayanmaktadır.
 Versiyon numaralandırması [Semantic Versioning](https://semver.org/lang/tr/) prensiplerine uymaktadır.
 
+## [0.3.1] - 2026-07-17 02:17
+
+### Added
+
+- Site, klasör, not ve ayarlar için sürümlenmiş uygulama veri şeması ile tek bir asenkron depolama katmanı eklendi
+- Birim testi, gerçek uzantı E2E testi, erişilebilirlik, lint, format, bağımlılık denetimi, paket bütçesi ve paket doğrulama kalite kapıları eklendi
+- İçe aktarma önizlemesi, aşamalı geri yükleme doğrulaması, otomatik geri dönüş ve tek adımda geri alma desteği eklendi
+
+### Changed
+
+- Yüklenen arka plan görselleri depolamadan önce yerel olarak optimize edilecek ve dosya türü/boyutu doğrulanacak şekilde güncellendi
+- Notların kalıcı kaydı, görünür kayıt durumları ve yeni sekme gizlendiğinde veya kapatıldığında yaşam döngüsü kaydıyla güncellendi
+- Site ve klasör değişiklikleri, kalıcı depolama hatasında önceki arayüz durumunu geri yükleyecek ve kullanıcıya hata bildirecek şekilde güncellendi
+
+### Fixed
+
+- Bilinçli olarak boş bırakılmış hızlı erişim listesinin migration sırasında varsayılan sitelerle yeniden doldurulması engellendi
+- Boş notların ve geçersiz içe aktarma verilerinin kalıcı duruma girmesi engellendi
+- Güvensiz veya desteklenmeyen URL protokollerinin ekleme, düzenleme, gezinme veya yedekten geri yükleme akışlarında kabul edilmesi düzeltildi
+
+### Security
+
+- Güvenlik açığı bulunan derleme bağımlılıkları güncellendi ve bağımlılık denetimi bilinen sıfır açıkla doğrulandı
+- Saklanan arka plan görselleri desteklenen raster veri URL'leriyle sınırlandırıldı ve veri alanlarına boyut limitleri eklendi
+
 ## [0.3.0] - 2026-05-03 17:54
 
 ### Added

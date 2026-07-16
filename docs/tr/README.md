@@ -4,7 +4,7 @@ Dil: [English](../../README.md) | Türkçe
 
 Chromium tabanlı tarayıcılar için modern, minimalist ve yüksek performanslı yeni sekme (new tab) açılış sayfası eklentisi.
 
-**Güncel sürüm:** `0.3.0`
+**Güncel sürüm:** `0.3.1`
 
 ## Hakkında
 
@@ -49,7 +49,7 @@ Tabibe, yeni sekme deneyimini kişisel bir kontrol ve üretkenlik alanına dön�
 
 ## Veri ve Gizlilik
 
-Tabibe verileri kullanıcının tarayıcısında saklar. Siteler, klasörler, notlar, ayarlar ve arka plan tercihleri `chrome.storage.local` veya yerel geliştirme ortamında `localStorage` üzerinden yönetilir. Import/export işlemleri JSON dosyasıyla yerel olarak yapılır.
+Tabibe verileri kullanıcının tarayıcısında saklar. Siteler, klasörler, notlar, ayarlar ve arka plan tercihleri `chrome.storage.local` tabanlı sürümlenmiş veri katmanı veya yerel geliştirme ortamında `localStorage` üzerinden yönetilir. İçe/dışa aktarma işlemleri önizleme, doğrulama, geri dönüş ve geri alma desteğiyle yerel JSON dosyaları üzerinden yapılır.
 
 ## Geliştirme
 
@@ -71,6 +71,14 @@ npm install
 
 ```bash
 npm run dev
+```
+
+### Kalite kontrolleri
+
+```bash
+npm run quality
+npm run test:e2e
+npm run audit
 ```
 
 ### Eklenti olarak yükleme

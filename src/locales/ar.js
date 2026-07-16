@@ -5,13 +5,20 @@
 const ar = {
   /* Clock */
   clock_aria_label: 'الساعة والتاريخ',
-  day_names: [
-    'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء',
-    'الخميس', 'الجمعة', 'السبت'
-  ],
+  day_names: ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'],
   month_names: [
-    'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-    'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+    'يناير',
+    'فبراير',
+    'مارس',
+    'أبريل',
+    'مايو',
+    'يونيو',
+    'يوليو',
+    'أغسطس',
+    'سبتمبر',
+    'أكتوبر',
+    'نوفمبر',
+    'ديسمبر',
   ],
 
   /* Search bar */
@@ -148,6 +155,22 @@ const ar = {
   settings_import_file_too_large: 'ملف النسخة الاحتياطية كبير جدًا.',
   settings_export_success: 'تم تصدير ملف النسخة الاحتياطية.',
   settings_export_error: 'تعذر تصدير ملف النسخة الاحتياطية.',
+  settings_import_undone: 'تمت استعادة البيانات السابقة.',
+  settings_import_preview_title: 'مراجعة النسخة الاحتياطية',
+  settings_import_preview_summary:
+    'ستتم استعادة {sites} مواقع و{folders} مجلدات و{folderSites} مواقع داخل المجلدات و{notes} ملاحظات.',
+  settings_import_apply: 'استعادة النسخة الاحتياطية',
+  settings_bg_processing: 'جارٍ تجهيز الصورة...',
+  settings_bg_upload_success: 'تم حفظ صورة الخلفية.',
+  settings_bg_unsupported_type: 'استخدم صورة PNG أو JPEG أو WebP أو AVIF.',
+  settings_bg_upload_error: 'تعذرت معالجة صورة الخلفية.',
+  app_storage_error: 'تعذر حفظ التغيير. حاول مرة أخرى.',
+  note_save_saving: 'جارٍ الحفظ...',
+  note_save_saved: 'تم الحفظ',
+  note_save_error: 'تعذر الحفظ',
+  speed_dial_load_error: 'تعذر تحميل عناصر الوصول السريع.',
+  speed_dial_save_error: 'تعذر حفظ تغيير الوصول السريع.',
+  common_retry: 'حاول مرة أخرى',
   settings_about_by: 'بواسطة',
   settings_about_developer: 'المطوّر',
 };

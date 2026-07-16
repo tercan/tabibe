@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useTranslation } from '../hooks/useTranslation.jsx';
+import { useTranslation } from '../hooks/useTranslation.js';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { load_sites, save_sites } from '../lib/storage.js';
+import { normalizeSiteUrl } from '../domain/dataSchema.js';
 import speedDialMoveAnimation from '../lib/speedDialMotion.js';
 import SiteModal from './SiteModal.jsx';
 import ContextMenu from './ContextMenu.jsx';
@@ -16,7 +17,8 @@ import FolderDeleteModal from './FolderDeleteModal.jsx';
 const ROOT_FOLDER_ID = 'root';
 const FOLDER_DROP_DELAY = 250;
 const FOLDER_SWAP_DELAY = 650;
-const TRANSPARENT_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+const TRANSPARENT_PIXEL =
+  'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
 function get_favicon_url(site_url) {
   try {
@@ -38,7 +40,10 @@ function get_simple_icon_url(slug, theme) {
 function get_suggested_icon_slug(site_url) {
   try {
     const parsed = new URL(site_url);
-    return parsed.hostname.replace(/^www\./, '').split('.')[0].toLowerCase();
+    return parsed.hostname
+      .replace(/^www\./, '')
+      .split('.')[0]
+      .toLowerCase();
   } catch {
     return '';
   }
@@ -46,7 +51,17 @@ function get_suggested_icon_slug(site_url) {
 
 function MoreIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       <circle cx="12" cy="12" r="1" />
       <circle cx="19" cy="12" r="1" />
       <circle cx="5" cy="12" r="1" />
@@ -56,7 +71,17 @@ function MoreIcon() {
 
 function PlusIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       <line x1="12" y1="5" x2="12" y2="19" />
       <line x1="5" y1="12" x2="19" y2="12" />
     </svg>
@@ -65,7 +90,17 @@ function PlusIcon() {
 
 function FolderPlusIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
       <line x1="12" y1="11" x2="12" y2="17" />
       <line x1="9" y1="14" x2="15" y2="14" />
@@ -75,7 +110,17 @@ function FolderPlusIcon() {
 
 function EditIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       <path d="M12 20h9" />
       <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
     </svg>
@@ -84,7 +129,17 @@ function EditIcon() {
 
 function CheckIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       <polyline points="20 6 9 17 4 12" />
     </svg>
   );
@@ -211,7 +266,9 @@ function upsert_site(sites, site_data, folder_id) {
 
 function update_folder_name(sites, folder_id, name) {
   const updated_sites = clone_sites(sites);
-  const folder_index = updated_sites.findIndex((item) => item.type === 'folder' && item.id === folder_id);
+  const folder_index = updated_sites.findIndex(
+    (item) => item.type === 'folder' && item.id === folder_id,
+  );
 
   if (folder_index === -1) {
     return null;
@@ -234,10 +291,10 @@ function move_folder_child(sites, folder_id, from_index, to_index) {
   }
 
   if (
-    from_index < 0
-    || to_index < 0
-    || from_index >= folder.children.length
-    || to_index >= folder.children.length
+    from_index < 0 ||
+    to_index < 0 ||
+    from_index >= folder.children.length ||
+    to_index >= folder.children.length
   ) {
     return null;
   }
@@ -255,10 +312,7 @@ function is_in_folder_swap_zone(event) {
   const edge_x = rect.width * 0.12;
   const edge_y = rect.height * 0.12;
 
-  return x < edge_x
-    || x > rect.width - edge_x
-    || y < edge_y
-    || y > rect.height - edge_y;
+  return x < edge_x || x > rect.width - edge_x || y < edge_y || y > rect.height - edge_y;
 }
 
 /**
@@ -269,6 +323,8 @@ function SpeedDial({ icon_style, theme }) {
   const { t } = useTranslation();
   const [sites, set_sites] = useState([]);
   const [is_loading, set_is_loading] = useState(true);
+  const [load_error, set_load_error] = useState(false);
+  const [save_error, set_save_error] = useState(false);
   const [modal_open, set_modal_open] = useState(false);
   const [modal_mode, set_modal_mode] = useState('site');
   const [editing_site, set_editing_site] = useState(null);
@@ -284,6 +340,7 @@ function SpeedDial({ icon_style, theme }) {
   const [folder_child_drag_over_index, set_folder_child_drag_over_index] = useState(null);
   const drag_node = useRef(null);
   const dragging_site_ref = useRef(null);
+  const drag_start_sites_ref = useRef(null);
   const drag_click_block_ref = useRef(false);
   const sites_ref = useRef([]);
   const drag_index_ref = useRef(null);
@@ -307,10 +364,16 @@ function SpeedDial({ icon_style, theme }) {
   }, [drag_index]);
 
   useEffect(() => {
-    load_sites().then((loaded) => {
-      set_sites(loaded);
-      set_is_loading(false);
-    });
+    load_sites()
+      .then((loaded) => {
+        set_sites(loaded);
+        set_load_error(false);
+        set_is_loading(false);
+      })
+      .catch(() => {
+        set_load_error(true);
+        set_is_loading(false);
+      });
 
     const CACHE_KEY = 'tabibe-icon-whitelist';
     const CACHE_TTL = 30 * 24 * 60 * 60 * 1000;
@@ -339,7 +402,7 @@ function SpeedDial({ icon_style, theme }) {
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
       chrome.storage.local.get([CACHE_KEY], (result) => {
         const cached = result[CACHE_KEY];
-        if (cached && cached.list && (Date.now() - cached.timestamp) < CACHE_TTL) {
+        if (cached && cached.list && Date.now() - cached.timestamp < CACHE_TTL) {
           apply_whitelist(cached.list);
         } else {
           fetch_and_cache();
@@ -350,12 +413,14 @@ function SpeedDial({ icon_style, theme }) {
         const raw = localStorage.getItem(CACHE_KEY);
         if (raw) {
           const cached = JSON.parse(raw);
-          if (cached && cached.list && (Date.now() - cached.timestamp) < CACHE_TTL) {
+          if (cached && cached.list && Date.now() - cached.timestamp < CACHE_TTL) {
             apply_whitelist(cached.list);
             return;
           }
         }
-      } catch { /* empty */ }
+      } catch {
+        /* empty */
+      }
       fetch_and_cache();
     }
   }, []);
@@ -384,10 +449,17 @@ function SpeedDial({ icon_style, theme }) {
   function handle_click(url) {
     if (drag_node.current || drag_click_block_ref.current || !url) return;
 
-    const trimmed_url = url.trim();
-    const is_browser_protocol = trimmed_url.startsWith('chrome://')
-      || trimmed_url.startsWith('edge://')
-      || trimmed_url.startsWith('about:');
+    let trimmed_url = '';
+    try {
+      trimmed_url = normalizeSiteUrl(url);
+    } catch {
+      set_save_error(true);
+      return;
+    }
+    const is_browser_protocol =
+      trimmed_url.startsWith('chrome://') ||
+      trimmed_url.startsWith('edge://') ||
+      trimmed_url.startsWith('about:');
 
     if (is_browser_protocol && typeof chrome !== 'undefined' && chrome.tabs) {
       chrome.tabs.update({ url: trimmed_url }, () => {
@@ -487,6 +559,7 @@ function SpeedDial({ icon_style, theme }) {
   function handle_drag_start(event, index) {
     drag_node.current = event.currentTarget;
     dragging_site_ref.current = sites[index];
+    drag_start_sites_ref.current = clone_sites(sites_ref.current);
     set_drag_index(index);
     drag_index_ref.current = index;
     event.dataTransfer.effectAllowed = 'move';
@@ -587,7 +660,12 @@ function SpeedDial({ icon_style, theme }) {
     if (current_drag_index === index) return;
 
     const new_sites = [...sites_ref.current];
-    if (current_drag_index < 0 || index < 0 || current_drag_index >= new_sites.length || index >= new_sites.length) {
+    if (
+      current_drag_index < 0 ||
+      index < 0 ||
+      current_drag_index >= new_sites.length ||
+      index >= new_sites.length
+    ) {
       return;
     }
 
@@ -612,14 +690,14 @@ function SpeedDial({ icon_style, theme }) {
     event.preventDefault();
 
     if (
-      typeof target_index === 'number'
-      && folder_drop_target_ref.current === null
-      && drag_index_ref.current !== target_index
+      typeof target_index === 'number' &&
+      folder_drop_target_ref.current === null &&
+      drag_index_ref.current !== target_index
     ) {
       perform_swap(target_index);
     }
 
-    await save_sites(sites_ref.current);
+    await persist_sites(clone_sites(sites_ref.current), drag_start_sites_ref.current);
     handle_drag_end();
   }
 
@@ -631,6 +709,7 @@ function SpeedDial({ icon_style, theme }) {
     clear_folder_swap_candidate();
     drag_node.current = null;
     dragging_site_ref.current = null;
+    drag_start_sites_ref.current = null;
     set_drag_index(null);
     drag_index_ref.current = null;
     set_drag_over_index(null);
@@ -654,19 +733,22 @@ function SpeedDial({ icon_style, theme }) {
     }
 
     folder.children.push(removed_site);
-    await persist_sites(current_sites);
-    queue_undo(t('toast_site_moved_folder'), previous_sites);
+    const was_saved = await persist_sites(current_sites, previous_sites);
+    if (was_saved) queue_undo(t('toast_site_moved_folder'), previous_sites);
     handle_drag_end();
   }
 
   function handle_folder_child_drag_start(event, folder_id, child_index) {
     event.stopPropagation();
-    const folder = sites_ref.current.find((item) => item.type === 'folder' && item.id === folder_id);
+    const folder = sites_ref.current.find(
+      (item) => item.type === 'folder' && item.id === folder_id,
+    );
     const child = folder?.children?.[child_index] || null;
     const next_drag_state = { folder_id, index: child_index };
 
     drag_node.current = event.currentTarget;
     dragging_site_ref.current = child;
+    drag_start_sites_ref.current = clone_sites(sites_ref.current);
     folder_child_drag_state_ref.current = next_drag_state;
     set_folder_child_drag_state(next_drag_state);
     set_folder_child_drag_over_index(child_index);
@@ -703,7 +785,7 @@ function SpeedDial({ icon_style, theme }) {
       sites_ref.current,
       folder_id,
       current_drag_state.index,
-      child_index
+      child_index,
     );
 
     if (!next_sites) return;
@@ -731,7 +813,7 @@ function SpeedDial({ icon_style, theme }) {
     const current_drag_state = folder_child_drag_state_ref.current;
     if (current_drag_state && current_drag_state.folder_id === folder_id) {
       perform_folder_child_swap(folder_id, child_index);
-      await save_sites(sites_ref.current);
+      await persist_sites(clone_sites(sites_ref.current), drag_start_sites_ref.current);
     }
 
     handle_folder_child_drag_end();
@@ -759,8 +841,8 @@ function SpeedDial({ icon_style, theme }) {
     }
 
     current_sites.push(removed_site);
-    await persist_sites(current_sites);
-    queue_undo(t('toast_site_removed_from_folder'), previous_sites);
+    const was_saved = await persist_sites(current_sites, previous_sites);
+    if (was_saved) queue_undo(t('toast_site_removed_from_folder'), previous_sites);
     handle_folder_child_drag_end(event);
   }
 
@@ -773,6 +855,7 @@ function SpeedDial({ icon_style, theme }) {
 
     drag_node.current = null;
     dragging_site_ref.current = null;
+    drag_start_sites_ref.current = null;
     folder_child_drag_state_ref.current = null;
     set_folder_child_drag_state(null);
     set_folder_child_drag_over_index(null);
@@ -782,10 +865,21 @@ function SpeedDial({ icon_style, theme }) {
    * 7. Undo and persistence helpers
    */
 
-  async function persist_sites(next_sites) {
+  async function persist_sites(next_sites, rollback_sites = sites_ref.current) {
+    const previous_sites = clone_sites(rollback_sites || sites_ref.current);
     set_sites(next_sites);
     sites_ref.current = next_sites;
-    await save_sites(next_sites);
+    set_save_error(false);
+
+    try {
+      await save_sites(next_sites);
+      return true;
+    } catch {
+      set_sites(previous_sites);
+      sites_ref.current = previous_sites;
+      set_save_error(true);
+      return false;
+    }
   }
 
   function queue_undo(message, previous_sites) {
@@ -808,7 +902,8 @@ function SpeedDial({ icon_style, theme }) {
       undo_timer_ref.current = null;
     }
 
-    await persist_sites(undo_state.previous_sites);
+    const was_saved = await persist_sites(undo_state.previous_sites);
+    if (!was_saved) return;
     set_undo_state({ message: t('toast_restored'), previous_sites: null });
 
     undo_timer_ref.current = setTimeout(() => {
@@ -881,14 +976,15 @@ function SpeedDial({ icon_style, theme }) {
 
       if (editing_site) {
         const folder_id = data.id || editing_site?.id;
-        const next_sites = update_folder_name(sites_list, folder_id, data.name)
-          || update_folder_name(await load_sites(), folder_id, data.name);
+        const next_sites =
+          update_folder_name(sites_list, folder_id, data.name) ||
+          update_folder_name(await load_sites(), folder_id, data.name);
 
         if (!next_sites) {
           return false;
         }
 
-        await persist_sites(next_sites);
+        if (!(await persist_sites(next_sites))) return false;
       } else {
         sites_list.push({
           type: 'folder',
@@ -896,7 +992,7 @@ function SpeedDial({ icon_style, theme }) {
           name: data.name,
           children: [],
         });
-        await persist_sites(sites_list);
+        if (!(await persist_sites(sites_list))) return false;
       }
     } else {
       const sites_list = clone_sites(sites_ref.current);
@@ -906,7 +1002,7 @@ function SpeedDial({ icon_style, theme }) {
         id: editing_site?.id || data.id || crypto.randomUUID(),
       };
       const next_sites = upsert_site(sites_list, site_data, target_folder_id);
-      await persist_sites(next_sites);
+      if (!(await persist_sites(next_sites))) return false;
     }
 
     handle_close_modal();
@@ -925,8 +1021,8 @@ function SpeedDial({ icon_style, theme }) {
     const removed_site = remove_site_by_id(sites_list, item.id);
     if (!removed_site) return;
 
-    await persist_sites(sites_list);
-    queue_undo(t('toast_site_deleted'), previous_sites);
+    const was_saved = await persist_sites(sites_list, previous_sites);
+    if (was_saved) queue_undo(t('toast_site_deleted'), previous_sites);
   }
 
   async function handle_confirm_folder_delete(mode) {
@@ -934,9 +1030,9 @@ function SpeedDial({ icon_style, theme }) {
 
     const sites_list = clone_sites(await load_sites());
     const previous_sites = clone_sites(sites_list);
-    const index = sites_list.findIndex((site) => (
-      site.id === folder_delete_candidate.id && site.type === 'folder'
-    ));
+    const index = sites_list.findIndex(
+      (site) => site.id === folder_delete_candidate.id && site.type === 'folder',
+    );
 
     if (index === -1) {
       set_folder_delete_candidate(null);
@@ -948,14 +1044,14 @@ function SpeedDial({ icon_style, theme }) {
 
     if (mode === 'move') {
       sites_list.splice(index, 1, ...children);
-      await persist_sites(sites_list);
+      if (!(await persist_sites(sites_list, previous_sites))) return;
       set_folder_delete_candidate(null);
       queue_undo(t('toast_folder_deleted'), previous_sites);
       return;
     }
 
     sites_list.splice(index, 1);
-    await persist_sites(sites_list);
+    if (!(await persist_sites(sites_list, previous_sites))) return;
     set_folder_delete_candidate(null);
     queue_undo(t('toast_folder_deleted_with_contents'), previous_sites);
   }
@@ -972,23 +1068,49 @@ function SpeedDial({ icon_style, theme }) {
 
     const [removed_site] = folder.children.splice(child_index, 1);
     sites_list.push(removed_site);
-    await persist_sites(sites_list);
-    queue_undo(t('toast_site_removed_from_folder'), previous_sites);
+    const was_saved = await persist_sites(sites_list, previous_sites);
+    if (was_saved) queue_undo(t('toast_site_removed_from_folder'), previous_sites);
   }
 
   if (is_loading) {
-    return null;
+    return (
+      <nav
+        className="speed-dial speed-dial--loading"
+        aria-busy="true"
+        aria-label={t('speed_dial_aria_label')}
+      />
+    );
+  }
+
+  if (load_error) {
+    return (
+      <nav className="speed-dial speed-dial--error" aria-label={t('speed_dial_aria_label')}>
+        <p>{t('speed_dial_load_error')}</p>
+        <button
+          type="button"
+          className="modal-button modal-button--primary"
+          onClick={() => window.location.reload()}
+        >
+          {t('common_retry')}
+        </button>
+      </nav>
+    );
   }
 
   const folders = get_folders(sites);
   const all_sites = get_all_sites(sites);
   const is_dragging_any = drag_index !== null || folder_child_drag_state !== null;
   const root_drop_preview_site = folder_child_drag_state
-    ? sites.find((item) => item.id === folder_child_drag_state.folder_id)?.children?.[folder_child_drag_state.index] || null
+    ? sites.find((item) => item.id === folder_child_drag_state.folder_id)?.children?.[
+        folder_child_drag_state.index
+      ] || null
     : null;
 
   return (
-    <nav className={`speed-dial${manage_mode ? ' speed-dial--manage' : ''}${is_dragging_any ? ' speed-dial--dragging' : ''}`} aria-label={t('speed_dial_aria_label')}>
+    <nav
+      className={`speed-dial${manage_mode ? ' speed-dial--manage' : ''}${is_dragging_any ? ' speed-dial--dragging' : ''}`}
+      aria-label={t('speed_dial_aria_label')}
+    >
       <div className="speed-dial-toolbar" role="toolbar" aria-label={t('speed_dial_toolbar_label')}>
         <div className="speed-dial-toolbar-actions">
           <button
@@ -1053,8 +1175,8 @@ function SpeedDial({ icon_style, theme }) {
                   if (dragging_site_ref.current?.type === 'folder') {
                     handle_drop(e);
                   } else if (
-                    folder_drop_target_ref.current === item.id
-                    || folder_drop_candidate_ref.current === item.id
+                    folder_drop_target_ref.current === item.id ||
+                    folder_drop_candidate_ref.current === item.id
                   ) {
                     handle_drop_on_folder(item.id);
                   } else {
@@ -1095,9 +1217,7 @@ function SpeedDial({ icon_style, theme }) {
                   onContextMenu={(e) => open_context_menu(e, item)}
                   aria-label={`${item.name} - ${item.url}`}
                 >
-                  <div className="speed-dial-icon-wrapper">
-                    {render_site_icon(item)}
-                  </div>
+                  <div className="speed-dial-icon-wrapper">{render_site_icon(item)}</div>
                   <span className="speed-dial-label">{item.name}</span>
                 </div>
                 {/* /.speed-dial-item */}
@@ -1141,6 +1261,15 @@ function SpeedDial({ icon_style, theme }) {
         </div>
       )}
 
+      {save_error && (
+        <div className="toast toast--error" role="alert">
+          <span>{t('speed_dial_save_error')}</span>
+          <button className="toast-action" type="button" onClick={() => set_save_error(false)}>
+            {t('modal_cancel')}
+          </button>
+        </div>
+      )}
+
       {context_menu && (
         <ContextMenu
           x={context_menu.x}
@@ -1148,7 +1277,9 @@ function SpeedDial({ icon_style, theme }) {
           on_edit={() => handle_edit(context_menu.site)}
           on_delete={() => handle_delete(context_menu.site)}
           on_remove_from_folder={
-            context_menu.folder_id ? () => handle_remove_from_folder(context_menu.site, context_menu.folder_id) : null
+            context_menu.folder_id
+              ? () => handle_remove_from_folder(context_menu.site, context_menu.folder_id)
+              : null
           }
           on_close={() => set_context_menu(null)}
         />

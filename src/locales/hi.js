@@ -5,13 +5,20 @@
 const hi = {
   /* Clock */
   clock_aria_label: 'घड़ी और तारीख',
-  day_names: [
-    'रविवार', 'सोमवार', 'मंगलवार', 'बुधवार',
-    'गुरुवार', 'शुक्रवार', 'शनिवार'
-  ],
+  day_names: ['रविवार', 'सोमवार', 'मंगलवार', 'बुधवार', 'गुरुवार', 'शुक्रवार', 'शनिवार'],
   month_names: [
-    'जनवरी', 'फरवरी', 'मार्च', 'अप्रैल', 'मई', 'जून',
-    'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर'
+    'जनवरी',
+    'फरवरी',
+    'मार्च',
+    'अप्रैल',
+    'मई',
+    'जून',
+    'जुलाई',
+    'अगस्त',
+    'सितंबर',
+    'अक्टूबर',
+    'नवंबर',
+    'दिसंबर',
   ],
 
   /* Search bar */
@@ -38,7 +45,8 @@ const hi = {
   folder_delete_modal_description: 'आप "{name}" हटाने वाले हैं। इसमें {count} साइट है।',
   folder_delete_modal_empty_description: '"{name}" हटाया जाएगा। इसमें कोई सहेजी गई साइट नहीं है।',
   folder_delete_modal_move_title: 'साइटों को मुख्य स्क्रीन पर ले जाएँ',
-  folder_delete_modal_move_description: 'फ़ोल्डर हट जाएगा और इसकी साइटें मुख्य स्क्रीन पर बनी रहेंगी।',
+  folder_delete_modal_move_description:
+    'फ़ोल्डर हट जाएगा और इसकी साइटें मुख्य स्क्रीन पर बनी रहेंगी।',
   folder_delete_modal_delete_title: 'फ़ोल्डर के साथ हटाएँ',
   folder_delete_modal_delete_description: 'फ़ोल्डर और उसके अंदर की सभी साइटें हट जाएँगी।',
   folder_delete_modal_empty_notice: 'यह फ़ोल्डर खाली है, इसलिए केवल फ़ोल्डर हटेगा।',
@@ -148,6 +156,22 @@ const hi = {
   settings_import_file_too_large: 'बैकअप फ़ाइल बहुत बड़ी है।',
   settings_export_success: 'बैकअप फ़ाइल निर्यात की गई।',
   settings_export_error: 'बैकअप फ़ाइल निर्यात नहीं की जा सकी।',
+  settings_import_undone: 'पिछला डेटा पुनर्स्थापित किया गया।',
+  settings_import_preview_title: 'बैकअप की समीक्षा करें',
+  settings_import_preview_summary:
+    '{sites} साइटें, {folders} फ़ोल्डर, फ़ोल्डरों में {folderSites} साइटें और {notes} नोट पुनर्स्थापित होंगे।',
+  settings_import_apply: 'बैकअप पुनर्स्थापित करें',
+  settings_bg_processing: 'चित्र तैयार हो रहा है...',
+  settings_bg_upload_success: 'पृष्ठभूमि चित्र सहेजा गया।',
+  settings_bg_unsupported_type: 'PNG, JPEG, WebP या AVIF चित्र का उपयोग करें।',
+  settings_bg_upload_error: 'पृष्ठभूमि चित्र संसाधित नहीं किया जा सका।',
+  app_storage_error: 'बदलाव सहेजा नहीं जा सका। फिर प्रयास करें।',
+  note_save_saving: 'सहेजा जा रहा है...',
+  note_save_saved: 'सहेजा गया',
+  note_save_error: 'सहेजा नहीं जा सका',
+  speed_dial_load_error: 'त्वरित पहुँच आइटम लोड नहीं हो सके।',
+  speed_dial_save_error: 'त्वरित पहुँच बदलाव सहेजा नहीं जा सका।',
+  common_retry: 'फिर प्रयास करें',
   settings_about_by: 'द्वारा',
   settings_about_developer: 'डेवलपर',
 };

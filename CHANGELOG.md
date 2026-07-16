@@ -6,6 +6,31 @@ This file documents all notable changes in the project.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.3.1] - 2026-07-17 02:17
+
+### Added
+
+- Added a versioned application state schema and a single asynchronous storage repository for sites, folders, notes, and settings
+- Added unit, extension E2E, accessibility, lint, format, dependency audit, bundle budget, and package validation quality gates
+- Added import preview, staged restore verification, automatic rollback, and one-step restore undo
+
+### Changed
+
+- Optimized uploaded background images locally before storage and added file type and size validation
+- Updated note persistence with visible save states and lifecycle flushing when the new-tab page is hidden or closed
+- Updated site and folder mutations to restore the previous UI state and report an error when persistent storage fails
+
+### Fixed
+
+- Preserved intentionally empty dashboards during migration instead of repopulating default sites
+- Prevented empty notes and invalid imported data from entering persistent state
+- Fixed unsafe or unsupported URL protocols being accepted through add, edit, navigation, or backup restore flows
+
+### Security
+
+- Updated vulnerable build dependencies and verified the dependency audit with zero known vulnerabilities
+- Restricted stored background images to supported raster data URLs and bounded state field sizes
+
 ## [0.3.0] - 2026-05-03 17:54
 
 ### Added

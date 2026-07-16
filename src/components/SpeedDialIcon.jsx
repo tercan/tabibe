@@ -4,11 +4,7 @@ import { useEffect, useState } from 'react';
  * 1. Speed dial icon renderer
  */
 
-function SpeedDialIcon({
-  site,
-  getIconMetadata,
-  iconResetKey,
-}) {
+function SpeedDialIcon({ site, getIconMetadata, iconResetKey }) {
   const [failedSources, setFailedSources] = useState([]);
 
   useEffect(() => {

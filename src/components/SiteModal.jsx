@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { useTranslation } from '../hooks/useTranslation.jsx';
+import { useTranslation } from '../hooks/useTranslation.js';
 import useFocusTrap from '../hooks/useFocusTrap.jsx';
+import { normalizeSiteUrl } from '../domain/dataSchema.js';
 
 const ROOT_FOLDER_ID = 'root';
 
@@ -16,15 +17,17 @@ function normalize_url(value) {
   const trimmed = get_safe_string(value).trim();
   if (!trimmed) return '';
 
-  const has_valid_protocol = /^(https?|chrome|edge|about):\/\//i.test(trimmed) || trimmed.startsWith('about:');
-  return has_valid_protocol ? trimmed : `https://${trimmed}`;
+  try {
+    return normalizeSiteUrl(trimmed);
+  } catch {
+    return trimmed;
+  }
 }
 
 function validate_url(value) {
   try {
-    const parsed = new URL(value);
-    const allowed_protocols = ['http:', 'https:', 'chrome:', 'edge:', 'about:'];
-    return allowed_protocols.includes(parsed.protocol);
+    normalizeSiteUrl(value);
+    return true;
   } catch {
     return false;
   }
@@ -56,7 +59,10 @@ function get_url_suggestion(value) {
     return {
       final_url,
       name: format_name_from_host(host),
-      icon_slug: host.replace(/^www\./, '').split('.')[0].toLowerCase(),
+      icon_slug: host
+        .replace(/^www\./, '')
+        .split('.')[0]
+        .toLowerCase(),
     };
   } catch {
     return { final_url, name: '', icon_slug: '' };
@@ -89,9 +95,9 @@ function SiteModal({
   const { t } = useTranslation();
   const is_folder = mode === 'folder';
   const is_edit = !!site;
-  const [name, set_name] = useState(site ? (site.name || '') : '');
-  const [url, set_url] = useState(site && !is_folder ? (site.url || '') : '');
-  const [icon_slug, set_icon_slug] = useState(site ? (site.icon_slug || '') : '');
+  const [name, set_name] = useState(site ? site.name || '' : '');
+  const [url, set_url] = useState(site && !is_folder ? site.url || '' : '');
+  const [icon_slug, set_icon_slug] = useState(site ? site.icon_slug || '' : '');
   const [target_folder_id, set_target_folder_id] = useState(current_folder_id || ROOT_FOLDER_ID);
   const [error, set_error] = useState('');
   const first_field_ref = useRef(null);
@@ -99,15 +105,17 @@ function SiteModal({
   const dialog_ref = useRef(null);
   const name_touched_ref = useRef(is_edit);
 
-  const normalized_url = useMemo(() => (
-    is_folder ? '' : normalize_url_for_compare(url)
-  ), [is_folder, url]);
+  const normalized_url = useMemo(
+    () => (is_folder ? '' : normalize_url_for_compare(url)),
+    [is_folder, url],
+  );
   const duplicate_site = useMemo(() => {
     if (is_folder || !get_safe_string(url).trim() || !normalized_url) return null;
 
-    return existing_sites.find((item) => (
-      item.id !== site?.id && normalize_url_for_compare(item.url || '') === normalized_url
-    ));
+    return existing_sites.find(
+      (item) =>
+        item.id !== site?.id && normalize_url_for_compare(item.url || '') === normalized_url,
+    );
   }, [existing_sites, is_folder, normalized_url, site?.id, url]);
 
   useFocusTrap({
@@ -129,9 +137,9 @@ function SiteModal({
   }, []);
 
   useEffect(() => {
-    set_name(site ? (site.name || '') : '');
-    set_url(site && !is_folder ? (site.url || '') : '');
-    set_icon_slug(site ? (site.icon_slug || '') : '');
+    set_name(site ? site.name || '' : '');
+    set_url(site && !is_folder ? site.url || '' : '');
+    set_icon_slug(site ? site.icon_slug || '' : '');
     set_target_folder_id(current_folder_id || ROOT_FOLDER_ID);
     set_error('');
     name_touched_ref.current = !!site;
@@ -159,7 +167,6 @@ function SiteModal({
     if (!is_edit && suggestion.name && !name_touched_ref.current) {
       set_name(suggestion.name);
     }
-
   }
 
   function handle_name_change(event) {
@@ -213,7 +220,14 @@ function SiteModal({
       return;
     }
 
-    const final_url = normalize_url(trimmed_url);
+    let final_url;
+
+    try {
+      final_url = normalizeSiteUrl(trimmed_url);
+    } catch {
+      set_error(t('modal_error_url_invalid'));
+      return;
+    }
 
     if (!validate_url(final_url)) {
       set_error(t('modal_error_url_invalid'));
@@ -222,22 +236,23 @@ function SiteModal({
 
     set_error('');
 
-    await handle_save_result({
-      name: trimmed_name,
-      url: final_url,
-      icon_slug: trimmed_slug,
-    }, target_folder_id);
+    await handle_save_result(
+      {
+        name: trimmed_name,
+        url: final_url,
+        icon_slug: trimmed_slug,
+      },
+      target_folder_id,
+    );
   }
 
   const preview_name = get_safe_string(name).trim() || t('modal_preview_empty_name');
-  const preview_url = get_safe_string(url).trim() ? normalize_url(url) : t('modal_preview_empty_url');
+  const preview_url = get_safe_string(url).trim()
+    ? normalize_url(url)
+    : t('modal_preview_empty_url');
 
   return (
-    <div
-      className="modal-overlay"
-      ref={overlay_ref}
-      onClick={handle_overlay_click}
-    >
+    <div className="modal-overlay" ref={overlay_ref} onClick={handle_overlay_click}>
       <div
         className="modal-dialog"
         ref={dialog_ref}
@@ -311,7 +326,9 @@ function SiteModal({
                 >
                   <option value={ROOT_FOLDER_ID}>{t('modal_location_root')}</option>
                   {folders.map((folder) => (
-                    <option key={folder.id} value={folder.id}>{folder.name}</option>
+                    <option key={folder.id} value={folder.id}>
+                      {folder.name}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -329,11 +346,7 @@ function SiteModal({
                 </div>
               </div>
 
-              {duplicate_site && (
-                <p className="modal-warning">
-                  {t('modal_duplicate_url')}
-                </p>
-              )}
+              {duplicate_site && <p className="modal-warning">{t('modal_duplicate_url')}</p>}
             </>
           )}
 

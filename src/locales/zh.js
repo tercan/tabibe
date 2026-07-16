@@ -5,13 +5,20 @@
 const zh = {
   /* Clock */
   clock_aria_label: '时钟和日期',
-  day_names: [
-    '星期日', '星期一', '星期二', '星期三',
-    '星期四', '星期五', '星期六'
-  ],
+  day_names: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
   month_names: [
-    '一月', '二月', '三月', '四月', '五月', '六月',
-    '七月', '八月', '九月', '十月', '十一月', '十二月'
+    '一月',
+    '二月',
+    '三月',
+    '四月',
+    '五月',
+    '六月',
+    '七月',
+    '八月',
+    '九月',
+    '十月',
+    '十一月',
+    '十二月',
   ],
 
   /* Search bar */
@@ -148,6 +155,22 @@ const zh = {
   settings_import_file_too_large: '备份文件过大。',
   settings_export_success: '备份文件已导出。',
   settings_export_error: '无法导出备份文件。',
+  settings_import_undone: '已恢复之前的数据。',
+  settings_import_preview_title: '检查备份',
+  settings_import_preview_summary:
+    '将恢复 {sites} 个网站、{folders} 个文件夹、文件夹中的 {folderSites} 个网站和 {notes} 条笔记。',
+  settings_import_apply: '恢复备份',
+  settings_bg_processing: '正在处理图片...',
+  settings_bg_upload_success: '背景图片已保存。',
+  settings_bg_unsupported_type: '请使用 PNG、JPEG、WebP 或 AVIF 图片。',
+  settings_bg_upload_error: '无法处理背景图片。',
+  app_storage_error: '无法保存更改，请重试。',
+  note_save_saving: '正在保存...',
+  note_save_saved: '已保存',
+  note_save_error: '无法保存',
+  speed_dial_load_error: '无法加载快速访问项目。',
+  speed_dial_save_error: '无法保存快速访问更改。',
+  common_retry: '重试',
   settings_about_by: '由',
   settings_about_developer: '开发者',
 };

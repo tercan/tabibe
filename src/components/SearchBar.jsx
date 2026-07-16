@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useTranslation } from '../hooks/useTranslation.jsx';
+import { useTranslation } from '../hooks/useTranslation.js';
 import { SEARCH_ENGINES } from './SettingsPanel.jsx';
 
 /**
@@ -49,7 +49,9 @@ function SearchBar({ search_engine }) {
     <section className="search-bar" aria-label={t('search_aria_label')}>
       <form className="search-bar-form" onSubmit={handle_submit} role="search">
         <SearchIcon />
-        <label htmlFor="search-input" className="visually-hidden">{t('search_label')}</label>
+        <label htmlFor="search-input" className="visually-hidden">
+          {t('search_label')}
+        </label>
         <input
           id="search-input"
           className="search-bar-input"

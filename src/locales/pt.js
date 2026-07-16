@@ -6,12 +6,27 @@ const pt = {
   /* Clock */
   clock_aria_label: 'Relógio e data',
   day_names: [
-    'Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira',
-    'Quinta-feira', 'Sexta-feira', 'Sábado'
+    'Domingo',
+    'Segunda-feira',
+    'Terça-feira',
+    'Quarta-feira',
+    'Quinta-feira',
+    'Sexta-feira',
+    'Sábado',
   ],
   month_names: [
-    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+    'Janeiro',
+    'Fevereiro',
+    'Março',
+    'Abril',
+    'Maio',
+    'Junho',
+    'Julho',
+    'Agosto',
+    'Setembro',
+    'Outubro',
+    'Novembro',
+    'Dezembro',
   ],
 
   /* Search bar */
@@ -38,7 +53,8 @@ const pt = {
   folder_delete_modal_description: 'Você está prestes a excluir "{name}". Ela contém {count} site.',
   folder_delete_modal_empty_description: '"{name}" será excluída. Ela não contém sites salvos.',
   folder_delete_modal_move_title: 'Mover sites para a tela principal',
-  folder_delete_modal_move_description: 'A pasta será excluída e seus sites serão mantidos na tela principal.',
+  folder_delete_modal_move_description:
+    'A pasta será excluída e seus sites serão mantidos na tela principal.',
   folder_delete_modal_delete_title: 'Excluir com a pasta',
   folder_delete_modal_delete_description: 'A pasta e todos os sites dentro dela serão excluídos.',
   folder_delete_modal_empty_notice: 'Esta pasta está vazia, então apenas a pasta será excluída.',
@@ -67,7 +83,8 @@ const pt = {
   note_restore_item: 'Restaurar nota',
   note_delete_item: 'Excluir nota',
   note_delete_confirm_title: 'Excluir nota?',
-  note_delete_confirm_description: 'Esta nota será excluída. Você ainda poderá desfazer por alguns instantes.',
+  note_delete_confirm_description:
+    'Esta nota será excluída. Você ainda poderá desfazer por alguns instantes.',
   note_delete_confirm_cancel: 'Cancelar',
   note_delete_confirm_action: 'Excluir nota',
   note_untitled: 'Nota sem título',
@@ -148,6 +165,22 @@ const pt = {
   settings_import_file_too_large: 'O arquivo de backup é muito grande.',
   settings_export_success: 'Arquivo de backup exportado.',
   settings_export_error: 'Não foi possível exportar o arquivo de backup.',
+  settings_import_undone: 'Os dados anteriores foram restaurados.',
+  settings_import_preview_title: 'Revisar backup',
+  settings_import_preview_summary:
+    'Serão restaurados {sites} sites, {folders} pastas, {folderSites} sites em pastas e {notes} notas.',
+  settings_import_apply: 'Restaurar backup',
+  settings_bg_processing: 'Preparando imagem...',
+  settings_bg_upload_success: 'Imagem de fundo salva.',
+  settings_bg_unsupported_type: 'Use uma imagem PNG, JPEG, WebP ou AVIF.',
+  settings_bg_upload_error: 'Não foi possível processar a imagem de fundo.',
+  app_storage_error: 'Não foi possível salvar a alteração. Tente novamente.',
+  note_save_saving: 'Salvando...',
+  note_save_saved: 'Salvo',
+  note_save_error: 'Não foi possível salvar',
+  speed_dial_load_error: 'Não foi possível carregar os atalhos.',
+  speed_dial_save_error: 'Não foi possível salvar a alteração do atalho.',
+  common_retry: 'Tentar novamente',
   settings_about_by: 'por',
   settings_about_developer: 'Desenvolvedor',
 };

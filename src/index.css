@@ -85,10 +85,9 @@ ol {
   --color-footer-bg: #f1f3f5;
 
   /* Typography */
-  --font-family-base: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
-  --font-family-heading:
-    "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
-  --font-family-mono: "JetBrains Mono", "Fira Code", "Consolas", monospace;
+  --font-family-base: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-family-heading: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-family-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
   --font-size-xxs: 0.625rem;
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
@@ -149,7 +148,7 @@ ol {
  * 2b. Dark theme overrides
  */
 
-[data-theme="dark"] {
+[data-theme='dark'] {
   --color-primary: #6e28bd;
   --color-primary-hover: #8236e2;
   --color-primary-rgb: 110, 40, 189;
@@ -233,7 +232,7 @@ body.no-scroll {
 }
 
 .new-tab--custom-background .clock {
-  padding: var(--space-md) var(--space-lg) var(--space-sm) ;
+  padding: var(--space-md) var(--space-lg) var(--space-sm);
   border: var(--border-width) solid var(--color-clock-border);
   border-radius: var(--border-radius);
   background-color: var(--color-clock-surface);
@@ -246,7 +245,7 @@ body.no-scroll {
   font-size: var(--font-size-clock);
   font-weight: 100;
   line-height: 0.85;
-  letter-spacing: -.25rem;
+  letter-spacing: -0.25rem;
 }
 
 .clock-date {
@@ -271,11 +270,10 @@ body.no-scroll {
   border-radius: var(--border-radius);
   background-color: var(--color-surface);
   transition:
-  border-color var(--transition-base),
-  box-shadow var(--transition-base);
+    border-color var(--transition-base),
+    box-shadow var(--transition-base);
   padding: var(--space-sm) var(--space-lg);
   gap: var(--space-sm);
-  border-radius: 3rem;
   height: 3.5rem;
 }
 
@@ -309,6 +307,24 @@ body.no-scroll {
   max-width: 48rem;
 }
 
+.speed-dial--loading {
+  min-height: 8rem;
+}
+
+.speed-dial--error {
+  display: flex;
+  min-height: 8rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  border: var(--border-width) solid var(--color-error);
+  background-color: var(--color-surface);
+  color: var(--color-error);
+  text-align: center;
+}
+
 .speed-dial-toolbar {
   position: fixed;
   top: var(--space-md);
@@ -339,7 +355,10 @@ body.no-scroll {
   background-color: var(--color-surface);
   color: var(--color-text);
   box-shadow: var(--shadow-sm);
-  transition: background-color var(--transition-base), border-color var(--transition-base), color var(--transition-base);
+  transition:
+    background-color var(--transition-base),
+    border-color var(--transition-base),
+    color var(--transition-base);
 }
 
 .speed-dial-toolbar-button svg {
@@ -374,7 +393,9 @@ body.no-scroll {
   position: relative;
   width: 100%;
   max-width: 7rem;
-  transition: transform var(--transition-slow), opacity var(--transition-base);
+  transition:
+    transform var(--transition-slow),
+    opacity var(--transition-base);
 }
 
 .speed-dial-item {
@@ -407,7 +428,11 @@ body.no-scroll {
   opacity: 0;
   transform: translateY(-0.25rem);
   pointer-events: none;
-  transition: opacity var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  transition:
+    opacity var(--transition-fast),
+    transform var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
 }
 
 .speed-dial-card:hover .speed-dial-action-button,
@@ -472,15 +497,17 @@ body.no-scroll {
 
 .speed-dial--dragging .speed-dial-card,
 .folder-grid--dragging .speed-dial-card {
-  transition: transform var(--transition-slow), opacity var(--transition-base);
+  transition:
+    transform var(--transition-slow),
+    opacity var(--transition-base);
 }
 
-.speed-dial-grid li[draggable="true"] {
+.speed-dial-grid li[draggable='true'] {
   cursor: grab;
 }
 
-.speed-dial-grid li[draggable="true"]:active,
-.speed-dial--dragging .speed-dial-grid li[draggable="true"] {
+.speed-dial-grid li[draggable='true']:active,
+.speed-dial--dragging .speed-dial-grid li[draggable='true'] {
   cursor: grabbing;
 }
 
@@ -499,7 +526,10 @@ body.no-scroll {
   border-radius: var(--border-radius);
   background-color: var(--color-surface);
   border: var(--border-width) solid var(--color-border);
-  transition: background-color var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
+  transition:
+    background-color var(--transition-base),
+    border-color var(--transition-base),
+    box-shadow var(--transition-base);
   overflow: hidden;
 }
 
@@ -537,7 +567,7 @@ body.no-scroll {
   color: var(--color-text-muted);
 }
 
-.speed-dial-item--folder[aria-expanded="true"] .speed-dial-icon--folder,
+.speed-dial-item--folder[aria-expanded='true'] .speed-dial-icon--folder,
 .speed-dial-drop-target .speed-dial-icon--folder {
   color: var(--color-primary);
 }
@@ -628,7 +658,10 @@ body.no-scroll {
   border-radius: var(--border-radius);
   color: var(--color-text-muted);
   background-color: var(--color-surface);
-  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
 }
 
 .folder-header-button:hover,
@@ -656,12 +689,12 @@ body.no-scroll {
   margin: 0;
 }
 
-.folder-grid li[draggable="true"] {
+.folder-grid li[draggable='true'] {
   cursor: grab;
 }
 
-.folder-grid li[draggable="true"]:active,
-.folder-grid--dragging li[draggable="true"] {
+.folder-grid li[draggable='true']:active,
+.folder-grid--dragging li[draggable='true'] {
   cursor: grabbing;
 }
 
@@ -879,7 +912,10 @@ body.no-scroll {
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--border-radius);
   background-color: var(--color-surface);
-  transition: background-color var(--transition-base), border-color var(--transition-base), color var(--transition-base);
+  transition:
+    background-color var(--transition-base),
+    border-color var(--transition-base),
+    color var(--transition-base);
 }
 
 .modal-decision-option:hover,
@@ -928,7 +964,9 @@ body.no-scroll {
   font-weight: var(--font-weight-medium);
   border-radius: var(--border-radius);
   cursor: pointer;
-  transition: background-color var(--transition-base), color var(--transition-base);
+  transition:
+    background-color var(--transition-base),
+    color var(--transition-base);
 }
 
 .modal-button--cancel {
@@ -992,6 +1030,14 @@ body.no-scroll {
   color: var(--color-primary-hover);
 }
 
+.toast--error {
+  border-color: var(--color-error);
+}
+
+.toast--error .toast-action {
+  color: var(--color-error);
+}
+
 /* Note Panel (Side Panel) */
 .note-panel {
   position: fixed;
@@ -1006,7 +1052,9 @@ body.no-scroll {
   display: flex;
   flex-direction: column;
   z-index: var(--z-modal);
-  transition: transform var(--transition-base), left var(--transition-base);
+  transition:
+    transform var(--transition-base),
+    left var(--transition-base);
 }
 
 .note-panel--open {
@@ -1053,7 +1101,10 @@ body.no-scroll {
   border-radius: var(--border-radius);
   color: var(--color-text-muted);
   cursor: pointer;
-  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
 }
 
 .note-panel-button:hover,
@@ -1101,7 +1152,9 @@ body.no-scroll {
   color: var(--color-text);
   background-color: var(--color-surface);
   font-size: var(--font-size-sm);
-  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+  transition:
+    border-color var(--transition-base),
+    box-shadow var(--transition-base);
 }
 
 .note-panel-search:focus,
@@ -1127,7 +1180,10 @@ body.no-scroll {
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
   white-space: nowrap;
-  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
 }
 
 .note-panel-tab:hover,
@@ -1170,7 +1226,10 @@ body.no-scroll {
   border-radius: var(--border-radius);
   background-color: var(--color-surface);
   box-shadow: var(--shadow-sm);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background-color var(--transition-fast);
 }
 
 .note-list-row:hover,
@@ -1281,6 +1340,20 @@ body.no-scroll {
   font-size: var(--font-size-xs);
 }
 
+.note-save-status {
+  min-height: 1rem;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.note-save-status--saved {
+  color: var(--color-success);
+}
+
+.note-save-status--error {
+  color: var(--color-error);
+}
+
 .note-panel-empty {
   display: flex;
   flex: 1;
@@ -1370,7 +1443,7 @@ body.no-scroll {
 
 .speed-dial-label {
   background-color: var(--color-surface);
-  padding: .125rem .525rem;
+  padding: 0.125rem 0.525rem;
   border-radius: var(--border-radius);
   font-size: var(--font-size-xs);
   color: var(--color-text-muted);
@@ -1461,7 +1534,9 @@ body.no-scroll {
   height: 2rem;
   border-radius: var(--border-radius);
   color: var(--color-text-muted);
-  transition: color var(--transition-base), background-color var(--transition-base);
+  transition:
+    color var(--transition-base),
+    background-color var(--transition-base);
 }
 
 .footer-button:hover {
@@ -1552,7 +1627,7 @@ body.no-scroll {
 }
 
 .settings-group-title::after {
-  content: "";
+  content: '';
   flex: 1;
   height: 1px;
   background-color: var(--color-border);
@@ -1622,7 +1697,7 @@ body.no-scroll {
   width: 2.5rem;
   height: 1.25rem;
   background-color: var(--color-border);
-  border-radius: .125rem;
+  border-radius: 0.125rem;
   position: relative;
   cursor: pointer;
   transition: background-color var(--transition-base);
@@ -1633,12 +1708,12 @@ body.no-scroll {
 }
 
 .settings-toggle input::before {
-  content: "";
+  content: '';
   position: absolute;
   width: 1rem;
   height: 1rem;
   background-color: white;
-  border-radius: .125rem;
+  border-radius: 0.125rem;
   top: 0.125rem;
   left: 0.125rem;
   transition: transform var(--transition-base);
@@ -1722,7 +1797,10 @@ body.no-scroll {
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--border-radius);
   cursor: pointer;
-  transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
+  transition:
+    border-color var(--transition-base),
+    box-shadow var(--transition-base),
+    transform var(--transition-base);
 }
 
 .settings-bg-swatch:hover {
@@ -1738,7 +1816,9 @@ body.no-scroll {
 
 .settings-bg-swatch--active {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 0.125rem var(--color-background), 0 0 0 0.25rem var(--color-primary);
+  box-shadow:
+    0 0 0 0.125rem var(--color-background),
+    0 0 0 0.25rem var(--color-primary);
 }
 
 .settings-bg-actions {
@@ -1774,6 +1854,20 @@ body.no-scroll {
 .settings-status--loading {
   border-color: var(--color-primary);
   color: var(--color-text);
+}
+
+.settings-import-preview {
+  display: grid;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border: var(--border-width) solid var(--color-primary);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+}
+
+.settings-import-preview-title {
+  font-weight: var(--font-weight-semibold);
 }
 
 /**

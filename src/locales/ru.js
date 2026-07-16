@@ -5,13 +5,20 @@
 const ru = {
   /* Clock */
   clock_aria_label: 'Часы и дата',
-  day_names: [
-    'Воскресенье', 'Понедельник', 'Вторник', 'Среда',
-    'Четверг', 'Пятница', 'Суббота'
-  ],
+  day_names: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
   month_names: [
-    'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-    'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+    'Январь',
+    'Февраль',
+    'Март',
+    'Апрель',
+    'Май',
+    'Июнь',
+    'Июль',
+    'Август',
+    'Сентябрь',
+    'Октябрь',
+    'Ноябрь',
+    'Декабрь',
   ],
 
   /* Search bar */
@@ -67,7 +74,8 @@ const ru = {
   note_restore_item: 'Восстановить заметку',
   note_delete_item: 'Удалить заметку',
   note_delete_confirm_title: 'Удалить заметку?',
-  note_delete_confirm_description: 'Эта заметка будет удалена. В течение короткого времени действие можно отменить.',
+  note_delete_confirm_description:
+    'Эта заметка будет удалена. В течение короткого времени действие можно отменить.',
   note_delete_confirm_cancel: 'Отмена',
   note_delete_confirm_action: 'Удалить заметку',
   note_untitled: 'Заметка без названия',
@@ -148,6 +156,22 @@ const ru = {
   settings_import_file_too_large: 'Файл резервной копии слишком большой.',
   settings_export_success: 'Файл резервной копии экспортирован.',
   settings_export_error: 'Не удалось экспортировать файл резервной копии.',
+  settings_import_undone: 'Предыдущие данные восстановлены.',
+  settings_import_preview_title: 'Проверка резервной копии',
+  settings_import_preview_summary:
+    'Будут восстановлены: сайтов — {sites}, папок — {folders}, сайтов в папках — {folderSites}, заметок — {notes}.',
+  settings_import_apply: 'Восстановить копию',
+  settings_bg_processing: 'Подготовка изображения...',
+  settings_bg_upload_success: 'Фоновое изображение сохранено.',
+  settings_bg_unsupported_type: 'Используйте PNG, JPEG, WebP или AVIF.',
+  settings_bg_upload_error: 'Не удалось обработать фоновое изображение.',
+  app_storage_error: 'Не удалось сохранить изменение. Повторите попытку.',
+  note_save_saving: 'Сохранение...',
+  note_save_saved: 'Сохранено',
+  note_save_error: 'Не удалось сохранить',
+  speed_dial_load_error: 'Не удалось загрузить быстрые ссылки.',
+  speed_dial_save_error: 'Не удалось сохранить изменение быстрой ссылки.',
+  common_retry: 'Повторить',
   settings_about_by: 'от',
   settings_about_developer: 'Разработчик',
 };

@@ -1,20 +1,15 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
-import { useTranslation } from '../hooks/useTranslation.jsx';
+import { useCallback, useState, useEffect, useMemo, useRef } from 'react';
+import { useTranslation } from '../hooks/useTranslation.js';
 import useFocusTrap from '../hooks/useFocusTrap.jsx';
+import { loadNotes, saveNotes } from '../lib/storage.js';
 import CloseIcon from './icons/CloseIcon.jsx';
 
 /**
  * 1. Storage helpers for notes
  */
 
-const NOTES_STORAGE_KEY = 'tabibe-notes';
-const LEGACY_NOTE_STORAGE_KEY = 'tabibe-note';
 const NOTE_SAVE_DELAY = 450;
 const UNDO_TIMEOUT = 7000;
-
-function hasChromeStorage() {
-  return typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local;
-}
 
 function getSafeString(value) {
   return typeof value === 'string' ? value : '';
@@ -26,41 +21,6 @@ function createId() {
   }
 
   return `note-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-}
-
-function getStorageValue(key) {
-  if (hasChromeStorage()) {
-    return new Promise((resolve) => {
-      chrome.storage.local.get([key], (result) => {
-        resolve(result[key] || null);
-      });
-    });
-  }
-
-  try {
-    const value = localStorage.getItem(key);
-    return Promise.resolve(value || null);
-  } catch {
-    return Promise.resolve(null);
-  }
-}
-
-function setStorageValue(key, value) {
-  if (hasChromeStorage()) {
-    return new Promise((resolve) => {
-      chrome.storage.local.set({ [key]: value }, () => resolve());
-    });
-  }
-
-  localStorage.setItem(key, JSON.stringify(value));
-  return Promise.resolve();
-}
-
-function getTitleFromContent(content) {
-  return getSafeString(content)
-    .split('\n')
-    .map((line) => line.trim())
-    .find(Boolean) || '';
 }
 
 function createNote(overrides = {}) {
@@ -78,68 +38,10 @@ function createNote(overrides = {}) {
   };
 }
 
-function normalizeNote(note) {
-  if (!note || typeof note !== 'object') return null;
-
-  const content = getSafeString(note.content || note.text);
-  const createdAt = getSafeString(note.createdAt) || new Date().toISOString();
-
-  return {
-    id: getSafeString(note.id) || createId(),
-    title: getSafeString(note.title),
-    content,
-    isPinned: Boolean(note.isPinned),
-    isArchived: Boolean(note.isArchived),
-    createdAt,
-    updatedAt: getSafeString(note.updatedAt) || createdAt,
-  };
-}
-
 function isNoteEmpty(note) {
   if (!note) return true;
 
   return !getSafeString(note.title).trim() && !getSafeString(note.content).trim();
-}
-
-function parseNotes(value) {
-  if (!value) return [];
-
-  try {
-    const parsed = typeof value === 'string' ? JSON.parse(value) : value;
-    if (!Array.isArray(parsed)) return [];
-
-    return parsed
-      .map((note) => normalizeNote(note))
-      .filter((note) => note && !isNoteEmpty(note));
-  } catch {
-    return [];
-  }
-}
-
-async function loadNotes() {
-  const savedNotes = parseNotes(await getStorageValue(NOTES_STORAGE_KEY));
-
-  if (savedNotes.length > 0) {
-    return savedNotes;
-  }
-
-  const legacyNote = getSafeString(await getStorageValue(LEGACY_NOTE_STORAGE_KEY));
-
-  if (!legacyNote.trim()) {
-    return [];
-  }
-
-  const migratedNote = createNote({
-    title: getTitleFromContent(legacyNote),
-    content: legacyNote,
-  });
-
-  await setStorageValue(NOTES_STORAGE_KEY, [migratedNote]);
-  return [migratedNote];
-}
-
-function saveNotes(notes) {
-  return setStorageValue(NOTES_STORAGE_KEY, notes.filter((note) => !isNoteEmpty(note)));
 }
 
 /**
@@ -148,7 +50,17 @@ function saveNotes(notes) {
 
 function PinIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       <path d="M12 2v8M9 4h6M12 10c-3.31 0-6 2.69-6 6h12c0-3.31-2.69-6-6-6zM12 16v6M10 22h4" />
     </svg>
   );
@@ -156,7 +68,17 @@ function PinIcon() {
 
 function PlusIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       <line x1="12" y1="5" x2="12" y2="19" />
       <line x1="5" y1="12" x2="19" y2="12" />
     </svg>
@@ -165,7 +87,17 @@ function PlusIcon() {
 
 function ArchiveIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       <rect x="3" y="3" width="18" height="4" rx="1" />
       <path d="M5 7v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7" />
       <path d="M10 12h4" />
@@ -175,7 +107,17 @@ function ArchiveIcon() {
 
 function RestoreIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       <path d="M3 12a9 9 0 1 0 3-6.7" />
       <path d="M3 3v6h6" />
     </svg>
@@ -184,7 +126,17 @@ function RestoreIcon() {
 
 function DeleteIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       <path d="M3 6h18" />
       <path d="M8 6V4h8v2" />
       <path d="M19 6l-1 14H6L5 6" />
@@ -196,7 +148,17 @@ function DeleteIcon() {
 
 function BackIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       <path d="M19 12H5" />
       <path d="M12 19l-7-7 7-7" />
     </svg>
@@ -217,7 +179,10 @@ function NotePanel({ is_open, is_pinned, on_close, on_toggle_pin }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [undoState, setUndoState] = useState(null);
   const [pendingDeleteNoteId, setPendingDeleteNoteId] = useState(null);
+  const [saveStatus, setSaveStatus] = useState('idle');
   const saveTimer = useRef(null);
+  const notesRef = useRef([]);
+  const isLoadedRef = useRef(false);
   const undoTimer = useRef(null);
   const wasVisibleRef = useRef(false);
   const panelRef = useRef(null);
@@ -251,6 +216,22 @@ function NotePanel({ is_open, is_pinned, on_close, on_toggle_pin }) {
   const isEditorView = noteView === 'editor' && activeNote;
   const isPanelVisible = is_open || is_pinned;
 
+  const flushPendingNotes = useCallback(async () => {
+    if (!isLoaded) return;
+    if (saveTimer.current) {
+      clearTimeout(saveTimer.current);
+      saveTimer.current = null;
+    }
+
+    setSaveStatus('saving');
+    try {
+      await saveNotes(notesRef.current.filter((note) => !isNoteEmpty(note)));
+      setSaveStatus('saved');
+    } catch {
+      setSaveStatus('error');
+    }
+  }, [isLoaded]);
+
   useFocusTrap({
     containerRef: panelRef,
     isActive: is_open && !is_pinned && !pendingDeleteNoteId,
@@ -266,12 +247,26 @@ function NotePanel({ is_open, is_pinned, on_close, on_toggle_pin }) {
   });
 
   useEffect(() => {
-    loadNotes().then((savedNotes) => {
-      setNotes(savedNotes);
-      setActiveNoteId(savedNotes.find((note) => !note.isArchived)?.id || savedNotes[0]?.id || null);
-      setIsLoaded(true);
-    });
+    loadNotes()
+      .then((savedNotes) => {
+        notesRef.current = savedNotes;
+        isLoadedRef.current = true;
+        setNotes(savedNotes);
+        setActiveNoteId(
+          savedNotes.find((note) => !note.isArchived)?.id || savedNotes[0]?.id || null,
+        );
+        setIsLoaded(true);
+      })
+      .catch(() => {
+        isLoadedRef.current = true;
+        setSaveStatus('error');
+        setIsLoaded(true);
+      });
   }, []);
+
+  useEffect(() => {
+    notesRef.current = notes;
+  }, [notes]);
 
   useEffect(() => {
     if (!isLoaded) return undefined;
@@ -280,22 +275,42 @@ function NotePanel({ is_open, is_pinned, on_close, on_toggle_pin }) {
       clearTimeout(saveTimer.current);
     }
 
-    saveTimer.current = setTimeout(() => {
-      saveNotes(notes);
-      saveTimer.current = null;
-    }, NOTE_SAVE_DELAY);
+    setSaveStatus('saving');
+    saveTimer.current = setTimeout(flushPendingNotes, NOTE_SAVE_DELAY);
 
     return () => {
       if (saveTimer.current) {
         clearTimeout(saveTimer.current);
       }
     };
-  }, [isLoaded, notes]);
+  }, [flushPendingNotes, isLoaded, notes]);
+
+  useEffect(() => {
+    function handlePageLifecycle() {
+      if (document.visibilityState === 'hidden') void flushPendingNotes();
+    }
+
+    function handlePageHide() {
+      void flushPendingNotes();
+    }
+
+    document.addEventListener('visibilitychange', handlePageLifecycle);
+    window.addEventListener('pagehide', handlePageHide);
+    return () => {
+      document.removeEventListener('visibilitychange', handlePageLifecycle);
+      window.removeEventListener('pagehide', handlePageHide);
+    };
+  }, [flushPendingNotes]);
 
   useEffect(() => {
     if (!isLoaded) return;
     if (noteView === 'editor' && activeNote) return;
-    if (activeNote && activeNote.isArchived === showArchived && filteredNotes.some((note) => note.id === activeNote.id)) return;
+    if (
+      activeNote &&
+      activeNote.isArchived === showArchived &&
+      filteredNotes.some((note) => note.id === activeNote.id)
+    )
+      return;
 
     setActiveNoteId(filteredNotes[0]?.id || null);
   }, [activeNote, filteredNotes, isLoaded, noteView, showArchived]);
@@ -320,15 +335,21 @@ function NotePanel({ is_open, is_pinned, on_close, on_toggle_pin }) {
     wasVisibleRef.current = isPanelVisible;
   }, [isPanelVisible]);
 
-  useEffect(() => () => {
-    if (saveTimer.current) {
-      clearTimeout(saveTimer.current);
-    }
+  useEffect(
+    () => () => {
+      if (saveTimer.current) {
+        clearTimeout(saveTimer.current);
+      }
 
-    if (undoTimer.current) {
-      clearTimeout(undoTimer.current);
-    }
-  }, []);
+      if (undoTimer.current) {
+        clearTimeout(undoTimer.current);
+      }
+
+      if (isLoadedRef.current)
+        void saveNotes(notesRef.current.filter((note) => !isNoteEmpty(note)));
+    },
+    [],
+  );
 
   function formatNoteDate(value) {
     try {
@@ -356,9 +377,9 @@ function NotePanel({ is_open, is_pinned, on_close, on_toggle_pin }) {
   function removeEmptyNote(noteId) {
     if (!noteId) return;
 
-    setNotes((currentNotes) => currentNotes.filter((note) => (
-      note.id !== noteId || !isNoteEmpty(note)
-    )));
+    setNotes((currentNotes) =>
+      currentNotes.filter((note) => note.id !== noteId || !isNoteEmpty(note)),
+    );
   }
 
   function handleBackToList() {
@@ -411,27 +432,33 @@ function NotePanel({ is_open, is_pinned, on_close, on_toggle_pin }) {
   function updateActiveNote(field, value) {
     if (!activeNote) return;
 
-    setNotes((currentNotes) => currentNotes.map((note) => (
-      note.id === activeNote.id
-        ? { ...note, [field]: value, updatedAt: new Date().toISOString() }
-        : note
-    )));
+    setNotes((currentNotes) =>
+      currentNotes.map((note) =>
+        note.id === activeNote.id
+          ? { ...note, [field]: value, updatedAt: new Date().toISOString() }
+          : note,
+      ),
+    );
   }
 
   function toggleNotePin(noteId) {
-    setNotes((currentNotes) => currentNotes.map((note) => (
-      note.id === noteId
-        ? { ...note, isPinned: !note.isPinned, updatedAt: new Date().toISOString() }
-        : note
-    )));
+    setNotes((currentNotes) =>
+      currentNotes.map((note) =>
+        note.id === noteId
+          ? { ...note, isPinned: !note.isPinned, updatedAt: new Date().toISOString() }
+          : note,
+      ),
+    );
   }
 
   function toggleNoteArchive(noteId) {
-    setNotes((currentNotes) => currentNotes.map((note) => (
-      note.id === noteId
-        ? { ...note, isArchived: !note.isArchived, updatedAt: new Date().toISOString() }
-        : note
-    )));
+    setNotes((currentNotes) =>
+      currentNotes.map((note) =>
+        note.id === noteId
+          ? { ...note, isArchived: !note.isArchived, updatedAt: new Date().toISOString() }
+          : note,
+      ),
+    );
   }
 
   function deleteNote(noteId) {
@@ -498,7 +525,9 @@ function NotePanel({ is_open, is_pinned, on_close, on_toggle_pin }) {
   const isSearchEmpty = searchQuery.trim().length > 0 && filteredNotes.length === 0;
   const emptyMessage = showArchived
     ? t('note_archived_empty')
-    : (isSearchEmpty ? t('note_search_empty') : t('note_empty'));
+    : isSearchEmpty
+      ? t('note_search_empty')
+      : t('note_empty');
 
   return (
     <>
@@ -582,7 +611,9 @@ function NotePanel({ is_open, is_pinned, on_close, on_toggle_pin }) {
           </div>
         )}
 
-        <div className={`note-panel-body ${isEditorView ? 'note-panel-body--editor' : 'note-panel-body--list'}`}>
+        <div
+          className={`note-panel-body ${isEditorView ? 'note-panel-body--editor' : 'note-panel-body--list'}`}
+        >
           {!isEditorView ? (
             <>
               {filteredNotes.length > 0 ? (
@@ -614,7 +645,9 @@ function NotePanel({ is_open, is_pinned, on_close, on_toggle_pin }) {
                           className="note-panel-button note-panel-button--compact"
                           type="button"
                           onClick={() => toggleNoteArchive(note.id)}
-                          aria-label={note.isArchived ? t('note_restore_item') : t('note_archive_item')}
+                          aria-label={
+                            note.isArchived ? t('note_restore_item') : t('note_archive_item')
+                          }
                           title={note.isArchived ? t('note_restore_item') : t('note_archive_item')}
                         >
                           {note.isArchived ? <RestoreIcon /> : <ArchiveIcon />}
@@ -683,6 +716,15 @@ function NotePanel({ is_open, is_pinned, on_close, on_toggle_pin }) {
               />
               <p className="note-editor-meta">
                 {t('note_updated_at', { date: formatNoteDate(activeNote.updatedAt) })}
+              </p>
+              <p
+                className={`note-save-status note-save-status--${saveStatus}`}
+                role="status"
+                aria-live="polite"
+              >
+                {saveStatus === 'saving' && t('note_save_saving')}
+                {saveStatus === 'saved' && t('note_save_saved')}
+                {saveStatus === 'error' && t('note_save_error')}
               </p>
             </div>
           )}

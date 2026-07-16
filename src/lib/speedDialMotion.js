@@ -24,41 +24,53 @@ function speedDialMoveAnimation(element, action, oldCoords, newCoords) {
       return createNoopEffect(element);
     }
 
-    return new KeyframeEffect(element, [
+    return new KeyframeEffect(
+      element,
+      [
+        {
+          transform: `translate(${delta.x}px, ${delta.y}px)`,
+        },
+        {
+          transform: `translate(${Math.round(delta.x * 0.18)}px, ${Math.round(delta.y * 0.18)}px)`,
+          offset: 0.72,
+        },
+        {
+          transform: 'translate(0, 0)',
+        },
+      ],
       {
-        transform: `translate(${delta.x}px, ${delta.y}px)`,
+        duration: MOVE_DURATION,
+        easing: MOVE_EASING,
       },
-      {
-        transform: `translate(${Math.round(delta.x * 0.18)}px, ${Math.round(delta.y * 0.18)}px)`,
-        offset: 0.72,
-      },
-      {
-        transform: 'translate(0, 0)',
-      },
-    ], {
-      duration: MOVE_DURATION,
-      easing: MOVE_EASING,
-    });
+    );
   }
 
   if (action === 'add') {
-    return new KeyframeEffect(element, [
-      { opacity: 0, transform: 'scale(0.96)' },
-      { opacity: 1, transform: 'scale(1)' },
-    ], {
-      duration: ENTER_EXIT_DURATION,
-      easing: MOVE_EASING,
-    });
+    return new KeyframeEffect(
+      element,
+      [
+        { opacity: 0, transform: 'scale(0.96)' },
+        { opacity: 1, transform: 'scale(1)' },
+      ],
+      {
+        duration: ENTER_EXIT_DURATION,
+        easing: MOVE_EASING,
+      },
+    );
   }
 
   if (action === 'remove') {
-    return new KeyframeEffect(element, [
-      { opacity: 1, transform: 'scale(1)' },
-      { opacity: 0, transform: 'scale(0.96)' },
-    ], {
-      duration: ENTER_EXIT_DURATION,
-      easing: 'ease-out',
-    });
+    return new KeyframeEffect(
+      element,
+      [
+        { opacity: 1, transform: 'scale(1)' },
+        { opacity: 0, transform: 'scale(0.96)' },
+      ],
+      {
+        duration: ENTER_EXIT_DURATION,
+        easing: 'ease-out',
+      },
+    );
   }
 
   return createNoopEffect(element);
