@@ -107,6 +107,16 @@ const ar = {
   modal_preview_title: 'معاينة',
   modal_preview_empty_name: 'اسم الموقع',
   modal_preview_empty_url: 'معاينة الرابط',
+  modal_icon_label: 'الأيقونة',
+  modal_icon_auto: 'تلقائي',
+  modal_icon_brand: 'العلامة',
+  modal_icon_favicon: 'الموقع',
+  modal_icon_monogram: 'حرف',
+  modal_icon_brand_search: 'البحث في العلامات',
+  modal_icon_brand_empty: 'لم يتم العثور على أيقونة علامة مطابقة.',
+  modal_icon_catalog_loading: 'جارٍ تحميل أيقونات العلامات...',
+  modal_icon_favicon_permission: 'تتطلب أيقونات المواقع إذنًا لمرة واحدة من المتصفح.',
+  modal_icon_favicon_enable: 'تفعيل أيقونات المواقع',
 
   /* Context menu */
   context_edit: 'تعديل',
@@ -137,6 +147,12 @@ const ar = {
   settings_show_clock: 'إظهار الساعة',
   settings_show_search: 'إظهار شريط البحث',
   settings_show_memory: 'إظهار حالة الذاكرة',
+  settings_site_icons: 'أيقونات المواقع',
+  settings_site_icons_description:
+    'اسمح لـ Tabibe باستخدام الأيقونات المعروفة لدى Chrome. لا تُرسل العناوين إلى خدمة خارجية.',
+  settings_site_icons_enable: 'تفعيل أيقونات المواقع',
+  settings_site_icons_enabled: 'أيقونات المواقع مفعلة.',
+  settings_site_icons_denied: 'لم يُمنح الإذن. ستظل أيقونات العلامات والحروف متاحة.',
 
   /* Background */
   settings_background: 'الخلفية',

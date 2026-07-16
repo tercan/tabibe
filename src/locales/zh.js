@@ -107,6 +107,16 @@ const zh = {
   modal_preview_title: '预览',
   modal_preview_empty_name: '网站名称',
   modal_preview_empty_url: '网址预览',
+  modal_icon_label: '图标',
+  modal_icon_auto: '自动',
+  modal_icon_brand: '品牌',
+  modal_icon_favicon: '网站',
+  modal_icon_monogram: '字母',
+  modal_icon_brand_search: '搜索品牌',
+  modal_icon_brand_empty: '未找到匹配的品牌图标。',
+  modal_icon_catalog_loading: '正在加载品牌图标...',
+  modal_icon_favicon_permission: '网站图标需要一次性浏览器权限。',
+  modal_icon_favicon_enable: '启用网站图标',
 
   /* Context menu */
   context_edit: '编辑',
@@ -137,6 +147,12 @@ const zh = {
   settings_show_clock: '显示时钟',
   settings_show_search: '显示搜索栏',
   settings_show_memory: '显示内存状态',
+  settings_site_icons: '网站图标',
+  settings_site_icons_description:
+    '允许 Tabibe 使用 Chrome 已知的图标。页面地址不会发送到外部图标服务。',
+  settings_site_icons_enable: '启用网站图标',
+  settings_site_icons_enabled: '网站图标已启用。',
+  settings_site_icons_denied: '未授予权限。品牌图标和字母仍可使用。',
 
   /* Background */
   settings_background: '背景',

@@ -99,12 +99,12 @@ function normalizeSite(item, allowFolder = true) {
   }
 
   const legacySlug = typeof item.icon_slug === 'string' ? item.icon_slug : '';
+  const icon = normalizeIcon(item.icon, legacySlug);
   return {
     id,
     name,
     url: normalizeSiteUrl(item.url),
-    icon: normalizeIcon(item.icon, legacySlug),
-    icon_slug: normalizeIcon(item.icon, legacySlug).slug || '',
+    icon,
   };
 }
 

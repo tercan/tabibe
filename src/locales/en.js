@@ -109,6 +109,16 @@ const en = {
   modal_preview_title: 'Preview',
   modal_preview_empty_name: 'Site name',
   modal_preview_empty_url: 'URL preview',
+  modal_icon_label: 'Icon',
+  modal_icon_auto: 'Automatic',
+  modal_icon_brand: 'Brand',
+  modal_icon_favicon: 'Site',
+  modal_icon_monogram: 'Letter',
+  modal_icon_brand_search: 'Search brands',
+  modal_icon_brand_empty: 'No matching brand icon was found.',
+  modal_icon_catalog_loading: 'Loading brand icons...',
+  modal_icon_favicon_permission: 'Site icons require one-time browser permission.',
+  modal_icon_favicon_enable: 'Enable site icons',
 
   /* Context menu */
   context_edit: 'Edit',
@@ -139,6 +149,13 @@ const en = {
   settings_show_clock: 'Show clock',
   settings_show_search: 'Show search bar',
   settings_show_memory: 'Show memory status',
+  settings_site_icons: 'Site Icons',
+  settings_site_icons_description:
+    'Allow Tabibe to use icons already known by Chrome. Page addresses are not sent to an external icon service.',
+  settings_site_icons_enable: 'Enable site icons',
+  settings_site_icons_enabled: 'Site icons are enabled.',
+  settings_site_icons_denied:
+    'Permission was not granted. Brand icons and letters will remain available.',
 
   /* Background */
   settings_background: 'Background',

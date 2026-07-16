@@ -4,10 +4,11 @@ import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { load_sites, save_sites } from '../lib/storage.js';
 import { normalizeSiteUrl } from '../domain/dataSchema.js';
 import speedDialMoveAnimation from '../lib/speedDialMotion.js';
+import useIconCatalog from '../hooks/useIconCatalog.js';
 import SiteModal from './SiteModal.jsx';
 import ContextMenu from './ContextMenu.jsx';
 import Folder from './Folder.jsx';
-import SpeedDialIcon from './SpeedDialIcon.jsx';
+import SiteIcon from './SiteIcon.jsx';
 import FolderDeleteModal from './FolderDeleteModal.jsx';
 
 /**
@@ -17,38 +18,6 @@ import FolderDeleteModal from './FolderDeleteModal.jsx';
 const ROOT_FOLDER_ID = 'root';
 const FOLDER_DROP_DELAY = 250;
 const FOLDER_SWAP_DELAY = 650;
-const TRANSPARENT_PIXEL =
-  'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-
-function get_favicon_url(site_url) {
-  try {
-    const parsed = new URL(site_url);
-    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
-      return '';
-    }
-    return `https://www.google.com/s2/favicons?domain=${parsed.origin}&sz=64`;
-  } catch {
-    return '';
-  }
-}
-
-function get_simple_icon_url(slug, theme) {
-  const color = theme === 'dark' ? 'e8eaed' : '212121';
-  return `https://cdn.simpleicons.org/${slug}/${color}`;
-}
-
-function get_suggested_icon_slug(site_url) {
-  try {
-    const parsed = new URL(site_url);
-    return parsed.hostname
-      .replace(/^www\./, '')
-      .split('.')[0]
-      .toLowerCase();
-  } catch {
-    return '';
-  }
-}
-
 function MoreIcon() {
   return (
     <svg
@@ -319,8 +288,9 @@ function is_in_folder_swap_zone(event) {
  * 3. SpeedDial component
  */
 
-function SpeedDial({ icon_style, theme }) {
+function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favicon_permission }) {
   const { t } = useTranslation();
+  const icon_catalog = useIconCatalog();
   const [sites, set_sites] = useState([]);
   const [is_loading, set_is_loading] = useState(true);
   const [load_error, set_load_error] = useState(false);
@@ -352,7 +322,6 @@ function SpeedDial({ icon_style, theme }) {
   const folder_swap_timer_ref = useRef(null);
   const folder_swap_candidate_ref = useRef(null);
   const undo_timer_ref = useRef(null);
-  const [simple_icons_whitelist, set_simple_icons_whitelist] = useState(new Set());
   const [animation_parent] = useAutoAnimate(speedDialMoveAnimation);
 
   useEffect(() => {
@@ -374,55 +343,6 @@ function SpeedDial({ icon_style, theme }) {
         set_load_error(true);
         set_is_loading(false);
       });
-
-    const CACHE_KEY = 'tabibe-icon-whitelist';
-    const CACHE_TTL = 30 * 24 * 60 * 60 * 1000;
-
-    function apply_whitelist(list) {
-      set_simple_icons_whitelist(new Set(list));
-    }
-
-    function fetch_and_cache() {
-      fetch('https://api.iconify.design/collection?prefix=simple-icons')
-        .then((res) => res.json())
-        .then((data) => {
-          if (data && data.uncategorized) {
-            apply_whitelist(data.uncategorized);
-            const cache_data = { list: data.uncategorized, timestamp: Date.now() };
-            if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-              chrome.storage.local.set({ [CACHE_KEY]: cache_data });
-            } else {
-              localStorage.setItem(CACHE_KEY, JSON.stringify(cache_data));
-            }
-          }
-        })
-        .catch(() => {});
-    }
-
-    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.get([CACHE_KEY], (result) => {
-        const cached = result[CACHE_KEY];
-        if (cached && cached.list && Date.now() - cached.timestamp < CACHE_TTL) {
-          apply_whitelist(cached.list);
-        } else {
-          fetch_and_cache();
-        }
-      });
-    } else {
-      try {
-        const raw = localStorage.getItem(CACHE_KEY);
-        if (raw) {
-          const cached = JSON.parse(raw);
-          if (cached && cached.list && Date.now() - cached.timestamp < CACHE_TTL) {
-            apply_whitelist(cached.list);
-            return;
-          }
-        }
-      } catch {
-        /* empty */
-      }
-      fetch_and_cache();
-    }
   }, []);
 
   useEffect(() => {
@@ -488,53 +408,13 @@ function SpeedDial({ icon_style, theme }) {
    * 5. Icon helpers
    */
 
-  const DEFAULT_ICON = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6c757d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>')}`;
-
-  function get_icon_source_order() {
-    return icon_style === 'simple' ? ['simple', 'favicon-simple'] : ['favicon', 'simple'];
-  }
-
-  function get_icon_url_by_source(site, source) {
-    if (!site || site.type === 'folder') return '';
-
-    if (source === 'simple') {
-      const slug = site.icon_slug || get_suggested_icon_slug(site.url);
-
-      if (slug && simple_icons_whitelist.has(slug)) {
-        return get_simple_icon_url(slug, theme);
-      }
-    }
-
-    if ((source === 'favicon' || source === 'favicon-simple') && site.url) {
-      return get_favicon_url(site.url);
-    }
-
-    return '';
-  }
-
-  function get_icon_metadata(site, failed_sources = new Set()) {
-    if (!site || site.type === 'folder') {
-      return { src: TRANSPARENT_PIXEL, source: 'fallback' };
-    }
-
-    for (const source of get_icon_source_order()) {
-      if (failed_sources.has(source)) continue;
-
-      const src = get_icon_url_by_source(site, source);
-      if (src) {
-        return { src, source };
-      }
-    }
-
-    return { src: DEFAULT_ICON, source: 'fallback' };
-  }
-
   function render_site_icon(site) {
     return (
-      <SpeedDialIcon
+      <SiteIcon
         site={site}
-        getIconMetadata={get_icon_metadata}
-        iconResetKey={`${icon_style}:${theme}:${site.id}:${site.url || ''}:${site.icon_slug || ''}`}
+        catalog={icon_catalog}
+        globalStyle={icon_style}
+        hasFaviconPermission={has_favicon_permission}
       />
     );
   }
@@ -1293,6 +1173,10 @@ function SpeedDial({ icon_style, theme }) {
           folders={folders}
           current_folder_id={modal_folder_id}
           existing_sites={all_sites}
+          icon_catalog={icon_catalog}
+          icon_style={icon_style}
+          has_favicon_permission={has_favicon_permission}
+          on_request_favicon_permission={on_request_favicon_permission}
           on_save={handle_save}
           on_close={handle_close_modal}
         />

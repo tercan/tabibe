@@ -108,6 +108,16 @@ const ja = {
   modal_preview_title: 'プレビュー',
   modal_preview_empty_name: 'サイト名',
   modal_preview_empty_url: 'URLプレビュー',
+  modal_icon_label: 'アイコン',
+  modal_icon_auto: '自動',
+  modal_icon_brand: 'ブランド',
+  modal_icon_favicon: 'サイト',
+  modal_icon_monogram: '文字',
+  modal_icon_brand_search: 'ブランドを検索',
+  modal_icon_brand_empty: '一致するブランドアイコンが見つかりません。',
+  modal_icon_catalog_loading: 'ブランドアイコンを読み込み中...',
+  modal_icon_favicon_permission: 'サイトアイコンには一度だけブラウザー権限が必要です。',
+  modal_icon_favicon_enable: 'サイトアイコンを有効にする',
 
   /* Context menu */
   context_edit: '編集',
@@ -138,6 +148,13 @@ const ja = {
   settings_show_clock: '時計を表示',
   settings_show_search: '検索バーを表示',
   settings_show_memory: 'メモリ状態を表示',
+  settings_site_icons: 'サイトアイコン',
+  settings_site_icons_description:
+    'Chrome が認識しているアイコンを Tabibe で使用します。アドレスは外部サービスへ送信されません。',
+  settings_site_icons_enable: 'サイトアイコンを有効にする',
+  settings_site_icons_enabled: 'サイトアイコンは有効です。',
+  settings_site_icons_denied:
+    '権限が許可されませんでした。ブランドアイコンと文字は引き続き使用できます。',
 
   /* Background */
   settings_background: '背景',

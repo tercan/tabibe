@@ -9,25 +9,29 @@ import {
   normalizeSites,
 } from '../domain/dataSchema.js';
 
+function createDefaultSite(name, url, slug = null) {
+  return { name, url, icon: { preference: 'auto', slug } };
+}
+
 const DEFAULT_SITES = [
-  { name: 'Google', url: 'https://www.google.com', icon_slug: 'google' },
-  { name: 'YouTube', url: 'https://www.youtube.com', icon_slug: 'youtube' },
-  { name: 'Wikipedia', url: 'https://wikipedia.org', icon_slug: 'wikipedia' },
-  { name: 'ChatGPT', url: 'https://chatgpt.com', icon_slug: 'openai' },
-  { name: 'Notion', url: 'https://www.notion.so', icon_slug: 'notion' },
-  { name: 'Gmail', url: 'https://mail.google.com', icon_slug: 'gmail' },
-  { name: 'Google Translate', url: 'https://translate.google.com', icon_slug: 'googletranslate' },
-  { name: 'Netflix', url: 'https://www.netflix.com', icon_slug: 'netflix' },
-  { name: 'Spotify', url: 'https://open.spotify.com', icon_slug: 'spotify' },
-  { name: 'Google Maps', url: 'https://maps.google.com', icon_slug: 'googlemaps' },
-  { name: 'Google Drive', url: 'https://drive.google.com', icon_slug: 'googledrive' },
-  { name: 'WhatsApp Web', url: 'https://web.whatsapp.com', icon_slug: 'whatsapp' },
-  { name: 'Instagram', url: 'https://www.instagram.com', icon_slug: 'instagram' },
-  { name: 'Facebook', url: 'https://www.facebook.com', icon_slug: 'facebook' },
-  { name: 'X', url: 'https://x.com', icon_slug: 'x' },
-  { name: 'LinkedIn', url: 'https://www.linkedin.com', icon_slug: 'linkedin' },
-  { name: 'Pinterest', url: 'https://www.pinterest.com', icon_slug: 'pinterest' },
-  { name: 'Twitch', url: 'https://www.twitch.tv', icon_slug: 'twitch' },
+  createDefaultSite('Google', 'https://www.google.com', 'google'),
+  createDefaultSite('YouTube', 'https://www.youtube.com', 'youtube'),
+  createDefaultSite('Wikipedia', 'https://wikipedia.org', 'wikipedia'),
+  createDefaultSite('ChatGPT', 'https://chatgpt.com'),
+  createDefaultSite('Notion', 'https://www.notion.so', 'notion'),
+  createDefaultSite('Gmail', 'https://mail.google.com', 'gmail'),
+  createDefaultSite('Google Translate', 'https://translate.google.com', 'googletranslate'),
+  createDefaultSite('Netflix', 'https://www.netflix.com', 'netflix'),
+  createDefaultSite('Spotify', 'https://open.spotify.com', 'spotify'),
+  createDefaultSite('Google Maps', 'https://maps.google.com', 'googlemaps'),
+  createDefaultSite('Google Drive', 'https://drive.google.com', 'googledrive'),
+  createDefaultSite('WhatsApp Web', 'https://web.whatsapp.com', 'whatsapp'),
+  createDefaultSite('Instagram', 'https://www.instagram.com', 'instagram'),
+  createDefaultSite('Facebook', 'https://www.facebook.com', 'facebook'),
+  createDefaultSite('X', 'https://x.com', 'x'),
+  createDefaultSite('LinkedIn', 'https://www.linkedin.com', 'linkedin'),
+  createDefaultSite('Pinterest', 'https://www.pinterest.com', 'pinterest'),
+  createDefaultSite('Twitch', 'https://www.twitch.tv', 'twitch'),
 ];
 
 const STATE_KEY = 'tabibe-state';
@@ -36,7 +40,7 @@ const ROLLBACK_KEY = 'tabibe-state-rollback';
 const LEGACY_SITES_KEY = 'tabibe-sites';
 const LEGACY_NOTES_KEY = 'tabibe-notes';
 const LEGACY_NOTE_KEY = 'tabibe-note';
-const APP_VERSION = import.meta.env.VITE_APP_VERSION || '0.3.1';
+const APP_VERSION = import.meta.env.VITE_APP_VERSION || '0.4.0';
 
 let writeQueue = Promise.resolve();
 

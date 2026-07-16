@@ -6,6 +6,25 @@ This file documents all notable changes in the project.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] - 2026-07-17 02:39
+
+### Added
+
+- Added a pinned local Simple Icons 16.26.0 catalog with searchable brand selection and bundled license notices
+- Added optional Chrome favicon support that is requested only through an explicit user action
+- Added deterministic local monograms so every saved site has a visible offline fallback
+- Added automatic, brand, site, and letter icon preferences with a live preview in the site form
+
+### Changed
+
+- Replaced the legacy icon slug field with a structured icon preference model and automatic migration
+- Replaced runtime Iconify, Simple Icons CDN, and Google S2 icon requests with local assets and Chrome's built-in favicon provider
+
+### Fixed
+
+- Fixed missing site icons when no Simple Icons match exists or an image request fails, times out, or is unavailable offline
+- Fixed cached local SVG loads remaining on the monogram fallback because the image load event completed before state synchronization
+
 ## [0.3.1] - 2026-07-17 02:17
 
 ### Added

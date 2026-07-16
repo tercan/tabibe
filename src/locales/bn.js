@@ -107,6 +107,16 @@ const bn = {
   modal_preview_title: 'প্রিভিউ',
   modal_preview_empty_name: 'সাইটের নাম',
   modal_preview_empty_url: 'URL প্রিভিউ',
+  modal_icon_label: 'আইকন',
+  modal_icon_auto: 'স্বয়ংক্রিয়',
+  modal_icon_brand: 'ব্র্যান্ড',
+  modal_icon_favicon: 'সাইট',
+  modal_icon_monogram: 'অক্ষর',
+  modal_icon_brand_search: 'ব্র্যান্ড খুঁজুন',
+  modal_icon_brand_empty: 'মিলে যাওয়া ব্র্যান্ড আইকন পাওয়া যায়নি।',
+  modal_icon_catalog_loading: 'ব্র্যান্ড আইকন লোড হচ্ছে...',
+  modal_icon_favicon_permission: 'সাইট আইকনের জন্য ব্রাউজারের একবারের অনুমতি প্রয়োজন।',
+  modal_icon_favicon_enable: 'সাইট আইকন চালু করুন',
 
   /* Context menu */
   context_edit: 'সম্পাদনা',
@@ -137,6 +147,12 @@ const bn = {
   settings_show_clock: 'ঘড়ি দেখান',
   settings_show_search: 'সার্চ বার দেখান',
   settings_show_memory: 'মেমোরি অবস্থা দেখান',
+  settings_site_icons: 'সাইট আইকন',
+  settings_site_icons_description:
+    'Tabibe-কে Chrome-এর পরিচিত আইকন ব্যবহার করতে দিন। ঠিকানা বাইরের সেবায় পাঠানো হয় না।',
+  settings_site_icons_enable: 'সাইট আইকন চালু করুন',
+  settings_site_icons_enabled: 'সাইট আইকন চালু আছে।',
+  settings_site_icons_denied: 'অনুমতি দেওয়া হয়নি। ব্র্যান্ড আইকন ও অক্ষর ব্যবহার করা যাবে।',
 
   /* Background */
   settings_background: 'পটভূমি',

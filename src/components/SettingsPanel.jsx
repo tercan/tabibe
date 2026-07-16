@@ -34,6 +34,8 @@ function SettingsPanel({
   on_toggle_search,
   show_memory,
   on_toggle_memory,
+  favicon_permission,
+  on_request_favicon_permission,
   bg_color,
   bg_image,
   on_change_bg_color,
@@ -222,6 +224,37 @@ function SettingsPanel({
                 </label>
               ))}
             </div>
+          </div>
+          {/* /.settings-group */}
+
+          <div className="settings-group">
+            <h3 className="settings-group-title">{t('settings_site_icons')}</h3>
+            <p className="settings-description">{t('settings_site_icons_description')}</p>
+            {favicon_permission?.hasPermission ? (
+              <p className="settings-permission-state settings-permission-state--success">
+                {t('settings_site_icons_enabled')}
+              </p>
+            ) : (
+              <button
+                type="button"
+                className="modal-button modal-button--cancel settings-permission-button"
+                onClick={on_request_favicon_permission}
+                disabled={
+                  !favicon_permission?.supported ||
+                  favicon_permission?.requestState === 'requesting'
+                }
+              >
+                {t('settings_site_icons_enable')}
+              </button>
+            )}
+            {favicon_permission?.requestState === 'denied' && (
+              <p
+                className="settings-permission-state settings-permission-state--error"
+                role="status"
+              >
+                {t('settings_site_icons_denied')}
+              </p>
+            )}
           </div>
           {/* /.settings-group */}
 

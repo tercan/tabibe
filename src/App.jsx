@@ -11,6 +11,7 @@ import {
   getEquivalentBackgroundPresetColor,
 } from './lib/backgroundPresets.js';
 import { createDefaultSettings, loadSettings, saveSettings } from './lib/storage.js';
+import useFaviconPermission from './hooks/useFaviconPermission.js';
 
 function getSystemTheme() {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -18,6 +19,7 @@ function getSystemTheme() {
 
 function App() {
   const { locale, t } = useTranslation();
+  const faviconPermission = useFaviconPermission();
   const [settings, setSettings] = useState(() => createDefaultSettings(getSystemTheme()));
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [notePanelOpen, setNotePanelOpen] = useState(false);
@@ -130,6 +132,12 @@ function App() {
     updateSettings({ notePinned: !notePinned });
   }
 
+  async function handleRequestFaviconPermission() {
+    const granted = await faviconPermission.requestPermission();
+    if (granted) await updateSettings({ faviconFallback: true });
+    return granted;
+  }
+
   function handleChangeBackgroundColor(color, nextTheme) {
     const presetTheme = nextTheme || getBackgroundPresetTheme(color) || theme;
     updateSettings({
@@ -175,7 +183,11 @@ function App() {
     <main className={className} lang={locale} style={getBackgroundStyle()}>
       {showClock && <Clock />}
       {showSearch && <SearchBar search_engine={searchEngine} />}
-      <SpeedDial icon_style={iconStyle} theme={theme} />
+      <SpeedDial
+        icon_style={iconStyle}
+        has_favicon_permission={faviconPermission.hasPermission}
+        on_request_favicon_permission={handleRequestFaviconPermission}
+      />
       <NotePanel
         is_open={notePanelOpen}
         is_pinned={notePinned}
@@ -202,6 +214,8 @@ function App() {
         on_toggle_search={handleToggleSearch}
         show_memory={showMemory}
         on_toggle_memory={handleToggleMemory}
+        favicon_permission={faviconPermission}
+        on_request_favicon_permission={handleRequestFaviconPermission}
         bg_color={backgroundColor}
         bg_image={backgroundImage}
         on_change_bg_color={handleChangeBackgroundColor}

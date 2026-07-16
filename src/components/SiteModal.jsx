@@ -2,6 +2,8 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from '../hooks/useTranslation.js';
 import useFocusTrap from '../hooks/useFocusTrap.jsx';
 import { normalizeSiteUrl } from '../domain/dataSchema.js';
+import { getBrandIconUrl, resolveBrandIcon, searchIconCatalog } from '../lib/iconCatalog.js';
+import SiteIcon from './SiteIcon.jsx';
 
 const ROOT_FOLDER_ID = 'root';
 
@@ -45,7 +47,7 @@ function get_url_suggestion(value) {
   const final_url = normalize_url(value);
 
   if (!validate_url(final_url)) {
-    return { final_url, name: '', icon_slug: '' };
+    return { final_url, name: '' };
   }
 
   try {
@@ -53,19 +55,15 @@ function get_url_suggestion(value) {
     const host = parsed.hostname;
 
     if (!host) {
-      return { final_url, name: '', icon_slug: '' };
+      return { final_url, name: '' };
     }
 
     return {
       final_url,
       name: format_name_from_host(host),
-      icon_slug: host
-        .replace(/^www\./, '')
-        .split('.')[0]
-        .toLowerCase(),
     };
   } catch {
-    return { final_url, name: '', icon_slug: '' };
+    return { final_url, name: '' };
   }
 }
 
@@ -89,6 +87,10 @@ function SiteModal({
   folders = [],
   current_folder_id = ROOT_FOLDER_ID,
   existing_sites = [],
+  icon_catalog,
+  icon_style = 'favicon',
+  has_favicon_permission = false,
+  on_request_favicon_permission,
   on_save,
   on_close,
 }) {
@@ -97,7 +99,10 @@ function SiteModal({
   const is_edit = !!site;
   const [name, set_name] = useState(site ? site.name || '' : '');
   const [url, set_url] = useState(site && !is_folder ? site.url || '' : '');
-  const [icon_slug, set_icon_slug] = useState(site ? site.icon_slug || '' : '');
+  const [icon_preference, set_icon_preference] = useState(site?.icon?.preference || 'auto');
+  const [icon_slug, set_icon_slug] = useState(site?.icon?.slug || site?.icon_slug || '');
+  const [brand_query, set_brand_query] = useState('');
+  const [highlighted_brand_index, set_highlighted_brand_index] = useState(0);
   const [target_folder_id, set_target_folder_id] = useState(current_folder_id || ROOT_FOLDER_ID);
   const [error, set_error] = useState('');
   const first_field_ref = useRef(null);
@@ -117,6 +122,20 @@ function SiteModal({
         item.id !== site?.id && normalize_url_for_compare(item.url || '') === normalized_url,
     );
   }, [existing_sites, is_folder, normalized_url, site?.id, url]);
+  const brand_results = useMemo(
+    () => searchIconCatalog(icon_catalog, brand_query),
+    [brand_query, icon_catalog],
+  );
+  const selected_brand = icon_catalog?.bySlug?.get(icon_slug) || null;
+  const preview_site = useMemo(
+    () => ({
+      id: site?.id || 'preview',
+      name: get_safe_string(name).trim() || t('modal_preview_empty_name'),
+      url: normalize_url(url),
+      icon: { preference: icon_preference, slug: selected_brand?.slug || null },
+    }),
+    [icon_preference, name, selected_brand?.slug, site?.id, t, url],
+  );
 
   useFocusTrap({
     containerRef: dialog_ref,
@@ -139,11 +158,15 @@ function SiteModal({
   useEffect(() => {
     set_name(site ? site.name || '' : '');
     set_url(site && !is_folder ? site.url || '' : '');
-    set_icon_slug(site ? site.icon_slug || '' : '');
+    const next_slug = site?.icon?.slug || site?.icon_slug || '';
+    set_icon_preference(site?.icon?.preference || 'auto');
+    set_icon_slug(next_slug);
+    set_brand_query(icon_catalog?.bySlug?.get(next_slug)?.title || '');
+    set_highlighted_brand_index(0);
     set_target_folder_id(current_folder_id || ROOT_FOLDER_ID);
     set_error('');
     name_touched_ref.current = !!site;
-  }, [current_folder_id, is_folder, site]);
+  }, [current_folder_id, icon_catalog?.bySlug, is_folder, site]);
 
   function handle_overlay_click(event) {
     if (event.target === overlay_ref.current) {
@@ -174,8 +197,55 @@ function SiteModal({
     set_name(event.target.value);
   }
 
-  function handle_icon_change(event) {
-    set_icon_slug(event.target.value);
+  function handle_icon_preference_change(preference) {
+    set_icon_preference(preference);
+    set_highlighted_brand_index(0);
+
+    if (preference !== 'brand') {
+      set_icon_slug('');
+      set_brand_query('');
+      return;
+    }
+
+    const suggested_brand = resolveBrandIcon(
+      { name, url: normalize_url(url), icon: { preference: 'brand', slug: null } },
+      icon_catalog,
+    );
+    if (suggested_brand) {
+      set_icon_slug(suggested_brand.slug);
+      set_brand_query(suggested_brand.title);
+    }
+  }
+
+  function handle_brand_query_change(event) {
+    set_brand_query(event.target.value);
+    set_icon_slug('');
+    set_highlighted_brand_index(0);
+  }
+
+  function handle_brand_select(icon) {
+    set_icon_slug(icon.slug);
+    set_brand_query(icon.title);
+    set_highlighted_brand_index(0);
+  }
+
+  function handle_brand_key_down(event) {
+    if (!brand_results.length) return;
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      set_highlighted_brand_index((current) => (current + 1) % brand_results.length);
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      set_highlighted_brand_index(
+        (current) => (current - 1 + brand_results.length) % brand_results.length,
+      );
+    } else if (event.key === 'Enter') {
+      event.preventDefault();
+      handle_brand_select(brand_results[highlighted_brand_index]);
+    } else if (event.key === 'Escape') {
+      set_brand_query(selected_brand?.title || '');
+    }
   }
 
   async function handle_save_result(payload, folder_id) {
@@ -213,7 +283,6 @@ function SiteModal({
     }
 
     const trimmed_url = get_safe_string(url).trim();
-    const trimmed_slug = get_safe_string(icon_slug).trim();
 
     if (!trimmed_url) {
       set_error(t('modal_error_url'));
@@ -240,7 +309,10 @@ function SiteModal({
       {
         name: trimmed_name,
         url: final_url,
-        icon_slug: trimmed_slug,
+        icon: {
+          preference: icon_preference,
+          slug: icon_catalog?.bySlug?.has(icon_slug) ? icon_slug : null,
+        },
       },
       target_folder_id,
     );
@@ -299,20 +371,96 @@ function SiteModal({
 
           {!is_folder && (
             <>
-              <div className="modal-field">
-                <label htmlFor="site-icon" className="modal-label">
-                  {t('modal_label_icon')}
-                </label>
-                <input
-                  id="site-icon"
-                  className="modal-input"
-                  type="text"
-                  value={icon_slug}
-                  onChange={handle_icon_change}
-                  placeholder="google"
-                  autoComplete="off"
-                />
-              </div>
+              <fieldset className="modal-icon-selector">
+                <legend className="modal-label">{t('modal_icon_label')}</legend>
+                <div
+                  className="modal-icon-preferences"
+                  role="group"
+                  aria-label={t('modal_icon_label')}
+                >
+                  {['auto', 'brand', 'favicon', 'monogram'].map((preference) => (
+                    <button
+                      key={preference}
+                      type="button"
+                      className={`modal-icon-preference${icon_preference === preference ? ' modal-icon-preference--active' : ''}`}
+                      aria-pressed={icon_preference === preference}
+                      onClick={() => handle_icon_preference_change(preference)}
+                    >
+                      {t(`modal_icon_${preference}`)}
+                    </button>
+                  ))}
+                </div>
+
+                {icon_preference === 'brand' && (
+                  <div className="modal-brand-picker">
+                    <label htmlFor="site-brand-search" className="modal-label">
+                      {t('modal_icon_brand_search')}
+                    </label>
+                    <input
+                      id="site-brand-search"
+                      className="modal-input"
+                      type="search"
+                      role="combobox"
+                      value={brand_query}
+                      onChange={handle_brand_query_change}
+                      onKeyDown={handle_brand_key_down}
+                      autoComplete="off"
+                      aria-expanded={brand_results.length > 0}
+                      aria-controls="site-brand-results"
+                      aria-activedescendant={
+                        brand_results.length
+                          ? `site-brand-${brand_results[highlighted_brand_index]?.slug}`
+                          : undefined
+                      }
+                    />
+                    {brand_query && brand_results.length > 0 && !selected_brand && (
+                      <ul id="site-brand-results" className="modal-brand-results" role="listbox">
+                        {brand_results.map((icon, index) => (
+                          <li key={icon.slug} role="presentation">
+                            <button
+                              id={`site-brand-${icon.slug}`}
+                              type="button"
+                              className={`modal-brand-result${index === highlighted_brand_index ? ' modal-brand-result--active' : ''}`}
+                              role="option"
+                              aria-selected={index === highlighted_brand_index}
+                              onMouseDown={(event) => event.preventDefault()}
+                              onClick={() => handle_brand_select(icon)}
+                            >
+                              <span
+                                className="modal-brand-result-icon"
+                                style={{
+                                  '--site-icon-mask': `url("${getBrandIconUrl(icon.slug)}")`,
+                                }}
+                                aria-hidden="true"
+                              />
+                              <span>{icon.title}</span>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {brand_query && !brand_results.length && icon_catalog?.isLoaded && (
+                      <p className="modal-icon-help">{t('modal_icon_brand_empty')}</p>
+                    )}
+                    {!icon_catalog?.isLoaded && (
+                      <p className="modal-icon-help">{t('modal_icon_catalog_loading')}</p>
+                    )}
+                  </div>
+                )}
+
+                {icon_preference === 'favicon' && !has_favicon_permission && (
+                  <div className="modal-icon-permission">
+                    <p>{t('modal_icon_favicon_permission')}</p>
+                    <button
+                      type="button"
+                      className="modal-button modal-button--cancel"
+                      onClick={on_request_favicon_permission}
+                    >
+                      {t('modal_icon_favicon_enable')}
+                    </button>
+                  </div>
+                )}
+              </fieldset>
 
               <div className="modal-field">
                 <label htmlFor="site-location" className="modal-label">
@@ -337,7 +485,13 @@ function SiteModal({
                 <span className="modal-site-preview-label">{t('modal_preview_title')}</span>
                 <div className="modal-site-preview-card">
                   <span className="modal-site-preview-icon" aria-hidden="true">
-                    {preview_name.charAt(0).toUpperCase()}
+                    <SiteIcon
+                      site={preview_site}
+                      catalog={icon_catalog}
+                      globalStyle={icon_style}
+                      hasFaviconPermission={has_favicon_permission}
+                      compact
+                    />
                   </span>
                   <span className="modal-site-preview-content">
                     <strong>{preview_name}</strong>

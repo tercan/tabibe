@@ -4,7 +4,7 @@ Dil: [English](../../README.md) | Türkçe
 
 Chromium tabanlı tarayıcılar için modern, minimalist ve yüksek performanslı yeni sekme (new tab) açılış sayfası eklentisi.
 
-**Güncel sürüm:** `0.3.1`
+**Güncel sürüm:** `0.4.0`
 
 ## Hakkında
 
@@ -26,8 +26,8 @@ Tabibe, yeni sekme deneyimini kişisel bir kontrol ve üretkenlik alanına dön�
 - Açık/koyu arka plan renk grupları ve seçili renge göre otomatik tema geçişi
 - Tema değiştirirken eşlenik arka plan rengini otomatik seçme
 - Yerel arka plan görseli yükleme
-- Favicon ve Simple Icons simge modları
-- Simple Icons karşılığı olmayan siteler için favicon tabanlı siyah-beyaz hibrit simge görünümü
+- Sabitlenmiş yerel Simple Icons kataloğu, isteğe bağlı Chrome favicon'ları ve her zaman kullanılabilen monogram fallback'i ile dayanıklı site simgeleri
+- Otomatik, marka, site ve harf modlarını sunan aranabilir simge seçici
 - Tüm uygulama verileri için JSON import/export desteği (siteler, klasörler, ayarlar ve çoklu notlar dahil)
 - 10 arayüz dili desteği: Türkçe, English, Español, Português, Русский, العربية, हिन्दी, বাংলা, 中文, 日本語
 - Günlük alıntı sözler: Türkçe ve İngilizce havuz; diğer arayüz dillerinde İngilizce fallback kullanılır
@@ -50,6 +50,8 @@ Tabibe, yeni sekme deneyimini kişisel bir kontrol ve üretkenlik alanına dön�
 ## Veri ve Gizlilik
 
 Tabibe verileri kullanıcının tarayıcısında saklar. Siteler, klasörler, notlar, ayarlar ve arka plan tercihleri `chrome.storage.local` tabanlı sürümlenmiş veri katmanı veya yerel geliştirme ortamında `localStorage` üzerinden yönetilir. İçe/dışa aktarma işlemleri önizleme, doğrulama, geri dönüş ve geri alma desteğiyle yerel JSON dosyaları üzerinden yapılır.
+
+Marka simgeleri eklenti içinde yerel olarak paketlenir ve üçüncü taraf simge servisi gerektirmez. Chrome favicon sağlayıcısı yalnızca kullanıcının açık izniyle etkinleştirilir; marka veya favicon çözümlenemediğinde yerel monogram her zaman kullanılabilir.
 
 ## Geliştirme
 
@@ -91,3 +93,5 @@ npm run audit
 ## Lisans
 
 Bu proje [GPL v3](../../LICENSE) lisansı altında yayınlanmıştır.
+
+Paketlenen marka simgeleri [Simple Icons](https://simpleicons.org/) `16.26.0` sürümünden alınır; eklenti paketi kaynak projenin CC0-1.0 lisansını ve marka kullanım bildirimini içerir.

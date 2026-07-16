@@ -4,7 +4,7 @@ Language: English | [Türkçe](docs/tr/README.md)
 
 A modern, minimalist, and high-performance new tab extension for Chromium-based browsers.
 
-**Current version:** `0.3.1`
+**Current version:** `0.4.0`
 
 ## About
 
@@ -26,8 +26,8 @@ Tabibe turns the new tab experience into a personal control and productivity spa
 - Light/dark background color groups with automatic theme switching
 - Matched background color switching when toggling themes
 - Local background image upload
-- Favicon and Simple Icons icon modes
-- Favicon-based black-and-white hybrid icon fallback when a site is not available in Simple Icons
+- Resilient site icons with a pinned local Simple Icons catalog, optional Chrome favicons, and an always-available monogram fallback
+- Searchable icon selector with automatic, brand, site, and letter modes
 - JSON import/export for all app data, including sites, folders, settings, and multi-note data
 - 10 UI languages: Türkçe, English, Español, Português, Русский, العربية, हिन्दी, বাংলা, 中文, 日本語
 - Daily quotes: Turkish and English quote pools; other UI languages fall back to English quotes
@@ -50,6 +50,8 @@ Tabibe turns the new tab experience into a personal control and productivity spa
 ## Data and Privacy
 
 Tabibe stores data in the user's browser. Sites, folders, notes, settings, and background preferences are managed through a versioned state repository backed by `chrome.storage.local`, with `localStorage` used in local development. Import/export is handled locally through validated JSON files with preview, rollback, and undo support.
+
+Brand icons are bundled with the extension and do not require a third-party icon service. Chrome's favicon provider is optional and is enabled only after explicit user permission; a local monogram remains available when no brand or favicon can be resolved.
 
 ## Development
 
@@ -91,3 +93,5 @@ npm run audit
 ## License
 
 This project is released under the [GPL v3](LICENSE) license.
+
+Bundled brand icons are sourced from [Simple Icons](https://simpleicons.org/) `16.26.0` and retain the upstream CC0-1.0 license and trademark disclaimer in the extension package.

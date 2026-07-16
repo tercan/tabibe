@@ -108,6 +108,16 @@ const hi = {
   modal_preview_title: 'पूर्वावलोकन',
   modal_preview_empty_name: 'साइट का नाम',
   modal_preview_empty_url: 'URL पूर्वावलोकन',
+  modal_icon_label: 'आइकन',
+  modal_icon_auto: 'स्वचालित',
+  modal_icon_brand: 'ब्रांड',
+  modal_icon_favicon: 'साइट',
+  modal_icon_monogram: 'अक्षर',
+  modal_icon_brand_search: 'ब्रांड खोजें',
+  modal_icon_brand_empty: 'कोई मिलता-जुलता ब्रांड आइकन नहीं मिला।',
+  modal_icon_catalog_loading: 'ब्रांड आइकन लोड हो रहे हैं...',
+  modal_icon_favicon_permission: 'साइट आइकन के लिए ब्राउज़र की एक बार की अनुमति चाहिए।',
+  modal_icon_favicon_enable: 'साइट आइकन चालू करें',
 
   /* Context menu */
   context_edit: 'संपादित करें',
@@ -138,6 +148,12 @@ const hi = {
   settings_show_clock: 'घड़ी दिखाएँ',
   settings_show_search: 'खोज बार दिखाएँ',
   settings_show_memory: 'मेमोरी स्थिति दिखाएँ',
+  settings_site_icons: 'साइट आइकन',
+  settings_site_icons_description:
+    'Tabibe को Chrome के ज्ञात आइकन उपयोग करने दें। पते किसी बाहरी सेवा को नहीं भेजे जाते।',
+  settings_site_icons_enable: 'साइट आइकन चालू करें',
+  settings_site_icons_enabled: 'साइट आइकन चालू हैं।',
+  settings_site_icons_denied: 'अनुमति नहीं मिली। ब्रांड आइकन और अक्षर उपलब्ध रहेंगे।',
 
   /* Background */
   settings_background: 'पृष्ठभूमि',

@@ -37,6 +37,7 @@ describe('data schema', () => {
     ]);
 
     expect(site.icon).toEqual({ preference: 'auto', slug: 'example' });
+    expect(site).not.toHaveProperty('icon_slug');
     expect(() =>
       normalizeSites([
         {

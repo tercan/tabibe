@@ -107,6 +107,16 @@ const tr = {
   modal_preview_title: 'Önizleme',
   modal_preview_empty_name: 'Site adı',
   modal_preview_empty_url: 'URL önizlemesi',
+  modal_icon_label: 'Simge',
+  modal_icon_auto: 'Otomatik',
+  modal_icon_brand: 'Marka',
+  modal_icon_favicon: 'Site',
+  modal_icon_monogram: 'Harf',
+  modal_icon_brand_search: 'Markalarda ara',
+  modal_icon_brand_empty: 'Eşleşen marka simgesi bulunamadı.',
+  modal_icon_catalog_loading: 'Marka simgeleri yükleniyor...',
+  modal_icon_favicon_permission: 'Site simgeleri için bir defalık tarayıcı izni gerekir.',
+  modal_icon_favicon_enable: 'Site simgelerini etkinleştir',
 
   /* Context menu */
   context_edit: 'Düzenle',
@@ -137,6 +147,13 @@ const tr = {
   settings_show_clock: 'Saati göster',
   settings_show_search: 'Arama çubuğunu göster',
   settings_show_memory: 'Bellek durumunu göster',
+  settings_site_icons: 'Site Simgeleri',
+  settings_site_icons_description:
+    'Tabibe’nin Chrome tarafından bilinen simgeleri kullanmasına izin verin. Sayfa adresleri harici bir simge servisine gönderilmez.',
+  settings_site_icons_enable: 'Site simgelerini etkinleştir',
+  settings_site_icons_enabled: 'Site simgeleri etkin.',
+  settings_site_icons_denied:
+    'İzin verilmedi. Marka simgeleri ve harfler kullanılmaya devam edecek.',
 
   settings_background: 'Arka Plan',
   settings_bg_light_colors: 'Açık renkler',

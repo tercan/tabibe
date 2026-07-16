@@ -111,6 +111,16 @@ const es = {
   modal_preview_title: 'Vista previa',
   modal_preview_empty_name: 'Nombre del sitio',
   modal_preview_empty_url: 'Vista previa de URL',
+  modal_icon_label: 'Icono',
+  modal_icon_auto: 'Automático',
+  modal_icon_brand: 'Marca',
+  modal_icon_favicon: 'Sitio',
+  modal_icon_monogram: 'Letra',
+  modal_icon_brand_search: 'Buscar marcas',
+  modal_icon_brand_empty: 'No se encontró un icono de marca coincidente.',
+  modal_icon_catalog_loading: 'Cargando iconos de marca...',
+  modal_icon_favicon_permission: 'Los iconos del sitio requieren un permiso único del navegador.',
+  modal_icon_favicon_enable: 'Activar iconos del sitio',
 
   /* Context menu */
   context_edit: 'Editar',
@@ -141,6 +151,13 @@ const es = {
   settings_show_clock: 'Mostrar reloj',
   settings_show_search: 'Mostrar barra de búsqueda',
   settings_show_memory: 'Mostrar estado de memoria',
+  settings_site_icons: 'Iconos del sitio',
+  settings_site_icons_description:
+    'Permite que Tabibe use iconos conocidos por Chrome. Las direcciones no se envían a un servicio externo.',
+  settings_site_icons_enable: 'Activar iconos del sitio',
+  settings_site_icons_enabled: 'Los iconos del sitio están activados.',
+  settings_site_icons_denied:
+    'No se concedió el permiso. Seguirán disponibles las marcas y letras.',
 
   /* Background */
   settings_background: 'Fondo',

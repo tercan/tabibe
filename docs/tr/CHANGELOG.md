@@ -6,6 +6,25 @@ Bu dosya, projede yapılan tüm önemli değişiklikleri belgelemektedir.
 Format [Keep a Changelog](https://keepachangelog.com/tr/1.0.0/) standardına dayanmaktadır.
 Versiyon numaralandırması [Semantic Versioning](https://semver.org/lang/tr/) prensiplerine uymaktadır.
 
+## [0.4.0] - 2026-07-17 02:39
+
+### Added
+
+- Aranabilir marka seçimi ve paketlenmiş lisans bildirimleriyle sabitlenmiş yerel Simple Icons 16.26.0 kataloğu eklendi
+- Yalnızca kullanıcının açık eylemiyle istenen isteğe bağlı Chrome favicon desteği eklendi
+- Kayıtlı her sitenin çevrimdışı durumda görünür fallback'e sahip olması için deterministik yerel monogramlar eklendi
+- Site formuna canlı önizlemeli otomatik, marka, site ve harf simge tercihleri eklendi
+
+### Changed
+
+- Eski simge adı alanı, yapılandırılmış simge tercih modeli ve otomatik migration ile değiştirildi
+- Çalışma zamanındaki Iconify, Simple Icons CDN ve Google S2 simge istekleri yerel varlıklar ve Chrome'un yerleşik favicon sağlayıcısıyla değiştirildi
+
+### Fixed
+
+- Simple Icons eşleşmesi bulunmadığında veya görsel isteği hata verdiğinde, zaman aşımına uğradığında ya da çevrimdışı olduğunda site simgesinin kaybolması düzeltildi
+- Önbellekli yerel SVG yüklemesinin state eşitlemesinden önce tamamlanması nedeniyle monogram fallback'inde kalması düzeltildi
+
 ## [0.3.1] - 2026-07-17 02:17
 
 ### Added

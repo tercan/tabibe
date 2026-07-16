@@ -108,6 +108,16 @@ const ru = {
   modal_preview_title: 'Предпросмотр',
   modal_preview_empty_name: 'Название сайта',
   modal_preview_empty_url: 'Предпросмотр URL',
+  modal_icon_label: 'Значок',
+  modal_icon_auto: 'Автоматически',
+  modal_icon_brand: 'Бренд',
+  modal_icon_favicon: 'Сайт',
+  modal_icon_monogram: 'Буква',
+  modal_icon_brand_search: 'Поиск брендов',
+  modal_icon_brand_empty: 'Подходящий значок бренда не найден.',
+  modal_icon_catalog_loading: 'Загрузка значков брендов...',
+  modal_icon_favicon_permission: 'Для значков сайтов требуется однократное разрешение браузера.',
+  modal_icon_favicon_enable: 'Включить значки сайтов',
 
   /* Context menu */
   context_edit: 'Редактировать',
@@ -138,6 +148,13 @@ const ru = {
   settings_show_clock: 'Показать часы',
   settings_show_search: 'Показать строку поиска',
   settings_show_memory: 'Показать состояние памяти',
+  settings_site_icons: 'Значки сайтов',
+  settings_site_icons_description:
+    'Разрешите Tabibe использовать значки, известные Chrome. Адреса не отправляются внешнему сервису.',
+  settings_site_icons_enable: 'Включить значки сайтов',
+  settings_site_icons_enabled: 'Значки сайтов включены.',
+  settings_site_icons_denied:
+    'Разрешение не предоставлено. Значки брендов и буквы останутся доступны.',
 
   /* Background */
   settings_background: 'Фон',

@@ -1,9 +1,11 @@
 {
   "name": "tabibe",
   "private": true,
-  "version": "0.3.1",
+  "version": "0.4.0",
   "type": "module",
   "scripts": {
+    "prepare:icons": "node scripts/build-brand-icons.mjs",
+    "predev": "npm run prepare:icons",
     "dev": "vite",
     "lint": "eslint .",
     "lint:css": "stylelint \"src/**/*.css\"",
@@ -13,6 +15,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
+    "prebuild": "npm run prepare:icons",
     "build": "vite build",
     "preview": "vite preview",
     "audit": "npm audit --audit-level=high",
