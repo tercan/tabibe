@@ -57,7 +57,28 @@ function useFaviconPermission() {
     });
   }, [supported]);
 
-  return { supported, hasPermission, requestState, requestPermission, refresh };
+  const revokePermission = useCallback(async () => {
+    if (!supported || !globalThis.chrome?.permissions?.remove) return false;
+    setRequestState('revoking');
+
+    return new Promise((resolve) => {
+      chrome.permissions.remove(FAVICON_PERMISSION, (removed) => {
+        const revoked = !chrome.runtime.lastError && Boolean(removed);
+        if (revoked) setHasPermission(false);
+        setRequestState(revoked ? 'revoked' : 'granted');
+        resolve(revoked);
+      });
+    });
+  }, [supported]);
+
+  return {
+    supported,
+    hasPermission,
+    requestState,
+    requestPermission,
+    revokePermission,
+    refresh,
+  };
 }
 
 export { FAVICON_PERMISSION, supportsFaviconPermission };

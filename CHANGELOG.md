@@ -6,6 +6,29 @@ This file documents all notable changes in the project.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.4.1] - 2026-07-17 02:53
+
+### Added
+
+- Added English and Turkish privacy policies that document local data handling, network behavior, and optional permissions
+- Added automated theme contrast, keyboard focus, target size, reduced-motion, CSP, and permission-scope checks
+
+### Changed
+
+- Made optional favicon and system memory permissions revocable from the controls that enable them
+- Expanded reduced-motion handling to CSS transitions, keyframes, and drag-and-drop move effects
+- Hardened extension packaging against hidden files, source maps, credentials, archives, source directories, and symbolic links
+
+### Fixed
+
+- Updated light and dark theme tokens to meet WCAG 2.2 AA text, control, and focus contrast thresholds across every background preset
+- Restored visible focus indicators and increased compact controls and settings links to a minimum 24 CSS pixel target
+
+### Security
+
+- Removed the unnecessary required `tabs` permission while retaining tested Tabs API navigation behavior
+- Added an explicit extension-page CSP limited to local scripts, assets, images, and connections
+
 ## [0.4.0] - 2026-07-17 02:39
 
 ### Added

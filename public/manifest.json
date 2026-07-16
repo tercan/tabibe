@@ -1,14 +1,17 @@
 {
   "manifest_version": 3,
   "name": "__MSG_extension_name__",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "__MSG_extension_description__",
   "default_locale": "en",
   "chrome_url_overrides": {
     "newtab": "index.html"
   },
-  "permissions": ["storage", "tabs"],
+  "permissions": ["storage"],
   "optional_permissions": ["system.memory", "favicon"],
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'; script-src 'self'; object-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'"
+  },
   "icons": {
     "16": "icons/icon-16.png",
     "48": "icons/icon-48.png",

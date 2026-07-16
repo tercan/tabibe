@@ -125,6 +125,17 @@ function App() {
       return;
     }
 
+    if (showMemory && globalThis.chrome?.permissions?.remove) {
+      chrome.permissions.remove({ permissions: ['system.memory'] }, () => {
+        if (chrome.runtime.lastError) {
+          setStorageError(true);
+          return;
+        }
+        updateSettings({ showMemory: false });
+      });
+      return;
+    }
+
     updateSettings({ showMemory: !showMemory });
   }
 
@@ -136,6 +147,12 @@ function App() {
     const granted = await faviconPermission.requestPermission();
     if (granted) await updateSettings({ faviconFallback: true });
     return granted;
+  }
+
+  async function handleRevokeFaviconPermission() {
+    const revoked = await faviconPermission.revokePermission();
+    if (revoked) await updateSettings({ faviconFallback: false });
+    return revoked;
   }
 
   function handleChangeBackgroundColor(color, nextTheme) {
@@ -216,6 +233,7 @@ function App() {
         on_toggle_memory={handleToggleMemory}
         favicon_permission={faviconPermission}
         on_request_favicon_permission={handleRequestFaviconPermission}
+        on_revoke_favicon_permission={handleRevokeFaviconPermission}
         bg_color={backgroundColor}
         bg_image={backgroundImage}
         on_change_bg_color={handleChangeBackgroundColor}

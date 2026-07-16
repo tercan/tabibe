@@ -151,7 +151,9 @@ const bn = {
   settings_site_icons_description:
     'Tabibe-কে Chrome-এর পরিচিত আইকন ব্যবহার করতে দিন। ঠিকানা বাইরের সেবায় পাঠানো হয় না।',
   settings_site_icons_enable: 'সাইট আইকন চালু করুন',
+  settings_site_icons_disable: 'সাইট আইকন বন্ধ করুন',
   settings_site_icons_enabled: 'সাইট আইকন চালু আছে।',
+  settings_site_icons_disabled: 'সাইট আইকন বন্ধ আছে।',
   settings_site_icons_denied: 'অনুমতি দেওয়া হয়নি। ব্র্যান্ড আইকন ও অক্ষর ব্যবহার করা যাবে।',
 
   /* Background */

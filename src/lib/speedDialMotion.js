@@ -2,6 +2,10 @@ const MOVE_DURATION = 520;
 const ENTER_EXIT_DURATION = 220;
 const MOVE_EASING = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
+function shouldReduceMotion() {
+  return Boolean(globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
+}
+
 function getDelta(oldCoords, newCoords) {
   return {
     x: oldCoords.left - newCoords.left,
@@ -17,6 +21,8 @@ function createNoopEffect(element) {
 }
 
 function speedDialMoveAnimation(element, action, oldCoords, newCoords) {
+  if (shouldReduceMotion()) return createNoopEffect(element);
+
   if (action === 'remain' && oldCoords && newCoords) {
     const delta = getDelta(oldCoords, newCoords);
 
@@ -76,4 +82,5 @@ function speedDialMoveAnimation(element, action, oldCoords, newCoords) {
   return createNoopEffect(element);
 }
 
+export { shouldReduceMotion };
 export default speedDialMoveAnimation;

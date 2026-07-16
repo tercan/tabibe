@@ -152,7 +152,9 @@ const ru = {
   settings_site_icons_description:
     'Разрешите Tabibe использовать значки, известные Chrome. Адреса не отправляются внешнему сервису.',
   settings_site_icons_enable: 'Включить значки сайтов',
+  settings_site_icons_disable: 'Отключить значки сайтов',
   settings_site_icons_enabled: 'Значки сайтов включены.',
+  settings_site_icons_disabled: 'Значки сайтов отключены.',
   settings_site_icons_denied:
     'Разрешение не предоставлено. Значки брендов и буквы останутся доступны.',
 

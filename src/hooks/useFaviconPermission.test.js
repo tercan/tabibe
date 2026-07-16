@@ -12,6 +12,7 @@ beforeEach(() => {
     permissions: {
       contains: vi.fn((_permission, callback) => callback(false)),
       request: vi.fn((_permission, callback) => callback(true)),
+      remove: vi.fn((_permission, callback) => callback(true)),
       onAdded: createEvent(),
       onRemoved: createEvent(),
     },
@@ -44,5 +45,33 @@ describe('useFaviconPermission', () => {
     );
     expect(result.current.hasPermission).toBe(true);
     expect(result.current.requestState).toBe('granted');
+  });
+
+  it('reports a denied permission request without enabling favicons', async () => {
+    chrome.permissions.request.mockImplementationOnce((_permission, callback) => callback(false));
+    const { result } = renderHook(() => useFaviconPermission());
+
+    await act(async () => {
+      expect(await result.current.requestPermission()).toBe(false);
+    });
+
+    expect(result.current.hasPermission).toBe(false);
+    expect(result.current.requestState).toBe('denied');
+  });
+
+  it('revokes an optional permission through the exposed user action', async () => {
+    const { result } = renderHook(() => useFaviconPermission());
+
+    await act(async () => {
+      expect(await result.current.requestPermission()).toBe(true);
+      expect(await result.current.revokePermission()).toBe(true);
+    });
+
+    expect(chrome.permissions.remove).toHaveBeenCalledWith(
+      { permissions: ['favicon'] },
+      expect.any(Function),
+    );
+    expect(result.current.hasPermission).toBe(false);
+    expect(result.current.requestState).toBe('revoked');
   });
 });

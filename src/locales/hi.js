@@ -152,7 +152,9 @@ const hi = {
   settings_site_icons_description:
     'Tabibe को Chrome के ज्ञात आइकन उपयोग करने दें। पते किसी बाहरी सेवा को नहीं भेजे जाते।',
   settings_site_icons_enable: 'साइट आइकन चालू करें',
+  settings_site_icons_disable: 'साइट आइकन बंद करें',
   settings_site_icons_enabled: 'साइट आइकन चालू हैं।',
+  settings_site_icons_disabled: 'साइट आइकन बंद हैं।',
   settings_site_icons_denied: 'अनुमति नहीं मिली। ब्रांड आइकन और अक्षर उपलब्ध रहेंगे।',
 
   /* Background */

@@ -4,7 +4,7 @@ Dil: [English](../../README.md) | Türkçe
 
 Chromium tabanlı tarayıcılar için modern, minimalist ve yüksek performanslı yeni sekme (new tab) açılış sayfası eklentisi.
 
-**Güncel sürüm:** `0.4.0`
+**Güncel sürüm:** `0.4.1`
 
 ## Hakkında
 
@@ -28,6 +28,7 @@ Tabibe, yeni sekme deneyimini kişisel bir kontrol ve üretkenlik alanına dön�
 - Yerel arka plan görseli yükleme
 - Sabitlenmiş yerel Simple Icons kataloğu, isteğe bağlı Chrome favicon'ları ve her zaman kullanılabilen monogram fallback'i ile dayanıklı site simgeleri
 - Otomatik, marka, site ve harf modlarını sunan aranabilir simge seçici
+- WCAG odaklı kontrast, görünür klavye odağı, reduced-motion desteği ve minimum hedef boyutları
 - Tüm uygulama verileri için JSON import/export desteği (siteler, klasörler, ayarlar ve çoklu notlar dahil)
 - 10 arayüz dili desteği: Türkçe, English, Español, Português, Русский, العربية, हिन्दी, বাংলা, 中文, 日本語
 - Günlük alıntı sözler: Türkçe ve İngilizce havuz; diğer arayüz dillerinde İngilizce fallback kullanılır
@@ -52,6 +53,8 @@ Tabibe, yeni sekme deneyimini kişisel bir kontrol ve üretkenlik alanına dön�
 Tabibe verileri kullanıcının tarayıcısında saklar. Siteler, klasörler, notlar, ayarlar ve arka plan tercihleri `chrome.storage.local` tabanlı sürümlenmiş veri katmanı veya yerel geliştirme ortamında `localStorage` üzerinden yönetilir. İçe/dışa aktarma işlemleri önizleme, doğrulama, geri dönüş ve geri alma desteğiyle yerel JSON dosyaları üzerinden yapılır.
 
 Marka simgeleri eklenti içinde yerel olarak paketlenir ve üçüncü taraf simge servisi gerektirmez. Chrome favicon sağlayıcısı yalnızca kullanıcının açık izniyle etkinleştirilir; marka veya favicon çözümlenemediğinde yerel monogram her zaman kullanılabilir.
+
+Tabibe analiz, reklam, telemetri veya uzak uygulama sunucusu içermez. İzinler ve veri işleme ayrıntıları için [Gizlilik Politikası](../privacy-policy.tr.md) belgesine bakabilirsiniz.
 
 ## Geliştirme
 

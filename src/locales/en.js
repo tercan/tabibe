@@ -153,7 +153,9 @@ const en = {
   settings_site_icons_description:
     'Allow Tabibe to use icons already known by Chrome. Page addresses are not sent to an external icon service.',
   settings_site_icons_enable: 'Enable site icons',
+  settings_site_icons_disable: 'Disable site icons',
   settings_site_icons_enabled: 'Site icons are enabled.',
+  settings_site_icons_disabled: 'Site icons are disabled.',
   settings_site_icons_denied:
     'Permission was not granted. Brand icons and letters will remain available.',
 

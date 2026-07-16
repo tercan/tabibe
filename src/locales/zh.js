@@ -151,7 +151,9 @@ const zh = {
   settings_site_icons_description:
     '允许 Tabibe 使用 Chrome 已知的图标。页面地址不会发送到外部图标服务。',
   settings_site_icons_enable: '启用网站图标',
+  settings_site_icons_disable: '停用网站图标',
   settings_site_icons_enabled: '网站图标已启用。',
+  settings_site_icons_disabled: '网站图标已停用。',
   settings_site_icons_denied: '未授予权限。品牌图标和字母仍可使用。',
 
   /* Background */

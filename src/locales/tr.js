@@ -151,7 +151,9 @@ const tr = {
   settings_site_icons_description:
     'Tabibe’nin Chrome tarafından bilinen simgeleri kullanmasına izin verin. Sayfa adresleri harici bir simge servisine gönderilmez.',
   settings_site_icons_enable: 'Site simgelerini etkinleştir',
+  settings_site_icons_disable: 'Site simgelerini devre dışı bırak',
   settings_site_icons_enabled: 'Site simgeleri etkin.',
+  settings_site_icons_disabled: 'Site simgeleri devre dışı bırakıldı.',
   settings_site_icons_denied:
     'İzin verilmedi. Marka simgeleri ve harfler kullanılmaya devam edecek.',
 

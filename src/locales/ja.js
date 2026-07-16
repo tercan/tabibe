@@ -152,7 +152,9 @@ const ja = {
   settings_site_icons_description:
     'Chrome が認識しているアイコンを Tabibe で使用します。アドレスは外部サービスへ送信されません。',
   settings_site_icons_enable: 'サイトアイコンを有効にする',
+  settings_site_icons_disable: 'サイトアイコンを無効にする',
   settings_site_icons_enabled: 'サイトアイコンは有効です。',
+  settings_site_icons_disabled: 'サイトアイコンは無効です。',
   settings_site_icons_denied:
     '権限が許可されませんでした。ブランドアイコンと文字は引き続き使用できます。',
 

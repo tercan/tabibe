@@ -155,7 +155,9 @@ const es = {
   settings_site_icons_description:
     'Permite que Tabibe use iconos conocidos por Chrome. Las direcciones no se envían a un servicio externo.',
   settings_site_icons_enable: 'Activar iconos del sitio',
+  settings_site_icons_disable: 'Desactivar iconos del sitio',
   settings_site_icons_enabled: 'Los iconos del sitio están activados.',
+  settings_site_icons_disabled: 'Los iconos del sitio están desactivados.',
   settings_site_icons_denied:
     'No se concedió el permiso. Seguirán disponibles las marcas y letras.',
 

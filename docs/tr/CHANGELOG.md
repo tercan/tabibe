@@ -6,6 +6,29 @@ Bu dosya, projede yapılan tüm önemli değişiklikleri belgelemektedir.
 Format [Keep a Changelog](https://keepachangelog.com/tr/1.0.0/) standardına dayanmaktadır.
 Versiyon numaralandırması [Semantic Versioning](https://semver.org/lang/tr/) prensiplerine uymaktadır.
 
+## [0.4.1] - 2026-07-17 02:53
+
+### Added
+
+- Yerel veri işleme, ağ davranışı ve isteğe bağlı izinleri açıklayan İngilizce ve Türkçe gizlilik politikaları eklendi
+- Otomatik tema kontrastı, klavye odağı, hedef boyutu, reduced-motion, CSP ve izin kapsamı kontrolleri eklendi
+
+### Changed
+
+- İsteğe bağlı favicon ve sistem belleği izinleri, bu özellikleri etkinleştiren kontroller üzerinden geri alınabilir hale getirildi
+- Reduced-motion davranışı CSS geçişlerini, keyframe'leri ve sürükle-bırak taşıma efektlerini kapsayacak şekilde genişletildi
+- Eklenti paketi gizli dosyalara, source map'lere, kimlik bilgilerine, arşivlere, kaynak klasörlerine ve sembolik bağlantılara karşı sertleştirildi
+
+### Fixed
+
+- Açık ve koyu tema tokenları, bütün arka plan presetlerinde WCAG 2.2 AA metin, kontrol ve odak kontrastı eşiklerini karşılayacak şekilde güncellendi
+- Görünür odak göstergeleri geri getirildi; kompakt kontroller ve ayar bağlantıları en az 24 CSS piksel hedefe çıkarıldı
+
+### Security
+
+- Gereksiz zorunlu `tabs` izni kaldırılırken Tabs API gezinme davranışı gerçek uzantı profilinde doğrulandı
+- Uzantı sayfaları için yerel script, varlık, görsel ve bağlantılarla sınırlı açık CSP eklendi
+
 ## [0.4.0] - 2026-07-17 02:39
 
 ### Added

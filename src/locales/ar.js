@@ -151,7 +151,9 @@ const ar = {
   settings_site_icons_description:
     'اسمح لـ Tabibe باستخدام الأيقونات المعروفة لدى Chrome. لا تُرسل العناوين إلى خدمة خارجية.',
   settings_site_icons_enable: 'تفعيل أيقونات المواقع',
+  settings_site_icons_disable: 'تعطيل أيقونات المواقع',
   settings_site_icons_enabled: 'أيقونات المواقع مفعلة.',
+  settings_site_icons_disabled: 'تم تعطيل أيقونات المواقع.',
   settings_site_icons_denied: 'لم يُمنح الإذن. ستظل أيقونات العلامات والحروف متاحة.',
 
   /* Background */

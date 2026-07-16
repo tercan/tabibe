@@ -6,16 +6,31 @@ const packageJson = JSON.parse(await readFile(resolve('package.json'), 'utf8'));
 const distDirectory = resolve('dist');
 const releaseDirectory = resolve('release');
 const archivePath = join(releaseDirectory, `tabibe-v${packageJson.version}.zip`);
-const forbiddenNames = new Set(['.DS_Store']);
-const forbiddenExtensions = new Set(['.map', '.pem', '.crx']);
+const forbiddenNames = new Set(['.DS_Store', '.env', 'Thumbs.db']);
+const forbiddenDirectories = new Set([
+  '.git',
+  '.github',
+  'documents',
+  'node_modules',
+  'src',
+  'test-results',
+  'tests',
+]);
+const forbiddenExtensions = new Set(['.crx', '.key', '.map', '.p12', '.pem', '.pfx', '.zip']);
 
 async function validateDirectory(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
 
   for (const entry of entries) {
     const path = join(directory, entry.name);
+    if (entry.isSymbolicLink()) {
+      throw new Error(
+        `Symbolic links are not allowed in the package: ${relative(distDirectory, path)}`,
+      );
+    }
     if (
       forbiddenNames.has(entry.name) ||
+      (entry.isDirectory() && forbiddenDirectories.has(entry.name)) ||
       forbiddenExtensions.has(entry.name.slice(entry.name.lastIndexOf('.')))
     ) {
       throw new Error(`Forbidden package file: ${relative(distDirectory, path)}`);
