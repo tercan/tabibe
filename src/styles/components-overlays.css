@@ -239,8 +239,8 @@
 
 .modal-input:focus {
   border-color: var(--color-primary);
-  outline: 0.125rem solid var(--color-focus);
-  outline-offset: 0.125rem;
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .modal-select {

@@ -367,7 +367,11 @@ function Folder({
               strokeLinejoin="round"
               aria-hidden="true"
             >
-              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+              <path
+                d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
+                fill="currentColor"
+                fillOpacity="0.14"
+              />
               {folder.children && folder.children.length > 0 && (
                 <>
                   <line x1="7" y1="11" x2="17" y2="11" opacity="0.3" />
@@ -375,6 +379,9 @@ function Folder({
                 </>
               )}
             </svg>
+            <span className="speed-dial-folder-count" aria-hidden="true">
+              {folder.children?.length || 0}
+            </span>
           </div>
           <span className="speed-dial-label">{folder.name}</span>
         </div>

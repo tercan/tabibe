@@ -18,6 +18,11 @@
   --color-background: #f8f9fa;
   --color-surface: #ffffff;
   --color-surface-hover: #f1f3f5;
+  --color-folder-surface: #f6f0dc;
+  --color-folder-surface-hover: #eee4c7;
+  --color-folder-border: #aa9257;
+  --color-folder-icon: #75613a;
+  --color-folder-badge-text: #ffffff;
   --color-clock-surface: rgba(255, 255, 255, 0.88);
   --color-clock-border: rgba(222, 226, 230, 0.9);
   --color-note-confirm-overlay: rgba(0, 0, 0, 0.35);
@@ -67,6 +72,8 @@
   --border-radius: 0.125rem;
   --border-width: 0.0625rem;
   --border-color: var(--color-border);
+  --focus-ring-width: 0.1875rem;
+  --focus-ring-offset: 0.125rem;
 
   /* Shadows */
   --shadow-sm: 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.05);
@@ -94,6 +101,9 @@
   /* Layout */
   --container-max-width: 75rem;
   --container-padding: var(--space-md);
+  --speed-dial-icon-wrapper-size: 4.25rem;
+  --speed-dial-icon-wrapper-padding: 0.75rem;
+  --speed-dial-site-icon-size: 2.125rem;
 }
 
 /**
@@ -115,6 +125,11 @@
   --color-background: #181828;
   --color-surface: #212133;
   --color-surface-hover: #2a2a44;
+  --color-folder-surface: #302e27;
+  --color-folder-surface-hover: #3a362b;
+  --color-folder-border: #8a7851;
+  --color-folder-icon: #d1bd84;
+  --color-folder-badge-text: #181828;
   --color-clock-surface: rgba(33, 33, 51, 0.88);
   --color-clock-border: rgba(45, 45, 61, 0.9);
   --color-note-confirm-overlay: rgba(0, 0, 0, 0.5);

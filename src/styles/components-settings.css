@@ -144,8 +144,8 @@
 .settings-radio-modern:focus-within,
 .settings-toggle:focus-within,
 .settings-bg-upload:focus-within {
-  outline: 0.125rem solid var(--color-focus);
-  outline-offset: 0.125rem;
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .settings-radio-modern input {
@@ -309,8 +309,8 @@
 }
 
 .settings-bg-swatch:focus-visible {
-  outline: 0.125rem solid var(--color-focus);
-  outline-offset: 0.125rem;
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .settings-bg-swatch--active {

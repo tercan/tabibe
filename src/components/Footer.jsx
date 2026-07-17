@@ -103,8 +103,14 @@ function NoteIcon() {
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      <path d="M12 20h9" />
-      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+      <rect x="4" y="2" width="16" height="20" rx="2" />
+      <path d="M2 6h4" />
+      <path d="M2 10h4" />
+      <path d="M2 14h4" />
+      <path d="M2 18h4" />
+      <path d="M9 8h6" />
+      <path d="M9 12h7" />
+      <path d="M9 16h5" />
     </svg>
   );
 }

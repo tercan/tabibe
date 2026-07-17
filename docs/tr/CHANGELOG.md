@@ -6,6 +6,21 @@ Bu dosya, projede yapılan tüm önemli değişiklikleri belgelemektedir.
 Format [Keep a Changelog](https://keepachangelog.com/tr/1.0.0/) standardına dayanmaktadır.
 Versiyon numaralandırması [Semantic Versioning](https://semver.org/lang/tr/) prensiplerine uymaktadır.
 
+## [1.0.1] - 2026-07-17 23:28
+
+### Added
+
+- Öğe sayısını gösteren ayrı klasör yüzeyleri ve Notlarım için özel not defteri simgesi eklendi
+
+### Changed
+
+- Hızlı erişim simgeleri küçültüldü, klasör renkleri yumuşatıldı ve etkileşimli yüzeylerdeki focus göstergeleri güçlendirildi
+
+### Fixed
+
+- Monogram fallback'lerinin yüklenen marka ve favicon görsellerinin altında görünür kalması engellendi
+- Başarıyla yüklenen faviconların fallback zaman aşımı iptal edilerek görünür kalması sağlandı
+
 ## [1.0.0] - 2026-07-17 04:16
 
 ### Added

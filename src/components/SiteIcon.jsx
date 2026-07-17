@@ -3,6 +3,12 @@ import { getMonogram, getMonogramColor, resolveIconCandidates } from '../lib/ico
 
 const FAVICON_TIMEOUT = 2000;
 
+function clearFaviconTimeout(timeoutRef) {
+  if (timeoutRef.current === null) return;
+  clearTimeout(timeoutRef.current);
+  timeoutRef.current = null;
+}
+
 function SiteIcon({
   site,
   catalog,
@@ -19,6 +25,7 @@ function SiteIcon({
   const [candidateIndex, setCandidateIndex] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const imageRef = useRef(null);
+  const faviconTimeoutRef = useRef(null);
   const candidate = candidates[candidateIndex] || candidates.at(-1);
   const isMonogram = candidate?.type === 'monogram';
   const isMask = candidate?.type === 'brand' && candidate.variant === 'monochrome';
@@ -33,21 +40,33 @@ function SiteIcon({
   }, [resetKey]);
 
   useEffect(() => {
+    clearFaviconTimeout(faviconTimeoutRef);
     setIsLoaded(false);
     const image = imageRef.current;
     if (image?.complete) {
-      if (image.naturalWidth > 0) setIsLoaded(true);
-      else setCandidateIndex((currentIndex) => Math.min(currentIndex + 1, candidates.length - 1));
+      if (image.naturalWidth > 0) {
+        setIsLoaded(true);
+      } else {
+        setCandidateIndex((currentIndex) => Math.min(currentIndex + 1, candidates.length - 1));
+      }
+      return undefined;
     }
     if (candidate?.type !== 'favicon') return undefined;
 
-    const timeout = setTimeout(() => {
+    faviconTimeoutRef.current = setTimeout(() => {
+      faviconTimeoutRef.current = null;
       setCandidateIndex((currentIndex) => Math.min(currentIndex + 1, candidates.length - 1));
     }, FAVICON_TIMEOUT);
-    return () => clearTimeout(timeout);
+    return () => clearFaviconTimeout(faviconTimeoutRef);
   }, [candidate?.src, candidate?.type, candidates.length, resetKey]);
 
+  function handleLoad() {
+    clearFaviconTimeout(faviconTimeoutRef);
+    setIsLoaded(true);
+  }
+
   function handleError() {
+    clearFaviconTimeout(faviconTimeoutRef);
     setIsLoaded(false);
     setCandidateIndex((currentIndex) => Math.min(currentIndex + 1, candidates.length - 1));
   }
@@ -59,12 +78,14 @@ function SiteIcon({
       data-icon-candidate={candidate?.type || 'monogram'}
       aria-hidden="true"
     >
-      <span
-        className={`site-icon-monogram site-icon-monogram--${monogramVariant}`}
-        style={monogramStyle}
-      >
-        {getMonogram(site)}
-      </span>
+      {visibleSource === 'monogram' && (
+        <span
+          className={`site-icon-monogram site-icon-monogram--${monogramVariant}`}
+          style={monogramStyle}
+        >
+          {getMonogram(site)}
+        </span>
+      )}
       {isMask && (
         <span
           className="site-icon-layer site-icon-brand-mask"
@@ -82,7 +103,7 @@ function SiteIcon({
           height="48"
           loading={eager ? 'eager' : 'lazy'}
           decoding="async"
-          onLoad={() => setIsLoaded(true)}
+          onLoad={handleLoad}
           onError={handleError}
         />
       )}

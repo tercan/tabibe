@@ -6,6 +6,21 @@ This file documents all notable changes in the project.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Versioning follows [Semantic Versioning](https://semver.org/).
 
+## [1.0.1] - 2026-07-17 23:28
+
+### Added
+
+- Added distinct folder surfaces with item counts and a dedicated notebook icon for My Notes
+
+### Changed
+
+- Reduced quick-access icon sizing, softened folder colors, and strengthened focus indicators across interactive surfaces
+
+### Fixed
+
+- Prevented monogram fallbacks from remaining underneath loaded brand and favicon images
+- Kept successfully loaded favicons visible by cancelling their fallback timeout
+
 ## [1.0.0] - 2026-07-17 04:16
 
 ### Added

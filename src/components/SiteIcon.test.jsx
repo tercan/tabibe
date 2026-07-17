@@ -35,6 +35,7 @@ describe('SiteIcon', () => {
 
     expect(container.querySelector('.site-icon')).toHaveAttribute('data-icon-source', 'brand');
     expect(container.querySelector('.site-icon-brand-mask')).toBeInTheDocument();
+    expect(screen.queryByText('G')).not.toBeInTheDocument();
   });
 
   it('keeps the monogram visible until a favicon loads', () => {
@@ -52,9 +53,36 @@ describe('SiteIcon', () => {
 
     const icon = container.querySelector('.site-icon');
     expect(icon).toHaveAttribute('data-icon-source', 'monogram');
+    expect(screen.getByText('E')).toBeInTheDocument();
     fireEvent.load(container.querySelector('img'));
     expect(icon).toHaveAttribute('data-icon-source', 'favicon');
-    expect(screen.getByText('E')).toBeInTheDocument();
+    expect(screen.queryByText('E')).not.toBeInTheDocument();
+  });
+
+  it('keeps a loaded favicon visible after the fallback timeout', async () => {
+    vi.useFakeTimers();
+    const { container } = render(
+      <SiteIcon
+        site={{
+          name: 'Example',
+          url: 'https://example.com',
+          icon: { preference: 'favicon', slug: null },
+        }}
+        catalog={catalog}
+        hasFaviconPermission
+      />,
+    );
+
+    const icon = container.querySelector('.site-icon');
+    fireEvent.load(container.querySelector('img'));
+    expect(icon).toHaveAttribute('data-icon-candidate', 'favicon');
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(2000);
+    });
+
+    expect(icon).toHaveAttribute('data-icon-source', 'favicon');
+    expect(icon).toHaveAttribute('data-icon-candidate', 'favicon');
   });
 
   it('falls back to a monogram when the favicon fails', () => {
@@ -75,6 +103,7 @@ describe('SiteIcon', () => {
       'data-icon-candidate',
       'monogram',
     );
+    expect(screen.getByText('E')).toBeInTheDocument();
   });
 
   it('advances after the favicon timeout', async () => {

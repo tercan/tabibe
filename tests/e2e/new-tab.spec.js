@@ -93,6 +93,12 @@ test('renders the unpacked new-tab experience without critical accessibility vio
     await expect(page.locator('.site-icon')).toHaveCount(18);
     await expect(page.locator('.site-icon[data-icon-source="brand"]')).toHaveCount(16);
     await expect(page.locator('.site-icon[data-icon-source="monogram"]')).toHaveCount(2);
+    expect(
+      await page
+        .locator('.site-icon')
+        .first()
+        .evaluate((element) => getComputedStyle(element).width),
+    ).toBe('34px');
     expect(thirdPartyIconRequests).toEqual([]);
 
     const reducedMotionDuration = await page
@@ -203,7 +209,17 @@ test('renders the unpacked new-tab experience without critical accessibility vio
     await page.locator('.speed-dial-toolbar-button').nth(1).click();
     await page.locator('#site-name').fill('RTL Folder');
     await page.locator('.modal-button--save').click();
-    await page.getByRole('button', { name: 'RTL Folder', exact: true }).click();
+    const rtlFolderButton = page.getByRole('button', { name: 'RTL Folder', exact: true });
+    await expect(rtlFolderButton.locator('.speed-dial-folder-count')).toHaveText('0');
+    const folderSurface = await rtlFolderButton
+      .locator('.speed-dial-icon--folder')
+      .evaluate((element) => getComputedStyle(element).backgroundColor);
+    const siteSurface = await page
+      .locator('.speed-dial-icon-wrapper:not(.speed-dial-icon--folder)')
+      .first()
+      .evaluate((element) => getComputedStyle(element).backgroundColor);
+    expect(folderSurface).not.toBe(siteSurface);
+    await rtlFolderButton.click();
     expect(
       await page
         .locator('.folder-modal')

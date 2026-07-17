@@ -17,6 +17,22 @@ const forbiddenDirectories = new Set([
   'tests',
 ]);
 const forbiddenExtensions = new Set(['.crx', '.key', '.map', '.p12', '.pem', '.pfx', '.zip']);
+const removableMetadataNames = new Set(['.DS_Store', 'Thumbs.db']);
+
+async function removeMetadataFiles(directory) {
+  const entries = await readdir(directory, { withFileTypes: true });
+
+  await Promise.all(
+    entries.map(async (entry) => {
+      const path = join(directory, entry.name);
+      if (removableMetadataNames.has(entry.name)) {
+        await rm(path, { force: true });
+        return;
+      }
+      if (entry.isDirectory()) await removeMetadataFiles(path);
+    }),
+  );
+}
 
 async function validateDirectory(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -39,6 +55,7 @@ async function validateDirectory(directory) {
   }
 }
 
+await removeMetadataFiles(distDirectory);
 await validateDirectory(distDirectory);
 const manifest = JSON.parse(await readFile(join(distDirectory, 'manifest.json'), 'utf8'));
 if (manifest.version !== packageJson.version) {

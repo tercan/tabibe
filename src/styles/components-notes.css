@@ -75,8 +75,8 @@
 .note-panel-button:focus-visible {
   background-color: var(--color-surface-hover);
   color: var(--color-text);
-  outline: 0.125rem solid var(--color-focus);
-  outline-offset: 0.125rem;
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .note-panel-button--active {
@@ -124,8 +124,8 @@
 .note-panel-search:focus,
 .note-title-input:focus {
   border-color: var(--color-primary);
-  outline: 0.125rem solid var(--color-focus);
-  outline-offset: 0.125rem;
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .note-panel-tabs {
@@ -221,8 +221,8 @@
 .note-list-item:hover,
 .note-list-item:focus-visible {
   background-color: var(--color-surface-hover);
-  outline: 0.125rem solid var(--color-focus);
-  outline-offset: 0.125rem;
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .note-list-title {
@@ -294,8 +294,8 @@
 
 .note-panel-textarea:focus {
   border-color: var(--color-primary);
-  outline: 0.125rem solid var(--color-focus);
-  outline-offset: 0.125rem;
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .note-editor-meta {
