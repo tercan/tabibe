@@ -90,10 +90,39 @@ function updateNote(notes, noteId, patch, now = new Date().toISOString()) {
   );
 }
 
+function updateNotes(notes, noteIds, patchFactory, now = new Date().toISOString()) {
+  const selectedIds = new Set(noteIds);
+  return notes.map((note) => {
+    if (!selectedIds.has(note.id)) return note;
+    const patch = typeof patchFactory === 'function' ? patchFactory(note) : patchFactory;
+    return {
+      ...note,
+      ...patch,
+      updatedAt: now,
+      revision: Math.max(1, note.revision || 1) + 1,
+    };
+  });
+}
+
 function restoreNote(notes, note, index) {
   const nextNotes = [...notes];
   nextNotes.splice(Math.min(index, nextNotes.length), 0, note);
   return nextNotes;
 }
 
-export { createNote, filterNotes, getSafeString, isNoteEmpty, restoreNote, updateNote };
+function restoreNotes(notes, deletedItems) {
+  return [...deletedItems]
+    .sort((firstItem, secondItem) => firstItem.index - secondItem.index)
+    .reduce((currentNotes, item) => restoreNote(currentNotes, item.note, item.index), notes);
+}
+
+export {
+  createNote,
+  filterNotes,
+  getSafeString,
+  isNoteEmpty,
+  restoreNote,
+  restoreNotes,
+  updateNote,
+  updateNotes,
+};

@@ -241,6 +241,33 @@ test('renders the unpacked new-tab experience without critical accessibility vio
     await page.locator('.note-filter-menu summary').click();
     await page.getByRole('button', { name: 'Clear filters' }).click();
 
+    await page.getByRole('button', { name: 'Select notes' }).click();
+    const bulkActions = page.locator('.note-bulk-actions');
+    await page.getByRole('checkbox', { name: 'Select all visible' }).check();
+    await expect(page.locator('.note-bulk-count')).toHaveText('2 selected');
+    await bulkActions.getByRole('combobox', { name: 'Bulk tag' }).selectOption({ label: 'Work' });
+    await bulkActions.getByRole('button', { name: 'Remove tag' }).click();
+    await bulkActions.getByRole('button', { name: 'Archive', exact: true }).click();
+    await expect(page.locator('.note-list-title')).toHaveCount(0);
+    await page.getByRole('button', { name: 'Archive', exact: true }).click();
+    await expect(page.locator('.note-list-title')).toHaveCount(2);
+    await page.getByRole('button', { name: 'Select notes' }).click();
+    await page.getByRole('checkbox', { name: 'Select all visible' }).check();
+    await bulkActions.getByRole('button', { name: 'Restore', exact: true }).click();
+    await page.getByRole('button', { name: 'Active', exact: true }).click();
+    await expect(page.locator('.note-list-title')).toHaveCount(2);
+
+    await page.getByRole('button', { name: 'Select notes' }).click();
+    await page.getByRole('checkbox', { name: 'Select all visible' }).check();
+    await bulkActions.getByRole('button', { name: 'Delete', exact: true }).click();
+    const bulkDeleteDialog = page.getByRole('dialog', { name: 'Delete selected notes?' });
+    await expect(bulkDeleteDialog).toBeVisible();
+    await bulkDeleteDialog.getByRole('button', { name: 'Delete note' }).click();
+    await expect(page.getByText('2 notes deleted.')).toBeVisible();
+    await page.getByRole('button', { name: 'Undo' }).click();
+    await expect(page.locator('.note-list-title')).toHaveCount(2);
+
+    await page.locator('.note-list-item').first().click();
     await page.setViewportSize({ width: 375, height: 800 });
     expect(
       await page
@@ -258,8 +285,20 @@ test('renders the unpacked new-tab experience without critical accessibility vio
     await expect(notePanel).toHaveClass(/note-panel--right/);
     await page.keyboard.press('Escape');
     await expect(page.locator('.note-panel')).toHaveCount(0);
+    await page.keyboard.press('Alt+Shift+N');
+    await expect(page.locator('.note-panel')).toBeVisible();
+    await expect(page.locator('.note-title-input')).toBeFocused();
+    await page.locator('.note-title-input').fill('Quick capture');
+    await page.locator('.note-panel-textarea').fill('Captured from the global shortcut');
+    await expect(page.locator('.note-save-status--saved')).toBeVisible();
+    await page.getByRole('button', { name: 'Back to note list' }).click();
+    await page.keyboard.press('/');
+    await expect(page.locator('#note-search')).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.note-panel')).toHaveCount(0);
     await notesButton.click();
     await expect(page.getByRole('button', { name: 'E2E note', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Quick capture', exact: true })).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(page.locator('.note-panel')).toHaveCount(0);
     await expect(notesButton).toBeFocused();

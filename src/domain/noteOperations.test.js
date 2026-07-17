@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { createNote, filterNotes, isNoteEmpty, restoreNote, updateNote } from './noteOperations.js';
+import {
+  createNote,
+  filterNotes,
+  isNoteEmpty,
+  restoreNote,
+  restoreNotes,
+  updateNote,
+  updateNotes,
+} from './noteOperations.js';
 
 function makeNote(overrides = {}) {
   return createNote(overrides, () => overrides.id || 'note', overrides.updatedAt || '2026-01-01');
@@ -84,5 +92,25 @@ describe('note operations', () => {
     expect(updated[0]).toMatchObject({ title: 'Updated', updatedAt: '2026-03-01', revision: 2 });
     expect(restored.map((note) => note.id)).toEqual(['one', 'two']);
     expect(notes[0].title).toBe('One');
+  });
+
+  it('updates and restores multiple selected notes in one operation', () => {
+    const notes = [
+      makeNote({ id: 'one', title: 'One' }),
+      makeNote({ id: 'two', title: 'Two' }),
+      makeNote({ id: 'three', title: 'Three' }),
+    ];
+    const updated = updateNotes(notes, ['one', 'three'], { isArchived: true }, '2026-04-01');
+    const restored = restoreNotes(
+      [updated[1]],
+      [
+        { note: updated[0], index: 0 },
+        { note: updated[2], index: 2 },
+      ],
+    );
+
+    expect(updated.map((note) => note.isArchived)).toEqual([true, false, true]);
+    expect(updated.map((note) => note.revision)).toEqual([2, 1, 2]);
+    expect(restored.map((note) => note.id)).toEqual(['one', 'two', 'three']);
   });
 });

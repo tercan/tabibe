@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from '../hooks/useTranslation.js';
 import useFocusTrap from '../hooks/useFocusTrap.jsx';
 import useBodyScrollLock from '../hooks/useBodyScrollLock.js';
 import useNotes from '../hooks/useNotes.js';
 import { isNoteEmpty } from '../domain/noteOperations.js';
 import CloseIcon from './icons/CloseIcon.jsx';
+import NoteBulkActions from './notes/NoteBulkActions.jsx';
 import NoteConflictDialog from './notes/NoteConflictDialog.jsx';
 import NoteFilters from './notes/NoteFilters.jsx';
 import NoteTagManager from './notes/NoteTagManager.jsx';
@@ -182,17 +183,38 @@ function FullscreenIcon({ active }) {
   );
 }
 
+function SelectIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="3" y="3" width="18" height="18" />
+      <path d="m8 12 3 3 5-6" />
+    </svg>
+  );
+}
+
 /**
  * 3. NotePanel component
  */
 
 function NotePanel({
+  capture_request,
   is_open,
   is_pinned,
   layout_side,
   layout_mode,
   note_sort,
   on_close,
+  on_capture_consumed,
   on_toggle_pin,
   on_change_side,
   on_toggle_fullscreen,
@@ -205,20 +227,26 @@ function NotePanel({
   const [pinnedOnly, setPinnedOnly] = useState(false);
   const [dateRange, setDateRange] = useState('all');
   const [noteView, setNoteView] = useState('list');
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedNoteIds, setSelectedNoteIds] = useState([]);
   const [isTagManagerOpen, setIsTagManagerOpen] = useState(false);
-  const [pendingDeleteNoteId, setPendingDeleteNoteId] = useState(null);
+  const [pendingDeleteNoteIds, setPendingDeleteNoteIds] = useState([]);
   const wasVisibleRef = useRef(false);
   const panelRef = useRef(null);
   const titleInputRef = useRef(null);
+  const searchInputRef = useRef(null);
   const createButtonRef = useRef(null);
+  const captureRequestRef = useRef(0);
   const deleteDialogRef = useRef(null);
   const deleteCancelButtonRef = useRef(null);
   const {
     activeNote,
     activeNoteId,
     addNoteTag,
+    bulkArchiveNotes,
+    bulkTagNotes,
     conflictState,
-    deleteNote,
+    deleteNotes,
     editNoteTag,
     ensureEditableNote,
     filteredNotes,
@@ -245,7 +273,7 @@ function NotePanel({
     showArchived,
     sortBy: note_sort,
   });
-  const pendingDeleteNote = notes.find((note) => note.id === pendingDeleteNoteId) || null;
+  const pendingDeleteNotes = notes.filter((note) => pendingDeleteNoteIds.includes(note.id));
   const isEditorView = noteView === 'editor' && activeNote;
   const isPanelVisible = is_open || is_pinned;
   const isFullscreen = layout_mode === 'fullscreen';
@@ -256,7 +284,7 @@ function NotePanel({
       isLoaded &&
       is_open &&
       (!is_pinned || isFullscreen) &&
-      !pendingDeleteNoteId &&
+      pendingDeleteNoteIds.length === 0 &&
       !isTagManagerOpen &&
       !conflictState,
     initialFocusRef: isEditorView ? titleInputRef : createButtonRef,
@@ -266,10 +294,26 @@ function NotePanel({
 
   useFocusTrap({
     containerRef: deleteDialogRef,
-    isActive: isPanelVisible && Boolean(pendingDeleteNoteId),
+    isActive: isPanelVisible && pendingDeleteNoteIds.length > 0,
     initialFocusRef: deleteCancelButtonRef,
     onEscape: cancelDeleteConfirmation,
   });
+
+  const focusTitleInput = useCallback(() => {
+    requestAnimationFrame(() => {
+      titleInputRef.current?.focus({ preventScroll: true });
+    });
+  }, []);
+
+  const createNewNote = useCallback(() => {
+    setShowArchived(false);
+    setSearchQuery('');
+    setSelectionMode(false);
+    setSelectedNoteIds([]);
+    ensureEditableNote();
+    setNoteView('editor');
+    focusTitleInput();
+  }, [ensureEditableNote, focusTitleInput]);
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -292,6 +336,44 @@ function NotePanel({
     wasVisibleRef.current = isPanelVisible;
   }, [isPanelVisible]);
 
+  useEffect(() => {
+    setSelectedNoteIds((currentIds) =>
+      currentIds.filter((noteId) => filteredNotes.some((note) => note.id === noteId)),
+    );
+  }, [filteredNotes]);
+
+  useEffect(() => {
+    if (!isLoaded || !isPanelVisible || capture_request <= captureRequestRef.current) return;
+    captureRequestRef.current = capture_request;
+    createNewNote();
+    on_capture_consumed();
+  }, [capture_request, createNewNote, isLoaded, isPanelVisible, on_capture_consumed]);
+
+  useEffect(() => {
+    if (!isLoaded || !isPanelVisible) return undefined;
+
+    function handleWorkspaceShortcut(event) {
+      const target = event.target;
+      const isEditing =
+        target instanceof HTMLElement &&
+        (target.matches('input, textarea, select') || target.isContentEditable);
+      if (isEditing || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
+      const key = event.key.toLocaleLowerCase();
+      if (key === 'n') {
+        event.preventDefault();
+        createNewNote();
+      }
+      if (key === '/') {
+        event.preventDefault();
+        setNoteView('list');
+        requestAnimationFrame(() => searchInputRef.current?.focus({ preventScroll: true }));
+      }
+    }
+
+    document.addEventListener('keydown', handleWorkspaceShortcut);
+    return () => document.removeEventListener('keydown', handleWorkspaceShortcut);
+  }, [createNewNote, isLoaded, isPanelVisible]);
+
   function formatNoteDate(value) {
     try {
       return new Intl.DateTimeFormat(undefined, {
@@ -309,12 +391,6 @@ function NotePanel({
     return note.title.trim() || t('note_untitled');
   }
 
-  function focusTitleInput() {
-    requestAnimationFrame(() => {
-      titleInputRef.current?.focus({ preventScroll: true });
-    });
-  }
-
   function handleBackToList() {
     if (activeNote && isNoteEmpty(activeNote)) {
       removeEmptyNote(activeNote.id);
@@ -330,18 +406,12 @@ function NotePanel({
       setActiveNoteId(filteredNotes[0]?.id || null);
     }
 
-    setPendingDeleteNoteId(null);
+    setPendingDeleteNoteIds([]);
     setIsTagManagerOpen(false);
+    setSelectionMode(false);
+    setSelectedNoteIds([]);
     setNoteView('list');
     on_close();
-  }
-
-  function createNewNote() {
-    setShowArchived(false);
-    setSearchQuery('');
-    ensureEditableNote();
-    setNoteView('editor');
-    focusTitleInput();
   }
 
   function openNote(noteId) {
@@ -350,18 +420,20 @@ function NotePanel({
   }
 
   function requestDeleteNote(noteId) {
-    setPendingDeleteNoteId(noteId);
+    setPendingDeleteNoteIds([noteId]);
   }
 
   function cancelDeleteConfirmation() {
-    setPendingDeleteNoteId(null);
+    setPendingDeleteNoteIds([]);
   }
 
   function confirmDeleteNote() {
-    if (!pendingDeleteNoteId) return;
+    if (pendingDeleteNoteIds.length === 0) return;
 
-    deleteNote(pendingDeleteNoteId);
-    setPendingDeleteNoteId(null);
+    deleteNotes(pendingDeleteNoteIds);
+    setPendingDeleteNoteIds([]);
+    setSelectedNoteIds([]);
+    setSelectionMode(false);
   }
 
   function handleDeleteConfirmationOverlayClick(event) {
@@ -371,8 +443,36 @@ function NotePanel({
   }
 
   function handleRestoreDeletedNote() {
-    const restoredNote = restoreDeletedNote();
-    if (restoredNote) setShowArchived(restoredNote.isArchived);
+    const restoredNotes = restoreDeletedNote();
+    if (restoredNotes?.[0]) setShowArchived(restoredNotes[0].isArchived);
+  }
+
+  function handleToggleNoteSelection(noteId) {
+    setSelectedNoteIds((currentIds) =>
+      currentIds.includes(noteId)
+        ? currentIds.filter((id) => id !== noteId)
+        : [...currentIds, noteId],
+    );
+  }
+
+  function handleToggleSelectAll() {
+    const visibleIds = filteredNotes.map((note) => note.id);
+    const allSelected = visibleIds.every((noteId) => selectedNoteIds.includes(noteId));
+    setSelectedNoteIds(allSelected ? [] : visibleIds);
+  }
+
+  function handleBulkTag(tagId, shouldAdd) {
+    bulkTagNotes(selectedNoteIds, tagId, shouldAdd);
+  }
+
+  function handleBulkArchive() {
+    bulkArchiveNotes(selectedNoteIds, !showArchived);
+    setSelectedNoteIds([]);
+    setSelectionMode(false);
+  }
+
+  function handleRequestBulkDelete() {
+    setPendingDeleteNoteIds(selectedNoteIds);
   }
 
   function handleToggleFilterTag(tagId) {
@@ -414,6 +514,8 @@ function NotePanel({
       : t('note_empty');
   const activeNoteCount = notes.filter((note) => !note.isArchived).length;
   const archivedNoteCount = notes.length - activeNoteCount;
+  const allVisibleSelected =
+    filteredNotes.length > 0 && filteredNotes.every((note) => selectedNoteIds.includes(note.id));
 
   return (
     <>
@@ -448,6 +550,20 @@ function NotePanel({
               title={t('note_add')}
             >
               <PlusIcon />
+            </button>
+            <button
+              className={`note-panel-button ${selectionMode ? 'note-panel-button--active' : ''}`}
+              type="button"
+              onClick={() => {
+                setSelectionMode((currentValue) => !currentValue);
+                setSelectedNoteIds([]);
+                setNoteView('list');
+              }}
+              aria-pressed={selectionMode}
+              aria-label={t('note_select_mode')}
+              title={t('note_select_mode')}
+            >
+              <SelectIcon />
             </button>
             <button
               className="note-panel-button"
@@ -529,6 +645,7 @@ function NotePanel({
               </label>
               <input
                 id="note-search"
+                ref={searchInputRef}
                 className="note-panel-search"
                 type="search"
                 value={searchQuery}
@@ -570,52 +687,92 @@ function NotePanel({
               sortBy={note_sort}
             />
 
+            {selectionMode && (
+              <NoteBulkActions
+                allVisibleSelected={allVisibleSelected}
+                noteTags={noteTags}
+                onArchive={handleBulkArchive}
+                onCancel={() => {
+                  setSelectionMode(false);
+                  setSelectedNoteIds([]);
+                }}
+                onDelete={handleRequestBulkDelete}
+                onSelectAll={handleToggleSelectAll}
+                onTag={handleBulkTag}
+                selectedCount={selectedNoteIds.length}
+                showArchived={showArchived}
+              />
+            )}
+
             {filteredNotes.length > 0 ? (
               <ul className="note-list" aria-label={t('note_list_label')}>
                 {filteredNotes.map((note) => (
                   <li
                     key={note.id}
-                    className={`note-list-row ${activeNoteId === note.id ? 'note-list-row--active' : ''}`}
+                    className={[
+                      'note-list-row',
+                      activeNoteId === note.id ? 'note-list-row--active' : '',
+                      selectionMode ? 'note-list-row--selecting' : '',
+                      selectedNoteIds.includes(note.id) ? 'note-list-row--selected' : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
                   >
+                    {selectionMode && (
+                      <label className="note-list-selection">
+                        <input
+                          type="checkbox"
+                          checked={selectedNoteIds.includes(note.id)}
+                          onChange={() => handleToggleNoteSelection(note.id)}
+                        />
+                        <span className="visually-hidden">
+                          {t('note_select_item', { title: getNoteTitle(note) })}
+                        </span>
+                      </label>
+                    )}
                     <button
                       className="note-list-item"
                       type="button"
-                      onClick={() => openNote(note.id)}
+                      onClick={() =>
+                        selectionMode ? handleToggleNoteSelection(note.id) : openNote(note.id)
+                      }
                       aria-current={activeNoteId === note.id}
                     >
                       <span className="note-list-title">{getNoteTitle(note)}</span>
                     </button>
-                    <div className="note-list-actions">
-                      <button
-                        className={`note-panel-button note-panel-button--compact ${note.isPinned ? 'note-panel-button--active' : ''}`}
-                        type="button"
-                        onClick={() => toggleNotePin(note.id)}
-                        aria-label={note.isPinned ? t('note_unpin_item') : t('note_pin_item')}
-                        title={note.isPinned ? t('note_unpin_item') : t('note_pin_item')}
-                      >
-                        <PinIcon />
-                      </button>
-                      <button
-                        className="note-panel-button note-panel-button--compact"
-                        type="button"
-                        onClick={() => toggleNoteArchive(note.id)}
-                        aria-label={
-                          note.isArchived ? t('note_restore_item') : t('note_archive_item')
-                        }
-                        title={note.isArchived ? t('note_restore_item') : t('note_archive_item')}
-                      >
-                        {note.isArchived ? <RestoreIcon /> : <ArchiveIcon />}
-                      </button>
-                      <button
-                        className="note-panel-button note-panel-button--compact note-panel-button--danger"
-                        type="button"
-                        onClick={() => requestDeleteNote(note.id)}
-                        aria-label={t('note_delete_item')}
-                        title={t('note_delete_item')}
-                      >
-                        <DeleteIcon />
-                      </button>
-                    </div>
+                    {!selectionMode && (
+                      <div className="note-list-actions">
+                        <button
+                          className={`note-panel-button note-panel-button--compact ${note.isPinned ? 'note-panel-button--active' : ''}`}
+                          type="button"
+                          onClick={() => toggleNotePin(note.id)}
+                          aria-label={note.isPinned ? t('note_unpin_item') : t('note_pin_item')}
+                          title={note.isPinned ? t('note_unpin_item') : t('note_pin_item')}
+                        >
+                          <PinIcon />
+                        </button>
+                        <button
+                          className="note-panel-button note-panel-button--compact"
+                          type="button"
+                          onClick={() => toggleNoteArchive(note.id)}
+                          aria-label={
+                            note.isArchived ? t('note_restore_item') : t('note_archive_item')
+                          }
+                          title={note.isArchived ? t('note_restore_item') : t('note_archive_item')}
+                        >
+                          {note.isArchived ? <RestoreIcon /> : <ArchiveIcon />}
+                        </button>
+                        <button
+                          className="note-panel-button note-panel-button--compact note-panel-button--danger"
+                          type="button"
+                          onClick={() => requestDeleteNote(note.id)}
+                          aria-label={t('note_delete_item')}
+                          title={t('note_delete_item')}
+                        >
+                          <DeleteIcon />
+                        </button>
+                      </div>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -721,7 +878,7 @@ function NotePanel({
           onEdit={editNoteTag}
         />
 
-        {pendingDeleteNote && (
+        {pendingDeleteNotes.length > 0 && (
           <div
             className="note-confirm-overlay"
             onClick={handleDeleteConfirmationOverlayClick}
@@ -737,10 +894,16 @@ function NotePanel({
               tabIndex={-1}
             >
               <h3 className="note-confirm-title" id="note-delete-confirm-title">
-                {t('note_delete_confirm_title')}
+                {pendingDeleteNotes.length > 1
+                  ? t('note_bulk_delete_confirm_title')
+                  : t('note_delete_confirm_title')}
               </h3>
               <p className="note-confirm-description" id="note-delete-confirm-description">
-                {t('note_delete_confirm_description')}
+                {pendingDeleteNotes.length > 1
+                  ? t('note_bulk_delete_confirm_description', {
+                      count: pendingDeleteNotes.length,
+                    })
+                  : t('note_delete_confirm_description')}
               </p>
               <div className="modal-actions">
                 <button
@@ -767,7 +930,11 @@ function NotePanel({
 
         {undoState && (
           <div className="note-panel-toast" role="status" aria-live="polite">
-            <span>{t('note_deleted')}</span>
+            <span>
+              {undoState.items.length > 1
+                ? t('note_deleted_count', { count: undoState.items.length })
+                : t('note_deleted')}
+            </span>
             <button className="toast-action" type="button" onClick={handleRestoreDeletedNote}>
               {t('toast_undo')}
             </button>

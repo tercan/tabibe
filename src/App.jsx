@@ -27,6 +27,7 @@ function App() {
   const [settings, setSettings] = useState(() => createDefaultSettings(getSystemTheme()));
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [notePanelOpen, setNotePanelOpen] = useState(false);
+  const [noteCaptureRequest, setNoteCaptureRequest] = useState(0);
   const [storageError, setStorageError] = useState(false);
   const [settingsLoadState, setSettingsLoadState] = useState('loading');
 
@@ -73,6 +74,19 @@ function App() {
   useEffect(() => {
     setLocale(selectedLocale || detectLocale());
   }, [selectedLocale, setLocale]);
+
+  useEffect(() => {
+    function handleQuickCaptureShortcut(event) {
+      if (!event.altKey || !event.shiftKey || event.metaKey || event.ctrlKey) return;
+      if (event.key.toLocaleLowerCase() !== 'n') return;
+      event.preventDefault();
+      setNotePanelOpen(true);
+      setNoteCaptureRequest((currentRequest) => currentRequest + 1);
+    }
+
+    document.addEventListener('keydown', handleQuickCaptureShortcut);
+    return () => document.removeEventListener('keydown', handleQuickCaptureShortcut);
+  }, []);
 
   useEffect(() => {
     if (backgroundImage) return;
@@ -169,6 +183,13 @@ function App() {
     updateSettings({ noteSort: nextSort });
   }
 
+  function handleOpenNotes(options = {}) {
+    setNotePanelOpen(true);
+    if (options.quickCapture) {
+      setNoteCaptureRequest((currentRequest) => currentRequest + 1);
+    }
+  }
+
   function handleChangeLocale(nextLocale) {
     updateSettings({ locale: nextLocale });
   }
@@ -260,10 +281,12 @@ function App() {
           <NotePanel
             is_open={notePanelOpen}
             is_pinned={isNotePanelPinned}
+            capture_request={noteCaptureRequest}
             layout_side={notePanelSide}
             layout_mode={notePanelMode}
             note_sort={noteSort}
             on_close={() => setNotePanelOpen(false)}
+            on_capture_consumed={() => setNoteCaptureRequest(0)}
             on_toggle_pin={handleToggleNotePin}
             on_change_side={handleChangeNotePanelSide}
             on_toggle_fullscreen={handleToggleNoteFullscreen}
@@ -277,7 +300,7 @@ function App() {
         icon_style={iconStyle}
         on_toggle_icon_style={toggleIconStyle}
         on_open_settings={() => setSettingsOpen(true)}
-        on_open_notes={() => setNotePanelOpen(true)}
+        on_open_notes={handleOpenNotes}
         show_memory={showMemory}
       />
       <Suspense

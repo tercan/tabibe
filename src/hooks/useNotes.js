@@ -3,8 +3,9 @@ import {
   createNote,
   filterNotes,
   isNoteEmpty,
-  restoreNote,
+  restoreNotes,
   updateNote,
+  updateNotes,
 } from '../domain/noteOperations.js';
 import { createNoteTag, deleteNoteTag, updateNoteTag } from '../domain/noteTagOperations.js';
 import { loadNoteWorkspace, saveNoteWorkspace, subscribeToStateChanges } from '../lib/storage.js';
@@ -247,18 +248,25 @@ function useNotes({
     [],
   );
 
-  function ensureEditableNote() {
-    const existingNote = notes.find((note) => isNoteEmpty(note));
+  const ensureEditableNote = useCallback((initialValues = {}) => {
+    const existingNote = notesRef.current.find((note) => isNoteEmpty(note));
     if (existingNote) {
+      if (Object.keys(initialValues).length > 0) {
+        const updatedNotes = updateNote(notesRef.current, existingNote.id, initialValues);
+        notesRef.current = updatedNotes;
+        setNotes(updatedNotes);
+      }
       setActiveNoteId(existingNote.id);
-      return existingNote;
+      return notesRef.current.find((note) => note.id === existingNote.id) || existingNote;
     }
 
-    const note = createNote();
-    setNotes((currentNotes) => [note, ...currentNotes]);
+    const note = createNote(initialValues);
+    const updatedNotes = [note, ...notesRef.current];
+    notesRef.current = updatedNotes;
+    setNotes(updatedNotes);
     setActiveNoteId(note.id);
     return note;
-  }
+  }, []);
 
   function removeEmptyNote(noteId) {
     if (!noteId) return;
@@ -305,17 +313,38 @@ function useNotes({
     setNotes(result.notes);
   }
 
-  function deleteNote(noteId) {
-    const noteIndex = notes.findIndex((note) => note.id === noteId);
-    if (noteIndex === -1) return;
+  function bulkArchiveNotes(noteIds, isArchived) {
+    setNotes((currentNotes) => updateNotes(currentNotes, noteIds, { isArchived }));
+  }
+
+  function bulkTagNotes(noteIds, tagId, shouldAdd) {
+    setNotes((currentNotes) =>
+      updateNotes(currentNotes, noteIds, (note) => ({
+        tagIds: shouldAdd
+          ? [...new Set([...note.tagIds, tagId])].slice(0, 8)
+          : note.tagIds.filter((id) => id !== tagId),
+      })),
+    );
+  }
+
+  function deleteNotes(noteIds) {
+    const selectedIds = new Set(noteIds);
+    const deletedItems = notes
+      .map((note, index) => ({ note, index }))
+      .filter((item) => selectedIds.has(item.note.id));
+    if (deletedItems.length === 0) return;
     if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
 
-    setNotes((currentNotes) => currentNotes.filter((note) => note.id !== noteId));
-    setUndoState({ note: notes[noteIndex], index: noteIndex });
+    setNotes((currentNotes) => currentNotes.filter((note) => !selectedIds.has(note.id)));
+    setUndoState({ items: deletedItems });
     undoTimerRef.current = setTimeout(() => {
       setUndoState(null);
       undoTimerRef.current = null;
     }, UNDO_TIMEOUT);
+  }
+
+  function deleteNote(noteId) {
+    deleteNotes([noteId]);
   }
 
   function restoreDeletedNote() {
@@ -325,9 +354,9 @@ function useNotes({
       undoTimerRef.current = null;
     }
 
-    setNotes((currentNotes) => restoreNote(currentNotes, undoState.note, undoState.index));
-    setActiveNoteId(undoState.note.id);
-    const restored = undoState.note;
+    setNotes((currentNotes) => restoreNotes(currentNotes, undoState.items));
+    setActiveNoteId(undoState.items[0]?.note.id || null);
+    const restored = undoState.items.map((item) => item.note);
     setUndoState(null);
     return restored;
   }
@@ -376,8 +405,11 @@ function useNotes({
     activeNote,
     activeNoteId,
     addNoteTag,
+    bulkArchiveNotes,
+    bulkTagNotes,
     conflictState,
     deleteNote,
+    deleteNotes,
     editNoteTag,
     ensureEditableNote,
     filteredNotes,

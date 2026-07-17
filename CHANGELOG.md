@@ -6,6 +6,23 @@ This file documents all notable changes in the project.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Versioning follows [Semantic Versioning](https://semver.org/).
 
+## [1.3.0] - 2026-07-18 00:31
+
+### Added
+
+- Added multi-select note management with select-all, bulk tag add/remove, archive, restore, and delete actions
+- Added fast note capture with `Alt+Shift+N`, plus workspace `N` and `/` commands for a new note and search when focus is outside editable fields
+- Added plural delete confirmation, feedback, and undo behavior for bulk note removal
+
+### Changed
+
+- Unified single and bulk deletion on the same ordered restore path so undo preserves original note positions
+- Kept browser-reserved shortcuts and text-entry keys untouched while a title, content, search, or form field has focus
+
+### Fixed
+
+- Prevented a consumed quick-capture request from reopening as a blank note when the notes panel is mounted again
+
 ## [1.2.0] - 2026-07-18 00:12
 
 ### Added

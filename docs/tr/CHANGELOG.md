@@ -6,6 +6,23 @@ Bu dosya, projede yapılan tüm önemli değişiklikleri belgelemektedir.
 Format [Keep a Changelog](https://keepachangelog.com/tr/1.0.0/) standardına dayanmaktadır.
 Versiyon numaralandırması [Semantic Versioning](https://semver.org/lang/tr/) prensiplerine uymaktadır.
 
+## [1.3.0] - 2026-07-18 00:31
+
+### Added
+
+- Tümünü seçme, toplu etiket ekleme/kaldırma, arşivleme, geri yükleme ve silme eylemlerine sahip çoklu not yönetimi eklendi
+- Odak düzenlenebilir alanların dışındayken hızlı not için `Alt+Shift+N`, çalışma alanında yeni not ve arama için `N` ile `/` komutları eklendi
+- Toplu not silme için çoğul onay, bildirim ve geri alma davranışı eklendi
+
+### Changed
+
+- Tekli ve toplu silme, geri alındığında notların özgün konumunu koruyan ortak sıralı geri yükleme akışında birleştirildi
+- Tarayıcıya ayrılmış kısayolların ve metin giriş tuşlarının başlık, içerik, arama veya form alanı odaktayken doğal davranışı korundu
+
+### Fixed
+
+- Tüketilmiş bir hızlı yakalama isteğinin not paneli yeniden bağlandığında boş not olarak tekrar açılması engellendi
+
 ## [1.2.0] - 2026-07-18 00:12
 
 ### Added

@@ -286,6 +286,70 @@
   margin-inline-start: auto;
 }
 
+.note-bulk-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: var(--border-width) solid var(--color-border);
+  background-color: var(--color-surface);
+}
+
+.note-bulk-select-all {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-height: 2rem;
+  color: var(--color-text);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+}
+
+.note-bulk-select-all input,
+.note-list-selection input {
+  width: 1rem;
+  height: 1rem;
+}
+
+.note-bulk-count {
+  min-width: 4rem;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.note-bulk-tag-select select,
+.note-bulk-button {
+  min-height: 2rem;
+  padding: var(--space-xs) var(--space-sm);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius);
+  color: var(--color-text-muted);
+  background-color: var(--color-background);
+  font-size: var(--font-size-xs);
+}
+
+.note-bulk-tag-select select:hover,
+.note-bulk-tag-select select:focus-visible,
+.note-bulk-button:hover:not(:disabled),
+.note-bulk-button:focus-visible:not(:disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.note-bulk-button--danger:hover:not(:disabled),
+.note-bulk-button--danger:focus-visible:not(:disabled) {
+  border-color: var(--color-error);
+  color: var(--color-error);
+}
+
+.note-bulk-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .note-panel-tab {
   min-height: 2rem;
   padding: var(--space-xs) var(--space-sm);
@@ -434,6 +498,31 @@
 .note-list-row--active {
   border-color: var(--color-primary);
   box-shadow: var(--shadow-md);
+}
+
+.note-list-row--selected {
+  border-color: var(--color-primary);
+  background-color: var(--color-surface-hover);
+}
+
+.note-list-row--selecting {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+}
+
+.note-list-selection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin-inline-start: var(--space-sm);
+  cursor: pointer;
+}
+
+.note-list-row--selecting .note-list-item {
+  padding-inline-start: var(--space-sm);
 }
 
 .note-list-item {
@@ -902,6 +991,16 @@
   .note-conflict-actions {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .note-bulk-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .note-bulk-tag-select select,
+  .note-bulk-button {
+    width: 100%;
   }
 }
 

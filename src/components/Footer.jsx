@@ -266,7 +266,7 @@ function Footer({
         </button>
         <button
           className="footer-button"
-          onClick={on_open_notes}
+          onClick={(event) => on_open_notes({ quickCapture: event.shiftKey })}
           aria-label={t('note_aria_label')}
           title={t('note_aria_label')}
         >
