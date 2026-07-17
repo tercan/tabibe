@@ -6,6 +6,18 @@ This file documents all notable changes in the project.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Versioning follows [Semantic Versioning](https://semver.org/).
 
+## [1.1.0] - 2026-07-17 23:43
+
+### Added
+
+- Added persistent left and right placement controls for the notes panel
+- Added a full-screen notes workspace with responsive three-column, two-column, and single-view layouts
+
+### Changed
+
+- Suspended panel pinning while full screen is active and restored the saved pin state when returning to panel mode
+- Preserved physical panel placement in right-to-left locales and extended focus trapping, scroll locking, and keyboard navigation to the full-screen workspace
+
 ## [1.0.1] - 2026-07-17 23:28
 
 ### Added

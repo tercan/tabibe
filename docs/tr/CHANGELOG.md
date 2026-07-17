@@ -6,6 +6,18 @@ Bu dosya, projede yapılan tüm önemli değişiklikleri belgelemektedir.
 Format [Keep a Changelog](https://keepachangelog.com/tr/1.0.0/) standardına dayanmaktadır.
 Versiyon numaralandırması [Semantic Versioning](https://semver.org/lang/tr/) prensiplerine uymaktadır.
 
+## [1.1.0] - 2026-07-17 23:43
+
+### Added
+
+- Not paneli için kalıcı sol ve sağ konum kontrolleri eklendi
+- Responsive üç sütunlu, iki sütunlu ve tek görünümlü düzenlere sahip tam ekran Notlarım çalışma alanı eklendi
+
+### Changed
+
+- Tam ekran etkinken panel sabitleme askıya alındı ve panel moduna dönüldüğünde kayıtlı sabitleme durumu geri yüklendi
+- RTL dillerinde fiziksel panel konumu korundu; odak tuzağı, sayfa kaydırma kilidi ve klavye gezinmesi tam ekran çalışma alanını kapsayacak şekilde genişletildi
+
 ## [1.0.1] - 2026-07-17 23:28
 
 ### Added

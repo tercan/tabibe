@@ -26,6 +26,32 @@ describe('data schema', () => {
     expect(state.settings.theme).toBe('dark');
   });
 
+  it('normalizes the notes workspace layout preferences', () => {
+    const state = normalizeAppState({
+      sites: [],
+      notes: [],
+      settings: {
+        notePanelSide: 'right',
+        notePanelMode: 'fullscreen',
+      },
+    });
+
+    expect(state.settings.notePanelSide).toBe('right');
+    expect(state.settings.notePanelMode).toBe('fullscreen');
+
+    const fallbackState = normalizeAppState({
+      sites: [],
+      notes: [],
+      settings: {
+        notePanelSide: 'inline-start',
+        notePanelMode: 'wide',
+      },
+    });
+
+    expect(fallbackState.settings.notePanelSide).toBe('left');
+    expect(fallbackState.settings.notePanelMode).toBe('panel');
+  });
+
   it('migrates legacy icon slugs and rejects nested folders', () => {
     const [site] = normalizeSites([
       {

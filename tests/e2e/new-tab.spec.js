@@ -145,11 +145,62 @@ test('renders the unpacked new-tab experience without critical accessibility vio
 
     const notesButton = page.locator('.footer-right > .footer-button').nth(2);
     await notesButton.click();
-    await expect(page.locator('.note-panel')).toBeVisible();
+    const notePanel = page.locator('.note-panel');
+    await expect(notePanel).toBeVisible();
+    await expect(notePanel).toHaveClass(/note-panel--left/);
+    await page.getByRole('button', { name: 'Move notes panel to the right' }).click();
+    await expect(notePanel).toHaveClass(/note-panel--right/);
+    await expect
+      .poll(async () =>
+        page.evaluate(
+          () =>
+            new Promise((resolveState) => {
+              chrome.storage.local.get('tabibe-state', (result) => {
+                resolveState(result['tabibe-state']?.settings?.notePanelSide);
+              });
+            }),
+        ),
+      )
+      .toBe('right');
+    await page.reload();
+    await page.locator('.footer-right > .footer-button').nth(2).click();
+    await expect(notePanel).toHaveClass(/note-panel--right/);
+
+    await page.getByRole('button', { name: 'Open notes in full screen' }).click();
+    await expect(notePanel).toHaveClass(/note-panel--fullscreen/);
+    await expect(notePanel).toHaveCSS('width', '1280px');
+    expect(
+      await page
+        .locator('.note-workspace')
+        .evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').length),
+    ).toBe(3);
+    await page.setViewportSize({ width: 1024, height: 720 });
+    expect(
+      await page
+        .locator('.note-workspace')
+        .evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').length),
+    ).toBe(2);
+    await expect(page.locator('.note-workspace-navigation')).toBeHidden();
+
     await page.locator('.note-panel-actions .note-panel-button').first().click();
     await page.locator('.note-title-input').fill('E2E note');
     await page.locator('.note-panel-textarea').fill('Persistent note content');
     await expect(page.locator('.note-save-status--saved')).toBeVisible();
+    await page.setViewportSize({ width: 375, height: 800 });
+    expect(
+      await page
+        .locator('.note-workspace')
+        .evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').length),
+    ).toBe(1);
+    await expect(page.locator('.note-workspace-list-pane')).toBeHidden();
+    await expect(page.locator('.note-workspace-editor-pane')).toBeVisible();
+    await page.getByRole('button', { name: 'Back to note list' }).click();
+    await expect(page.locator('.note-workspace-list-pane')).toBeVisible();
+    await expect(page.locator('.note-workspace-editor-pane')).toBeHidden();
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.getByRole('button', { name: 'Exit full screen' }).click();
+    await expect(notePanel).not.toHaveClass(/note-panel--fullscreen/);
+    await expect(notePanel).toHaveClass(/note-panel--right/);
     await page.keyboard.press('Escape');
     await expect(page.locator('.note-panel')).toHaveCount(0);
     await notesButton.click();

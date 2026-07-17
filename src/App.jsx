@@ -37,6 +37,8 @@ function App() {
     showClock,
     showSearch,
     notePinned,
+    notePanelSide,
+    notePanelMode,
     backgroundColor,
     backgroundImage,
     showMemory,
@@ -152,6 +154,16 @@ function App() {
     updateSettings({ notePinned: !notePinned });
   }
 
+  function handleChangeNotePanelSide() {
+    updateSettings({ notePanelSide: notePanelSide === 'left' ? 'right' : 'left' });
+  }
+
+  function handleToggleNoteFullscreen() {
+    const nextMode = notePanelMode === 'fullscreen' ? 'panel' : 'fullscreen';
+    if (nextMode === 'fullscreen') setNotePanelOpen(true);
+    updateSettings({ notePanelMode: nextMode });
+  }
+
   function handleChangeLocale(nextLocale) {
     updateSettings({ locale: nextLocale });
   }
@@ -214,9 +226,10 @@ function App() {
   if (settingsLoadState === 'loading') return <AppLoading />;
   if (settingsLoadState === 'error') return <AppRecovery onRetry={handleRetrySettingsLoad} />;
 
+  const isNotePanelPinned = notePinned && notePanelMode === 'panel';
   const className = [
     'new-tab',
-    notePinned ? 'new-tab--pinned' : '',
+    isNotePanelPinned ? `new-tab--pinned-${notePanelSide}` : '',
     backgroundImage ? 'new-tab--custom-background' : '',
   ]
     .filter(Boolean)
@@ -238,12 +251,16 @@ function App() {
           </span>
         }
       >
-        {(notePanelOpen || notePinned) && (
+        {(notePanelOpen || isNotePanelPinned) && (
           <NotePanel
             is_open={notePanelOpen}
-            is_pinned={notePinned}
+            is_pinned={isNotePanelPinned}
+            layout_side={notePanelSide}
+            layout_mode={notePanelMode}
             on_close={() => setNotePanelOpen(false)}
             on_toggle_pin={handleToggleNotePin}
+            on_change_side={handleChangeNotePanelSide}
+            on_toggle_fullscreen={handleToggleNoteFullscreen}
           />
         )}
       </Suspense>

@@ -127,11 +127,71 @@ function BackIcon() {
   );
 }
 
+function PanelSideIcon({ side }) {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="3" y="4" width="18" height="16" />
+      <path d={side === 'left' ? 'M9 4v16' : 'M15 4v16'} />
+    </svg>
+  );
+}
+
+function FullscreenIcon({ active }) {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {active ? (
+        <>
+          <path d="M8 3v5H3" />
+          <path d="M16 3v5h5" />
+          <path d="M8 21v-5H3" />
+          <path d="M16 21v-5h5" />
+        </>
+      ) : (
+        <>
+          <path d="M8 3H3v5" />
+          <path d="M16 3h5v5" />
+          <path d="M8 21H3v-5" />
+          <path d="M16 21h5v-5" />
+        </>
+      )}
+    </svg>
+  );
+}
+
 /**
  * 3. NotePanel component
  */
 
-function NotePanel({ is_open, is_pinned, on_close, on_toggle_pin }) {
+function NotePanel({
+  is_open,
+  is_pinned,
+  layout_side,
+  layout_mode,
+  on_close,
+  on_toggle_pin,
+  on_change_side,
+  on_toggle_fullscreen,
+}) {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [showArchived, setShowArchived] = useState(false);
@@ -163,14 +223,15 @@ function NotePanel({ is_open, is_pinned, on_close, on_toggle_pin }) {
   const pendingDeleteNote = notes.find((note) => note.id === pendingDeleteNoteId) || null;
   const isEditorView = noteView === 'editor' && activeNote;
   const isPanelVisible = is_open || is_pinned;
+  const isFullscreen = layout_mode === 'fullscreen';
 
   useFocusTrap({
     containerRef: panelRef,
-    isActive: isLoaded && is_open && !is_pinned && !pendingDeleteNoteId,
+    isActive: isLoaded && is_open && (!is_pinned || isFullscreen) && !pendingDeleteNoteId,
     initialFocusRef: isEditorView ? titleInputRef : createButtonRef,
     onEscape: handleClosePanel,
   });
-  useBodyScrollLock(is_open && !is_pinned);
+  useBodyScrollLock(is_open && (!is_pinned || isFullscreen));
 
   useFocusTrap({
     containerRef: deleteDialogRef,
@@ -291,14 +352,24 @@ function NotePanel({ is_open, is_pinned, on_close, on_toggle_pin }) {
     : isSearchEmpty
       ? t('note_search_empty')
       : t('note_empty');
+  const activeNoteCount = notes.filter((note) => !note.isArchived).length;
+  const archivedNoteCount = notes.length - activeNoteCount;
 
   return (
     <>
-      {!is_pinned && is_open && (
+      {!is_pinned && is_open && !isFullscreen && (
         <div className="settings-overlay" onClick={handleClosePanel} role="presentation" />
       )}
       <aside
-        className={`note-panel ${is_pinned ? 'note-panel--pinned' : ''} ${is_open ? 'note-panel--open' : ''}`}
+        className={[
+          'note-panel',
+          `note-panel--${layout_side}`,
+          is_pinned ? 'note-panel--pinned' : '',
+          is_open ? 'note-panel--open' : '',
+          isFullscreen ? 'note-panel--fullscreen' : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
         ref={panelRef}
         role={is_pinned ? 'complementary' : 'dialog'}
         aria-modal={is_pinned ? undefined : 'true'}
@@ -319,15 +390,39 @@ function NotePanel({ is_open, is_pinned, on_close, on_toggle_pin }) {
               <PlusIcon />
             </button>
             <button
-              className={`note-panel-button ${is_pinned ? 'note-panel-button--active' : ''}`}
+              className="note-panel-button"
               type="button"
-              onClick={on_toggle_pin}
-              aria-label={t('note_pin_panel')}
-              title={t('note_pin_panel')}
+              onClick={on_change_side}
+              aria-label={
+                layout_side === 'left' ? t('note_move_panel_right') : t('note_move_panel_left')
+              }
+              title={
+                layout_side === 'left' ? t('note_move_panel_right') : t('note_move_panel_left')
+              }
             >
-              <PinIcon />
+              <PanelSideIcon side={layout_side === 'left' ? 'right' : 'left'} />
             </button>
-            {!is_pinned && (
+            <button
+              className={`note-panel-button ${isFullscreen ? 'note-panel-button--active' : ''}`}
+              type="button"
+              onClick={on_toggle_fullscreen}
+              aria-label={isFullscreen ? t('note_exit_fullscreen') : t('note_enter_fullscreen')}
+              title={isFullscreen ? t('note_exit_fullscreen') : t('note_enter_fullscreen')}
+            >
+              <FullscreenIcon active={isFullscreen} />
+            </button>
+            {!isFullscreen && (
+              <button
+                className={`note-panel-button ${is_pinned ? 'note-panel-button--active' : ''}`}
+                type="button"
+                onClick={on_toggle_pin}
+                aria-label={t('note_pin_panel')}
+                title={t('note_pin_panel')}
+              >
+                <PinIcon />
+              </button>
+            )}
+            {(!is_pinned || isFullscreen) && (
               <button
                 className="note-panel-button"
                 type="button"
@@ -340,157 +435,194 @@ function NotePanel({ is_open, is_pinned, on_close, on_toggle_pin }) {
           </div>
         </header>
 
-        {!isEditorView && (
-          <div className="note-panel-controls">
-            <label className="visually-hidden" htmlFor="note-search">
-              {t('note_search_label')}
-            </label>
-            <input
-              id="note-search"
-              className="note-panel-search"
-              type="search"
-              value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
-              placeholder={t('note_search_placeholder')}
-            />
-            <div className="note-panel-tabs" role="group" aria-label={t('note_filter_label')}>
+        <div className="note-workspace">
+          <nav className="note-workspace-navigation" aria-label={t('note_filter_label')}>
+            <h3 className="note-workspace-navigation-title">{t('note_filter_label')}</h3>
+            <div className="note-workspace-navigation-items">
               <button
-                className={`note-panel-tab ${!showArchived ? 'note-panel-tab--active' : ''}`}
+                className={`note-workspace-navigation-button ${!showArchived ? 'note-workspace-navigation-button--active' : ''}`}
                 type="button"
                 aria-pressed={!showArchived}
                 onClick={() => setShowArchived(false)}
               >
-                {t('note_filter_active')}
+                <span>{t('note_filter_active')}</span>
+                <span className="note-workspace-count">{activeNoteCount}</span>
               </button>
               <button
-                className={`note-panel-tab ${showArchived ? 'note-panel-tab--active' : ''}`}
+                className={`note-workspace-navigation-button ${showArchived ? 'note-workspace-navigation-button--active' : ''}`}
                 type="button"
                 aria-pressed={showArchived}
                 onClick={() => setShowArchived(true)}
               >
-                {t('note_filter_archived')}
+                <span>{t('note_filter_archived')}</span>
+                <span className="note-workspace-count">{archivedNoteCount}</span>
               </button>
             </div>
-          </div>
-        )}
+          </nav>
 
-        <div
-          className={`note-panel-body ${isEditorView ? 'note-panel-body--editor' : 'note-panel-body--list'}`}
-        >
-          {!isEditorView ? (
-            <>
-              {filteredNotes.length > 0 ? (
-                <ul className="note-list" aria-label={t('note_list_label')}>
-                  {filteredNotes.map((note) => (
-                    <li
-                      key={note.id}
-                      className={`note-list-row ${activeNoteId === note.id ? 'note-list-row--active' : ''}`}
-                    >
-                      <button
-                        className="note-list-item"
-                        type="button"
-                        onClick={() => openNote(note.id)}
-                        aria-current={activeNoteId === note.id}
-                      >
-                        <span className="note-list-title">{getNoteTitle(note)}</span>
-                      </button>
-                      <div className="note-list-actions">
-                        <button
-                          className={`note-panel-button note-panel-button--compact ${note.isPinned ? 'note-panel-button--active' : ''}`}
-                          type="button"
-                          onClick={() => toggleNotePin(note.id)}
-                          aria-label={note.isPinned ? t('note_unpin_item') : t('note_pin_item')}
-                          title={note.isPinned ? t('note_unpin_item') : t('note_pin_item')}
-                        >
-                          <PinIcon />
-                        </button>
-                        <button
-                          className="note-panel-button note-panel-button--compact"
-                          type="button"
-                          onClick={() => toggleNoteArchive(note.id)}
-                          aria-label={
-                            note.isArchived ? t('note_restore_item') : t('note_archive_item')
-                          }
-                          title={note.isArchived ? t('note_restore_item') : t('note_archive_item')}
-                        >
-                          {note.isArchived ? <RestoreIcon /> : <ArchiveIcon />}
-                        </button>
-                        <button
-                          className="note-panel-button note-panel-button--compact note-panel-button--danger"
-                          type="button"
-                          onClick={() => requestDeleteNote(note.id)}
-                          aria-label={t('note_delete_item')}
-                          title={t('note_delete_item')}
-                        >
-                          <DeleteIcon />
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="note-panel-empty">
-                  <p>{emptyMessage}</p>
-                  <button
-                    className="modal-button modal-button--save"
-                    type="button"
-                    onClick={isSearchEmpty ? () => setSearchQuery('') : createNewNote}
-                  >
-                    {isSearchEmpty ? t('note_clear_search') : t('note_add')}
-                  </button>
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="note-editor" role="region" aria-label={t('note_editor_label')}>
-              <div className="note-editor-header">
-                <button
-                  className="note-panel-button"
-                  type="button"
-                  onClick={handleBackToList}
-                  aria-label={t('note_back_to_list')}
-                  title={t('note_back_to_list')}
-                >
-                  <BackIcon />
-                </button>
-              </div>
-              <label className="visually-hidden" htmlFor="note-title">
-                {t('note_title_label')}
+          <div
+            className={`note-workspace-list-pane ${isEditorView ? 'note-workspace-pane--compact-hidden' : ''}`}
+          >
+            <div className="note-panel-controls">
+              <label className="visually-hidden" htmlFor="note-search">
+                {t('note_search_label')}
               </label>
               <input
-                id="note-title"
-                ref={titleInputRef}
-                className="note-title-input"
-                type="text"
-                value={activeNote.title}
-                onChange={(event) => updateActiveNote('title', event.target.value)}
-                placeholder={t('note_title_placeholder')}
+                id="note-search"
+                className="note-panel-search"
+                type="search"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder={t('note_search_placeholder')}
               />
-              <label className="visually-hidden" htmlFor="note-content">
-                {t('note_content_label')}
-              </label>
-              <textarea
-                id="note-content"
-                className="note-panel-textarea"
-                value={activeNote.content}
-                onChange={(event) => updateActiveNote('content', event.target.value)}
-                placeholder={t('note_placeholder')}
-                aria-label={t('note_content_label')}
-              />
-              <p className="note-editor-meta">
-                {t('note_updated_at', { date: formatNoteDate(activeNote.updatedAt) })}
-              </p>
-              <p
-                className={`note-save-status note-save-status--${saveStatus}`}
-                role="status"
-                aria-live="polite"
-              >
-                {saveStatus === 'saving' && t('note_save_saving')}
-                {saveStatus === 'saved' && t('note_save_saved')}
-                {saveStatus === 'error' && t('note_save_error')}
-              </p>
+              <div className="note-panel-tabs" role="group" aria-label={t('note_filter_label')}>
+                <button
+                  className={`note-panel-tab ${!showArchived ? 'note-panel-tab--active' : ''}`}
+                  type="button"
+                  aria-pressed={!showArchived}
+                  onClick={() => setShowArchived(false)}
+                >
+                  {t('note_filter_active')}
+                </button>
+                <button
+                  className={`note-panel-tab ${showArchived ? 'note-panel-tab--active' : ''}`}
+                  type="button"
+                  aria-pressed={showArchived}
+                  onClick={() => setShowArchived(true)}
+                >
+                  {t('note_filter_archived')}
+                </button>
+              </div>
             </div>
-          )}
+
+            {filteredNotes.length > 0 ? (
+              <ul className="note-list" aria-label={t('note_list_label')}>
+                {filteredNotes.map((note) => (
+                  <li
+                    key={note.id}
+                    className={`note-list-row ${activeNoteId === note.id ? 'note-list-row--active' : ''}`}
+                  >
+                    <button
+                      className="note-list-item"
+                      type="button"
+                      onClick={() => openNote(note.id)}
+                      aria-current={activeNoteId === note.id}
+                    >
+                      <span className="note-list-title">{getNoteTitle(note)}</span>
+                    </button>
+                    <div className="note-list-actions">
+                      <button
+                        className={`note-panel-button note-panel-button--compact ${note.isPinned ? 'note-panel-button--active' : ''}`}
+                        type="button"
+                        onClick={() => toggleNotePin(note.id)}
+                        aria-label={note.isPinned ? t('note_unpin_item') : t('note_pin_item')}
+                        title={note.isPinned ? t('note_unpin_item') : t('note_pin_item')}
+                      >
+                        <PinIcon />
+                      </button>
+                      <button
+                        className="note-panel-button note-panel-button--compact"
+                        type="button"
+                        onClick={() => toggleNoteArchive(note.id)}
+                        aria-label={
+                          note.isArchived ? t('note_restore_item') : t('note_archive_item')
+                        }
+                        title={note.isArchived ? t('note_restore_item') : t('note_archive_item')}
+                      >
+                        {note.isArchived ? <RestoreIcon /> : <ArchiveIcon />}
+                      </button>
+                      <button
+                        className="note-panel-button note-panel-button--compact note-panel-button--danger"
+                        type="button"
+                        onClick={() => requestDeleteNote(note.id)}
+                        aria-label={t('note_delete_item')}
+                        title={t('note_delete_item')}
+                      >
+                        <DeleteIcon />
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="note-panel-empty">
+                <p>{emptyMessage}</p>
+                <button
+                  className="modal-button modal-button--save"
+                  type="button"
+                  onClick={isSearchEmpty ? () => setSearchQuery('') : createNewNote}
+                >
+                  {isSearchEmpty ? t('note_clear_search') : t('note_add')}
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div
+            className={`note-workspace-editor-pane ${!isEditorView ? 'note-workspace-pane--compact-hidden' : ''}`}
+          >
+            {activeNote ? (
+              <div className="note-editor" role="region" aria-label={t('note_editor_label')}>
+                <div className="note-editor-header">
+                  <button
+                    className="note-panel-button"
+                    type="button"
+                    onClick={handleBackToList}
+                    aria-label={t('note_back_to_list')}
+                    title={t('note_back_to_list')}
+                  >
+                    <BackIcon />
+                  </button>
+                </div>
+                <label className="visually-hidden" htmlFor="note-title">
+                  {t('note_title_label')}
+                </label>
+                <input
+                  id="note-title"
+                  ref={titleInputRef}
+                  className="note-title-input"
+                  type="text"
+                  value={activeNote.title}
+                  onChange={(event) => updateActiveNote('title', event.target.value)}
+                  placeholder={t('note_title_placeholder')}
+                />
+                <label className="visually-hidden" htmlFor="note-content">
+                  {t('note_content_label')}
+                </label>
+                <textarea
+                  id="note-content"
+                  className="note-panel-textarea"
+                  value={activeNote.content}
+                  onChange={(event) => updateActiveNote('content', event.target.value)}
+                  placeholder={t('note_placeholder')}
+                  aria-label={t('note_content_label')}
+                />
+                <p className="note-editor-meta">
+                  {t('note_updated_at', { date: formatNoteDate(activeNote.updatedAt) })}
+                </p>
+                <p
+                  className={`note-save-status note-save-status--${saveStatus}`}
+                  role="status"
+                  aria-live="polite"
+                >
+                  {saveStatus === 'saving' && t('note_save_saving')}
+                  {saveStatus === 'saved' && t('note_save_saved')}
+                  {saveStatus === 'error' && t('note_save_error')}
+                </p>
+              </div>
+            ) : (
+              <div className="note-panel-empty note-panel-empty--editor">
+                <p>{t('note_select_to_edit')}</p>
+                <button
+                  className="modal-button modal-button--save"
+                  type="button"
+                  onClick={createNewNote}
+                >
+                  {t('note_add')}
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {pendingDeleteNote && (

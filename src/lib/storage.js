@@ -40,7 +40,7 @@ const ROLLBACK_KEY = 'tabibe-state-rollback';
 const LEGACY_SITES_KEY = 'tabibe-sites';
 const LEGACY_NOTES_KEY = 'tabibe-notes';
 const LEGACY_NOTE_KEY = 'tabibe-note';
-const APP_VERSION = import.meta.env.VITE_APP_VERSION || '1.0.1';
+const APP_VERSION = import.meta.env.VITE_APP_VERSION || '1.1.0';
 
 let writeQueue = Promise.resolve();
 
@@ -172,6 +172,8 @@ function getLegacySettings(values) {
       showClock: readLegacy('show-clock', true),
       showSearch: readLegacy('show-search', true),
       notePinned: readLegacy('note-pinned', false),
+      notePanelSide: readLegacy('note-panel-side', 'left'),
+      notePanelMode: readLegacy('note-panel-mode', 'panel'),
       backgroundColor: readLegacy('bg-color', ''),
       backgroundImage: readLegacy('bg-image', ''),
       showMemory: readLegacy('show-memory', false),

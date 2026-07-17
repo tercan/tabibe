@@ -170,6 +170,8 @@ function createDefaultSettings(systemTheme = 'light') {
     showClock: true,
     showSearch: true,
     notePinned: false,
+    notePanelSide: 'left',
+    notePanelMode: 'panel',
     backgroundColor: '',
     backgroundImage: '',
     showMemory: false,
@@ -202,6 +204,14 @@ function normalizeSettings(value, systemTheme = 'light') {
     showClock: typeof source.showClock === 'boolean' ? source.showClock : defaults.showClock,
     showSearch: typeof source.showSearch === 'boolean' ? source.showSearch : defaults.showSearch,
     notePinned: typeof source.notePinned === 'boolean' ? source.notePinned : defaults.notePinned,
+    notePanelSide:
+      source.notePanelSide === 'left' || source.notePanelSide === 'right'
+        ? source.notePanelSide
+        : defaults.notePanelSide,
+    notePanelMode:
+      source.notePanelMode === 'panel' || source.notePanelMode === 'fullscreen'
+        ? source.notePanelMode
+        : defaults.notePanelMode,
     backgroundColor:
       typeof source.backgroundColor === 'string'
         ? source.backgroundColor.slice(0, 32)

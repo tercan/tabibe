@@ -4,7 +4,7 @@ Dil: [English](../../README.md) | Türkçe
 
 Chromium tabanlı tarayıcılar için modern, minimalist ve yüksek performanslı yeni sekme (new tab) açılış sayfası eklentisi.
 
-**Güncel sürüm:** `1.0.1`
+**Güncel sürüm:** `1.1.0`
 
 ## Hakkında
 
@@ -20,7 +20,7 @@ Tabibe, yeni sekme deneyimini kişisel bir kontrol ve üretkenlik alanına dön�
 - Ana ekran, klasör içi ve klasörden ana ekrana sürükle-bırak desteği
 - Sürükle-bırak sırasında daha anlaşılır hedef ve taşıma animasyonları
 - Klavyeyle sola/sağa sıralama ve siteleri ana ekran ile klasörler arasında taşıma
-- Çoklu not sistemi: başlık, içerik, arama, aktif/arşiv görünümü ve sabitleme
+- Çoklu not çalışma alanı: başlık, içerik, arama, aktif/arşiv görünümü, sabitleme, sol/sağ konum ve responsive tam ekran düzenleri
 - Boş not kaydını engelleyen not kontrolü
 - Not silme için onay ekranı ve geri alma bildirimi
 - Açık/koyu tema desteği
