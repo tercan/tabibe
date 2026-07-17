@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
 import { useTranslation } from '../hooks/useTranslation.js';
 import { get_daily_quote } from '../data/quotes.js';
+import useBrowserStats from '../hooks/useBrowserStats.js';
 
 /**
  * 1. SVG icon components
@@ -185,61 +185,15 @@ function Footer({
   show_memory,
 }) {
   const { t, locale } = useTranslation();
-  const [tab_count, set_tab_count] = useState(0);
-  const [window_count, set_window_count] = useState(0);
-  const [memory_info, set_memory_info] = useState(null);
+  const {
+    memoryInfo: memory_info,
+    refreshMemory: refresh_memory,
+    tabCount: tab_count,
+    windowCount: window_count,
+  } = useBrowserStats(show_memory);
   const quote = get_daily_quote(locale);
   const icon_style_label =
     icon_style === 'simple' ? t('footer_icon_style_simple') : t('footer_icon_style_favicon');
-
-  useEffect(() => {
-    function update_counts() {
-      if (typeof chrome !== 'undefined' && chrome.tabs) {
-        chrome.tabs.query({}, (tabs) => {
-          if (chrome.runtime.lastError) return;
-          set_tab_count(tabs.length);
-        });
-        chrome.windows.getAll({}, (windows) => {
-          if (chrome.runtime.lastError) return;
-          set_window_count(windows.length);
-        });
-      }
-
-      if (show_memory && typeof chrome !== 'undefined' && chrome.system && chrome.system.memory) {
-        chrome.system.memory.getInfo((info) => {
-          if (chrome.runtime.lastError) return;
-          const used_gb = ((info.capacity - info.availableCapacity) / 1024 ** 3).toFixed(1);
-          const total_gb = (info.capacity / 1024 ** 3).toFixed(0);
-          set_memory_info(`${used_gb}/${total_gb} GB`);
-        });
-      } else if (!show_memory) {
-        set_memory_info(null);
-      }
-    }
-
-    update_counts();
-
-    // Refresh counts every 30 seconds
-    let interval_id = setInterval(update_counts, 30000);
-
-    // Pause polling when tab is hidden
-    function handle_visibility() {
-      if (document.hidden) {
-        clearInterval(interval_id);
-        interval_id = null;
-      } else {
-        update_counts();
-        interval_id = setInterval(update_counts, 30000);
-      }
-    }
-
-    document.addEventListener('visibilitychange', handle_visibility);
-
-    return () => {
-      if (interval_id) clearInterval(interval_id);
-      document.removeEventListener('visibilitychange', handle_visibility);
-    };
-  }, [show_memory]);
 
   return (
     <footer className="footer">
@@ -264,7 +218,12 @@ function Footer({
 
       <div className="footer-right">
         {(tab_count > 0 || memory_info) && (
-          <details className="footer-stats-menu">
+          <details
+            className="footer-stats-menu"
+            onToggle={(event) => {
+              if (event.currentTarget.open) refresh_memory();
+            }}
+          >
             <summary
               className="footer-button"
               aria-label={t('footer_usage_stats')}

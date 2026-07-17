@@ -20,10 +20,12 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run lint:css
+      - run: npm run lint:css:standards
       - run: npm run format:check
       - run: npm run test:coverage
       - run: npm run build
       - run: npm run budget:bundle
+      - run: npm run lighthouse
       - run: npm run audit
       - run: npm run package:extension
 

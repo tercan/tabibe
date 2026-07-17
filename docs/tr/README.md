@@ -4,7 +4,7 @@ Dil: [English](../../README.md) | Türkçe
 
 Chromium tabanlı tarayıcılar için modern, minimalist ve yüksek performanslı yeni sekme (new tab) açılış sayfası eklentisi.
 
-**Güncel sürüm:** `0.6.0`
+**Güncel sürüm:** `0.6.1`
 
 ## Hakkında
 
@@ -35,6 +35,7 @@ Tabibe, yeni sekme deneyimini kişisel bir kontrol ve üretkenlik alanına dön�
 - Tüm uygulama verileri için JSON import/export desteği (siteler, klasörler, ayarlar ve çoklu notlar dahil)
 - 10 arayüz dili desteği: Türkçe, English, Español, Português, Русский, العربية, हिन्दी, বাংলা, 中文, 日本語
 - Kalıcı uygulama içi dil seçimi, 10 dilin tamamında yerelleştirilmiş uzantı metadatası ve sağdan sola Arapça düzen
+- Gerektiğinde yüklenen not, ayar ve modal araçları ile olay tabanlı tarayıcı kullanım sayaçları
 - Günlük alıntı sözler: Türkçe ve İngilizce havuz; diğer arayüz dillerinde İngilizce fallback kullanılır
 
 ### Tasarım Felsefesi
@@ -54,7 +55,7 @@ Tabibe, yeni sekme deneyimini kişisel bir kontrol ve üretkenlik alanına dön�
 
 ## Mimari
 
-Tabibe; kalıcı veri erişimini, alan işlemlerini, sürükle-bırak koordinasyonunu ve sunum katmanını birbirinden ayırır. Site, klasör ve not değişiklikleri test edilmiş saf işlemlerle yürütülür; React kancaları asenkron kayıt ve yaşam döngüsü davranışını yönetir; üst seviye kurtarma sınırları beklenmeyen render veya depolama hatalarının boş yeni sekme üretmesini engeller.
+Tabibe; kalıcı veri erişimini, alan işlemlerini, sürükle-bırak koordinasyonunu ve sunum katmanını birbirinden ayırır. Site, klasör ve not değişiklikleri test edilmiş saf işlemlerle yürütülür; React kancaları asenkron kayıt ve yaşam döngüsü davranışını yönetir; üst seviye kurtarma sınırları beklenmeyen render veya depolama hatalarının boş yeni sekme üretmesini engeller. İsteğe bağlı paneller gerektiğinde yüklenir, tarayıcı sayaçları Chrome olaylarına tepki verir ve bileşen CSS'i otomatik denetlenen tasarım tokenları etrafında düzenlenir.
 
 ## Veri ve Gizlilik
 
@@ -91,6 +92,7 @@ npm run dev
 ```bash
 npm run quality
 npm run test:e2e
+npm run lighthouse
 npm run audit
 ```
 

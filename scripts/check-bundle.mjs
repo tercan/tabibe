@@ -33,8 +33,14 @@ for (const file of jsFiles) {
   sizes.push({ file, gzipSize: gzipSync(contents).length });
 }
 
-sizes.sort((first, second) => second.gzipSize - first.gzipSize);
-const [initialChunk, ...lazyChunks] = sizes;
+const indexHtml = await readFile(join(distDirectory, 'index.html'), 'utf8');
+const initialFile = indexHtml.match(/<script[^>]+src=["']\.\/assets\/([^"']+\.js)["']/i)?.[1];
+const initialChunk = sizes.find((chunk) => chunk.file === initialFile);
+if (!initialChunk) {
+  throw new Error('Unable to identify the initial JavaScript chunk from dist/index.html.');
+}
+
+const lazyChunks = sizes.filter((chunk) => chunk.file !== initialFile);
 
 if (initialChunk.gzipSize > INITIAL_JS_BUDGET) {
   throw new Error(`Initial JS ${initialChunk.gzipSize} exceeds ${INITIAL_JS_BUDGET} bytes.`);
@@ -51,7 +57,9 @@ if (distSize > DIST_BUDGET) {
   throw new Error(`Distribution size ${distSize} exceeds ${DIST_BUDGET} bytes.`);
 }
 
-for (const chunk of sizes) {
+for (const chunk of [initialChunk, ...lazyChunks].sort(
+  (first, second) => second.gzipSize - first.gzipSize,
+)) {
   console.info(
     `${relative(process.cwd(), join(assetsDirectory, chunk.file))}: ${chunk.gzipSize} gzip bytes`,
   );

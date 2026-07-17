@@ -6,6 +6,25 @@ This file documents all notable changes in the project.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.6.1] - 2026-07-17 04:04
+
+### Added
+
+- Added Lighthouse release budgets for performance, accessibility, best practices, and SEO
+- Added automated CSS architecture checks for tokens, spacing, shadows, gradients, radii, and letter spacing
+- Added lifecycle tests for background object URLs and event-driven browser statistics
+
+### Changed
+
+- Lazy-loaded notes, settings, context menus, and site/folder modal flows to reduce initial JavaScript to 113,447 gzip bytes
+- Replaced the 30-second tab/window polling loop with Chrome event listeners and visibility-based refresh
+- Split the monolithic stylesheet into token, reset, base, layout, component, utility, responsive, and animation layers
+
+### Fixed
+
+- Released generated background object URLs when the image changes or the new-tab page closes
+- Restored Escape-key closing and focus trapping when the note panel is reopened after its data loads asynchronously
+
 ## [0.6.0] - 2026-07-17 03:42
 
 ### Added

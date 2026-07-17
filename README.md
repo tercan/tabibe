@@ -4,7 +4,7 @@ Language: English | [Türkçe](docs/tr/README.md)
 
 A modern, minimalist, and high-performance new tab extension for Chromium-based browsers.
 
-**Current version:** `0.6.0`
+**Current version:** `0.6.1`
 
 ## About
 
@@ -35,6 +35,7 @@ Tabibe turns the new tab experience into a personal control and productivity spa
 - JSON import/export for all app data, including sites, folders, settings, and multi-note data
 - 10 UI languages: Türkçe, English, Español, Português, Русский, العربية, हिन्दी, বাংলা, 中文, 日本語
 - Persistent in-app language selection, localized extension metadata for all 10 languages, and right-to-left Arabic layouts
+- Lazy-loaded notes, settings, and modal tools with event-driven browser usage counters
 - Daily quotes: Turkish and English quote pools; other UI languages fall back to English quotes
 
 ### Design Philosophy
@@ -54,7 +55,7 @@ Tabibe turns the new tab experience into a personal control and productivity spa
 
 ## Architecture
 
-Tabibe separates persisted data access, domain operations, drag-and-drop coordination, and presentation overlays. Site, folder, and note mutations are implemented as tested pure operations; React hooks own asynchronous persistence and lifecycle behavior; top-level recovery boundaries keep unexpected rendering or storage failures from producing a blank new tab.
+Tabibe separates persisted data access, domain operations, drag-and-drop coordination, and presentation overlays. Site, folder, and note mutations are implemented as tested pure operations; React hooks own asynchronous persistence and lifecycle behavior; top-level recovery boundaries keep unexpected rendering or storage failures from producing a blank new tab. Optional panels are loaded on demand, browser counters react to Chrome events, and component CSS is organized around enforced design tokens.
 
 ## Data and Privacy
 
@@ -91,6 +92,7 @@ npm run dev
 ```bash
 npm run quality
 npm run test:e2e
+npm run lighthouse
 npm run audit
 ```
 

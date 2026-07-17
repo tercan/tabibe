@@ -6,6 +6,25 @@ Bu dosya, projede yapılan tüm önemli değişiklikleri belgelemektedir.
 Format [Keep a Changelog](https://keepachangelog.com/tr/1.0.0/) standardına dayanmaktadır.
 Versiyon numaralandırması [Semantic Versioning](https://semver.org/lang/tr/) prensiplerine uymaktadır.
 
+## [0.6.1] - 2026-07-17 04:04
+
+### Added
+
+- Performans, erişilebilirlik, iyi uygulamalar ve SEO için Lighthouse sürüm bütçeleri eklendi
+- Token, spacing, gölge, gradient, radius ve letter-spacing kurallarını denetleyen otomatik CSS mimari kontrolü eklendi
+- Arka plan object URL yaşam döngüsü ve olay tabanlı tarayıcı istatistikleri için testler eklendi
+
+### Changed
+
+- İlk JavaScript yükünü 113.447 gzip bayta indirmek için notlar, ayarlar, context menu ve site/klasör modal akışları gerektiğinde yüklenecek şekilde ayrıldı
+- 30 saniyelik sekme/pencere polling döngüsü Chrome olay dinleyicileri ve görünürlük tabanlı yenilemeyle değiştirildi
+- Tek parça stil dosyası token, reset, base, layout, bileşen, yardımcı, responsive ve animasyon katmanlarına ayrıldı
+
+### Fixed
+
+- Üretilen arka plan object URL'lerinin görsel değiştiğinde veya yeni sekme kapandığında serbest bırakılması sağlandı
+- Not paneli asenkron veri yüklemesinden sonra yeniden açıldığında Escape ile kapatma ve odak tuzağı davranışı düzeltildi
+
 ## [0.6.0] - 2026-07-17 03:42
 
 ### Added

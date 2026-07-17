@@ -1,15 +1,20 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { BACKGROUND_PRESET_GROUPS } from './backgroundPresets.js';
 
-const stylesheet = readFileSync(resolve('src/index.css'), 'utf8');
+const stylesDirectory = resolve('src/styles');
+const stylesheet = readdirSync(stylesDirectory)
+  .filter((file) => file.endsWith('.css'))
+  .map((file) => readFileSync(resolve(stylesDirectory, file), 'utf8'))
+  .join('\n');
+const tokenStylesheet = readFileSync(resolve(stylesDirectory, 'tokens.css'), 'utf8');
 
 function getRuleBlock(selector) {
-  const start = stylesheet.indexOf(selector);
-  const openingBrace = stylesheet.indexOf('{', start);
-  const closingBrace = stylesheet.indexOf('}', openingBrace);
-  return stylesheet.slice(openingBrace + 1, closingBrace);
+  const start = tokenStylesheet.indexOf(selector);
+  const openingBrace = tokenStylesheet.indexOf('{', start);
+  const closingBrace = tokenStylesheet.indexOf('}', openingBrace);
+  return tokenStylesheet.slice(openingBrace + 1, closingBrace);
 }
 
 function getColorToken(block, token) {

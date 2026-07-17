@@ -1,0 +1,131 @@
+/**
+ * 2. Design tokens (custom properties) — Light theme (default)
+ */
+
+:root {
+  /* Colors */
+  --color-primary: #0b57d0;
+  --color-primary-hover: #0842a0;
+  --color-primary-surface: #0b57d0;
+  --color-primary-surface-hover: #0842a0;
+  --color-primary-rgb: 11, 87, 208;
+  --color-focus: #0b57d0;
+  --color-secondary: #e9ecef;
+  --color-text: #212529;
+  --color-text-muted: #5f6368;
+  --color-text-inverse: #ffffff;
+  --color-border: #dee2e6;
+  --color-background: #f8f9fa;
+  --color-surface: #ffffff;
+  --color-surface-hover: #f1f3f5;
+  --color-clock-surface: rgba(255, 255, 255, 0.88);
+  --color-clock-border: rgba(222, 226, 230, 0.9);
+  --color-note-confirm-overlay: rgba(0, 0, 0, 0.35);
+  --color-overlay: rgba(0, 0, 0, 0.5);
+  --color-overlay-soft: rgba(0, 0, 0, 0.35);
+  --color-panel-overlay: rgba(0, 0, 0, 0.4);
+  --color-toggle-thumb: #ffffff;
+  --color-error: #b3261e;
+  --color-error-surface: #b3261e;
+  --color-success: #1b6e36;
+  --color-warning: #f9a825;
+  --color-footer-bg: #f1f3f5;
+
+  /* Typography */
+  --font-family-base: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-family-heading: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-family-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  --font-size-xxs: 0.625rem;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-md: 1.125rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+  --font-size-2xl: 2rem;
+  --font-size-3xl: 2.5rem;
+  --font-size-clock: 4.5rem;
+  --line-height-tight: 1.25;
+  --line-height-base: 1.5;
+  --line-height-relaxed: 1.75;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Spacing */
+  --space-2xs: 0.125rem;
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+
+  /* Borders */
+  --border-radius: 0.125rem;
+  --border-width: 0.0625rem;
+  --border-color: var(--color-border);
+
+  /* Shadows */
+  --shadow-sm: 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 0.25rem 0.375rem rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 0.625rem 0.9375rem rgba(0, 0, 0, 0.1);
+  --shadow-focus-ring: 0 0 0 var(--border-width) var(--color-primary);
+  --shadow-selected-ring: 0 0 0 1px var(--color-primary);
+  --shadow-swatch-active:
+    0 0 0 var(--space-2xs) var(--color-background), 0 0 0 var(--space-xs) var(--color-focus);
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+  --filter-favicon-simple: grayscale(1) contrast(1.35);
+
+  /* Z-index scale */
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+  --z-context-menu: 600;
+
+  /* Layout */
+  --container-max-width: 75rem;
+  --container-padding: var(--space-md);
+}
+
+/**
+ * 2b. Dark theme overrides
+ */
+
+[data-theme='dark'] {
+  --color-primary: #a970ff;
+  --color-primary-hover: #c7a7ff;
+  --color-primary-surface: #6d28d9;
+  --color-primary-surface-hover: #5b21b6;
+  --color-primary-rgb: 169, 112, 255;
+  --color-focus: #c7a7ff;
+  --color-secondary: #212133;
+  --color-text: #e8eaed;
+  --color-text-muted: #c7c7d6;
+  --color-text-inverse: #ffffff;
+  --color-border: #2d2d3d;
+  --color-background: #181828;
+  --color-surface: #212133;
+  --color-surface-hover: #2a2a44;
+  --color-clock-surface: rgba(33, 33, 51, 0.88);
+  --color-clock-border: rgba(45, 45, 61, 0.9);
+  --color-note-confirm-overlay: rgba(0, 0, 0, 0.5);
+  --color-error: #ff5252;
+  --color-error-surface: #b3261e;
+  --color-success: #69f0ae;
+  --color-warning: #ffd740;
+
+  --shadow-sm: 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 0.25rem 0.375rem rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 0.625rem 0.9375rem rgba(0, 0, 0, 0.6);
+  --color-footer-bg: #13131f;
+  --filter-favicon-simple: grayscale(1) contrast(1.2) brightness(1.15);
+}

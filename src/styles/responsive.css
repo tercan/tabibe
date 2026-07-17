@@ -1,0 +1,123 @@
+/**
+ * 7. Media queries (responsive overrides)
+ */
+
+@media (max-width: 48rem) {
+  :root {
+    --font-size-clock: 3.5rem;
+  }
+
+  .speed-dial-grid {
+    grid-template-columns: repeat(auto-fill, minmax(5rem, 1fr));
+    gap: var(--space-md);
+  }
+
+  .footer-quote-text {
+    max-width: 20rem;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 36rem) {
+  :root {
+    --font-size-clock: 2.5rem;
+  }
+
+  .new-tab {
+    padding: var(--space-lg);
+    gap: var(--space-xl);
+  }
+
+  .app-loading-grid {
+    grid-template-columns: repeat(3, minmax(4rem, 1fr));
+  }
+
+  .app-recovery-content {
+    padding: var(--space-lg);
+  }
+
+  .app-recovery-actions .modal-button {
+    flex: 1 1 100%;
+  }
+
+  .speed-dial-grid {
+    grid-template-columns: repeat(auto-fill, minmax(4.5rem, 1fr));
+    gap: var(--space-sm);
+  }
+
+  .speed-dial-toolbar {
+    top: var(--space-md);
+    inset-inline-end: var(--space-md);
+  }
+
+  .speed-dial-toolbar-button {
+    width: 2.25rem;
+    height: 2.25rem;
+    min-height: 2.25rem;
+  }
+
+  .note-panel {
+    width: 96vw;
+    inset-inline-start: -96vw;
+  }
+
+  .note-panel--open {
+    transform: translateX(96vw);
+  }
+
+  [dir='rtl'] .note-panel--open {
+    transform: translateX(-96vw);
+  }
+
+  .note-panel-controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .note-panel-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .note-list-actions {
+    opacity: 1;
+  }
+
+  .footer {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-xs);
+  }
+
+  .footer-left {
+    display: none;
+  }
+
+  .footer-right {
+    order: 2;
+  }
+
+  .footer-stats-menu {
+    display: block;
+  }
+
+  .footer-center {
+    order: 1;
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .settings-bg-swatch:hover {
+    transform: none;
+  }
+}

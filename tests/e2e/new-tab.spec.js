@@ -149,6 +149,7 @@ test('renders the unpacked new-tab experience without critical accessibility vio
     await notesButton.click();
     await expect(page.locator('.note-list-title', { hasText: 'E2E note' })).toBeVisible();
     await page.keyboard.press('Escape');
+    await expect(page.locator('.note-panel')).toHaveCount(0);
     await expect(notesButton).toBeFocused();
 
     const settingsButton = page.locator('.footer-right > .footer-button').last();

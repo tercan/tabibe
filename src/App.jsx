@@ -1,10 +1,8 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { useTranslation } from './hooks/useTranslation.js';
 import Clock from './components/Clock.jsx';
 import SearchBar from './components/SearchBar.jsx';
 import SpeedDial from './components/SpeedDial.jsx';
-import NotePanel from './components/NotePanel.jsx';
-import SettingsPanel from './components/SettingsPanel.jsx';
 import Footer from './components/Footer.jsx';
 import { AppLoading, AppRecovery } from './components/AppRecovery.jsx';
 import {
@@ -14,6 +12,10 @@ import {
 import { createDefaultSettings, loadSettings, saveSettings } from './lib/storage.js';
 import { detectLocale } from './i18n/translationContext.js';
 import useFaviconPermission from './hooks/useFaviconPermission.js';
+import useBackgroundImageUrl from './hooks/useBackgroundImageUrl.js';
+
+const NotePanel = lazy(() => import('./components/NotePanel.jsx'));
+const SettingsPanel = lazy(() => import('./components/SettingsPanel.jsx'));
 
 function getSystemTheme() {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -40,6 +42,7 @@ function App() {
     showMemory,
     locale: selectedLocale,
   } = settings;
+  const renderedBackgroundImage = useBackgroundImageUrl(backgroundImage);
 
   useEffect(() => {
     let active = true;
@@ -187,9 +190,9 @@ function App() {
   }
 
   function getBackgroundStyle() {
-    if (backgroundImage) {
+    if (renderedBackgroundImage) {
       return {
-        backgroundImage: `url(${backgroundImage})`,
+        backgroundImage: `url(${renderedBackgroundImage})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
@@ -228,12 +231,22 @@ function App() {
         has_favicon_permission={faviconPermission.hasPermission}
         on_request_favicon_permission={handleRequestFaviconPermission}
       />
-      <NotePanel
-        is_open={notePanelOpen}
-        is_pinned={notePinned}
-        on_close={() => setNotePanelOpen(false)}
-        on_toggle_pin={handleToggleNotePin}
-      />
+      <Suspense
+        fallback={
+          <span className="visually-hidden" role="status">
+            {t('app_loading')}
+          </span>
+        }
+      >
+        {(notePanelOpen || notePinned) && (
+          <NotePanel
+            is_open={notePanelOpen}
+            is_pinned={notePinned}
+            on_close={() => setNotePanelOpen(false)}
+            on_toggle_pin={handleToggleNotePin}
+          />
+        )}
+      </Suspense>
       <Footer
         theme={theme}
         on_toggle_theme={toggleTheme}
@@ -243,28 +256,38 @@ function App() {
         on_open_notes={() => setNotePanelOpen(true)}
         show_memory={showMemory}
       />
-      <SettingsPanel
-        is_open={settingsOpen}
-        on_close={() => setSettingsOpen(false)}
-        search_engine={searchEngine}
-        on_change_search_engine={handleChangeSearchEngine}
-        show_clock={showClock}
-        on_toggle_clock={handleToggleClock}
-        show_search={showSearch}
-        on_toggle_search={handleToggleSearch}
-        show_memory={showMemory}
-        on_toggle_memory={handleToggleMemory}
-        locale={locale}
-        on_change_locale={handleChangeLocale}
-        favicon_permission={faviconPermission}
-        on_request_favicon_permission={handleRequestFaviconPermission}
-        on_revoke_favicon_permission={handleRevokeFaviconPermission}
-        bg_color={backgroundColor}
-        bg_image={backgroundImage}
-        on_change_bg_color={handleChangeBackgroundColor}
-        on_change_bg_image={handleChangeBackgroundImage}
-        on_reset_bg={handleResetBackground}
-      />
+      <Suspense
+        fallback={
+          <span className="visually-hidden" role="status">
+            {t('app_loading')}
+          </span>
+        }
+      >
+        {settingsOpen && (
+          <SettingsPanel
+            is_open={settingsOpen}
+            on_close={() => setSettingsOpen(false)}
+            search_engine={searchEngine}
+            on_change_search_engine={handleChangeSearchEngine}
+            show_clock={showClock}
+            on_toggle_clock={handleToggleClock}
+            show_search={showSearch}
+            on_toggle_search={handleToggleSearch}
+            show_memory={showMemory}
+            on_toggle_memory={handleToggleMemory}
+            locale={locale}
+            on_change_locale={handleChangeLocale}
+            favicon_permission={faviconPermission}
+            on_request_favicon_permission={handleRequestFaviconPermission}
+            on_revoke_favicon_permission={handleRevokeFaviconPermission}
+            bg_color={backgroundColor}
+            bg_image={backgroundImage}
+            on_change_bg_color={handleChangeBackgroundColor}
+            on_change_bg_image={handleChangeBackgroundImage}
+            on_reset_bg={handleResetBackground}
+          />
+        )}
+      </Suspense>
       {storageError && (
         <div className="toast toast--error" role="alert">
           <span>{t('app_storage_error')}</span>

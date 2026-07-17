@@ -7,6 +7,8 @@ release/
 coverage/
 test-results/
 playwright-report/
+lighthouse-results/
+.lighthouseci/
 public/brand-icons/
 
 # Environment variables

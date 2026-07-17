@@ -166,7 +166,7 @@ function NotePanel({ is_open, is_pinned, on_close, on_toggle_pin }) {
 
   useFocusTrap({
     containerRef: panelRef,
-    isActive: is_open && !is_pinned && !pendingDeleteNoteId,
+    isActive: isLoaded && is_open && !is_pinned && !pendingDeleteNoteId,
     initialFocusRef: isEditorView ? titleInputRef : createButtonRef,
     onEscape: handleClosePanel,
   });

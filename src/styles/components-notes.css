@@ -1,0 +1,416 @@
+/* Note Panel (Side Panel) */
+.note-panel {
+  position: fixed;
+  top: 0;
+  inset-inline-start: -30rem;
+  bottom: 0;
+  width: 30rem;
+  max-width: 96vw;
+  background-color: var(--color-background);
+  border-inline-end: var(--border-width) solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  z-index: var(--z-modal);
+  transition:
+    transform var(--transition-base),
+    inset-inline-start var(--transition-base);
+}
+
+.note-panel--open {
+  transform: translateX(30rem);
+}
+
+[dir='rtl'] .note-panel--open {
+  transform: translateX(-30rem);
+}
+
+.note-panel--pinned {
+  inset-inline-start: 0;
+  transform: none;
+  box-shadow: none;
+  z-index: var(--z-sticky);
+}
+
+.note-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md);
+  border-bottom: var(--border-width) solid var(--color-border);
+  gap: var(--space-md);
+}
+
+.note-panel-title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.note-panel-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.note-panel-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--border-radius);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.note-panel-button:hover,
+.note-panel-button:focus-visible {
+  background-color: var(--color-surface-hover);
+  color: var(--color-text);
+  outline: 0.125rem solid var(--color-focus);
+  outline-offset: 0.125rem;
+}
+
+.note-panel-button--active {
+  color: var(--color-primary);
+  background-color: var(--color-surface);
+}
+
+.note-panel-button--compact {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.note-panel-button--compact svg {
+  width: 0.8125rem;
+  height: 0.8125rem;
+}
+
+.note-panel-button--danger:hover,
+.note-panel-button--danger:focus-visible {
+  color: var(--color-error);
+}
+
+.note-panel-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.note-panel-search,
+.note-title-input {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius);
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  font-size: var(--font-size-sm);
+  transition:
+    border-color var(--transition-base),
+    box-shadow var(--transition-base);
+}
+
+.note-panel-search:focus,
+.note-title-input:focus {
+  border-color: var(--color-primary);
+  outline: 0.125rem solid var(--color-focus);
+  outline-offset: 0.125rem;
+}
+
+.note-panel-tabs {
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--space-2xs);
+}
+
+.note-panel-tab {
+  min-height: 2rem;
+  padding: var(--space-xs) var(--space-sm);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius);
+  color: var(--color-text-muted);
+  background-color: var(--color-surface);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.note-panel-tab:hover,
+.note-panel-tab:focus-visible,
+.note-panel-tab--active {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background-color: var(--color-surface-hover);
+}
+
+.note-panel-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.note-panel-body--list .note-list {
+  flex: 1;
+}
+
+.note-panel-body--editor .note-editor {
+  flex: 1;
+}
+
+.note-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  min-width: 0;
+  padding: var(--space-sm);
+  overflow-y: auto;
+}
+
+.note-list-row {
+  position: relative;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.note-list-row:hover,
+.note-list-row:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.note-list-row--active {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.note-list-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  width: 100%;
+  padding: var(--space-md) calc(var(--space-2xl) + var(--space-xs)) var(--space-md) var(--space-sm);
+  text-align: left;
+  border-radius: var(--border-radius);
+  color: var(--color-text);
+  background-color: transparent;
+}
+
+.note-list-item:hover,
+.note-list-item:focus-visible {
+  background-color: var(--color-surface-hover);
+  outline: 0.125rem solid var(--color-focus);
+  outline-offset: 0.125rem;
+}
+
+.note-list-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.note-list-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.note-list-actions {
+  position: absolute;
+  top: 50%;
+  inset-inline-end: var(--space-xs);
+  display: flex;
+  gap: var(--space-2xs);
+  opacity: 0;
+  transform: translateY(-50%);
+  transition: opacity var(--transition-fast);
+}
+
+.note-list-row:hover .note-list-actions,
+.note-list-row:focus-within .note-list-actions,
+.note-list-row--active .note-list-actions {
+  opacity: 1;
+}
+
+.note-editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  min-width: 0;
+  min-height: 0;
+  padding: var(--space-md);
+}
+
+.note-editor-header {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.note-title-input {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+}
+
+.note-panel-textarea {
+  width: 100%;
+  flex: 1;
+  min-height: 12rem;
+  padding: var(--space-md);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius);
+  resize: none;
+  transition: border-color var(--transition-base);
+  line-height: var(--line-height-base);
+}
+
+.note-panel-textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
+.note-panel-textarea:focus {
+  border-color: var(--color-primary);
+  outline: 0.125rem solid var(--color-focus);
+  outline-offset: 0.125rem;
+}
+
+.note-editor-meta {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.note-save-status {
+  min-height: 1rem;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.note-save-status--saved {
+  color: var(--color-success);
+}
+
+.note-save-status--error {
+  color: var(--color-error);
+}
+
+.note-panel-empty {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-xl) var(--space-md) 0;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-base);
+}
+
+.note-panel-empty p {
+  margin: 0;
+}
+
+.note-confirm-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--space-xl) var(--space-md);
+  background-color: var(--color-note-confirm-overlay);
+}
+
+.note-confirm-dialog {
+  width: 100%;
+  max-width: 24rem;
+  padding: var(--space-lg);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius);
+  background-color: var(--color-background);
+  box-shadow: var(--shadow-lg);
+}
+
+.note-confirm-title {
+  margin: 0 0 var(--space-sm);
+  color: var(--color-text);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+}
+
+.note-confirm-description {
+  margin: 0 0 var(--space-md);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-base);
+}
+
+.note-panel-toast {
+  position: absolute;
+  inset-inline: var(--space-md);
+  bottom: var(--space-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius);
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  font-size: var(--font-size-sm);
+}
+
+/* Layout adjustments for pinning */
+.new-tab {
+  transition: padding var(--transition-base);
+}
+
+.new-tab--pinned {
+  padding-inline-start: calc(30rem + var(--space-xl)) !important;
+}
+
+@media (max-width: 62rem) {
+  .new-tab--pinned {
+    padding-inline-start: var(--space-xl) !important;
+  }
+}
+
+.speed-dial-label {
+  background-color: var(--color-surface);
+  padding: var(--space-2xs) var(--space-sm);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}

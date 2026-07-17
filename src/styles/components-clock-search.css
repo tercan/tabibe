@@ -1,0 +1,78 @@
+/**
+ * 5. Components
+ */
+
+/* Clock */
+.clock {
+  text-align: center;
+  user-select: none;
+}
+
+.new-tab--custom-background .clock {
+  padding: var(--space-md) var(--space-lg) var(--space-sm);
+  border: var(--border-width) solid var(--color-clock-border);
+  border-radius: var(--border-radius);
+  background-color: var(--color-clock-surface);
+  box-shadow: var(--shadow-md);
+}
+
+.clock-time {
+  color: var(--color-text);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-clock);
+  font-weight: 100;
+  line-height: 0.85;
+  letter-spacing: 0;
+}
+
+.clock-date {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+  letter-spacing: 0;
+}
+
+/* Search Bar */
+.search-bar {
+  margin-bottom: var(--space-md);
+  max-width: 36rem;
+  width: 100%;
+}
+
+.search-bar-form {
+  display: flex;
+  align-items: center;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius);
+  background-color: var(--color-surface);
+  transition:
+    border-color var(--transition-base),
+    box-shadow var(--transition-base);
+  padding: var(--space-sm) var(--space-lg);
+  gap: var(--space-sm);
+  height: 3.5rem;
+}
+
+.search-bar-form:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-focus-ring);
+}
+
+.search-bar-icon {
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--color-text-muted);
+}
+
+.search-bar-input {
+  flex: 1;
+  padding: var(--space-xs) 0;
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+}
+
+.search-bar-input::placeholder {
+  color: var(--color-text-muted);
+}
