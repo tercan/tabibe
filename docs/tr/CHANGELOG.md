@@ -6,6 +6,27 @@ Bu dosya, projede yapılan tüm önemli değişiklikleri belgelemektedir.
 Format [Keep a Changelog](https://keepachangelog.com/tr/1.0.0/) standardına dayanmaktadır.
 Versiyon numaralandırması [Semantic Versioning](https://semver.org/lang/tr/) prensiplerine uymaktadır.
 
+## [0.6.0] - 2026-07-17 03:42
+
+### Added
+
+- Canlı konum bildirimi ve geri alma desteğiyle klavyeden sola/sağa sıralama, klasöre taşıma ve ana ekrana taşıma eylemleri eklendi
+- Kalıcı dil seçimi, kök dil/yön eşitlemesi ve desteklenen 10 dilin tamamı için uzantı metadatası eklendi
+- Yinelenen URL'lerde mevcut siteyi güncelleme veya ikinci kaydı ekleme kararı eklendi
+- Yerel geliştirme ve özel ağ adreslerinden ayrılan genel HTTP güvenlik uyarısı eklendi
+- Site ve klasör formlarına asenkron kayıt ilerlemesi ile disabled durumları eklendi
+
+### Changed
+
+- Context menu rol modeli, odağı çağıran düğmeye geri döndüren native düğme ve seçim eylem listesiyle değiştirildi
+- Yöne bağlı düzen kuralları logical CSS özelliklerine dönüştürüldü; panel, toggle, toast ve portallara sağdan sola davranış eklendi
+- Düşük öncelikli sekme, pencere ve bellek sayaçları mobilde kompakt bilgi menüsüne taşındı
+
+### Fixed
+
+- Kullanıcının seçtiği arayüz dilinin her yeni sekme yüklemesinde tarayıcı diline dönmesi engellendi
+- Yinelenen kayıtların açık kullanıcı kararı olmadan sessizce kabul edilmesi engellendi
+
 ## [0.5.0] - 2026-07-17 03:21
 
 ### Added

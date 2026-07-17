@@ -104,10 +104,21 @@ const es = {
   modal_error_save_failed: 'No se pudieron guardar los cambios. Inténtalo de nuevo.',
   modal_cancel: 'Cancelar',
   modal_save: 'Guardar',
+  modal_saving: 'Guardando...',
   modal_placeholder_folder: 'Nombre de la carpeta',
   modal_label_location: 'Ubicación',
   modal_location_root: 'Pantalla principal',
   modal_duplicate_url: 'Esta URL ya está guardada.',
+  modal_duplicate_update: 'Actualizar sitio existente',
+  modal_duplicate_add_anyway: 'Añadir de todos modos',
+  modal_duplicate_decision_required:
+    'Elige si quieres actualizar el sitio existente o añadir otra copia.',
+  modal_http_public_warning:
+    'Esta dirección HTTP pública no cifra el tráfico. Continúa solo si confías en el sitio.',
+  modal_http_local_notice:
+    'Esta es una dirección de desarrollo local; su tráfico HTTP se limita a este dispositivo.',
+  modal_http_private_notice:
+    'Esta dirección HTTP está en una red privada. Úsala solo en una red de confianza.',
   modal_preview_title: 'Vista previa',
   modal_preview_empty_name: 'Nombre del sitio',
   modal_preview_empty_url: 'Vista previa de URL',
@@ -124,6 +135,12 @@ const es = {
 
   /* Context menu */
   context_edit: 'Editar',
+  context_actions_label: 'Acciones del elemento',
+  context_move_left: 'Mover a la izquierda',
+  context_move_right: 'Mover a la derecha',
+  context_folder_label: 'Carpeta de destino',
+  context_move_to_folder: 'Mover a la carpeta',
+  context_move_to_root: 'Mover a la pantalla principal',
   context_delete: 'Eliminar',
   context_remove_from_folder: 'Quitar de la carpeta',
 
@@ -133,11 +150,16 @@ const es = {
   toast_folder_deleted_with_contents: 'Carpeta y sitios eliminados.',
   toast_site_removed_from_folder: 'Sitio movido a la pantalla principal.',
   toast_site_moved_folder: 'Sitio movido a la carpeta.',
+  toast_item_moved: 'Se actualizó la posición del elemento.',
+  speed_dial_position_announcement: '{name} se movió a la posición {position} de {total}.',
+  speed_dial_folder_announcement: '{name} se movió a {folder}.',
+  speed_dial_root_announcement: '{name} se movió a la pantalla principal.',
   toast_undo: 'Deshacer',
   toast_restored: 'Restaurado.',
 
   /* Footer */
   footer_tabs: '{tabs} pestañas, {windows} ventanas',
+  footer_usage_stats: 'Información de uso',
   footer_theme_toggle: 'Cambiar tema',
   footer_icon_style: 'Cambiar estilo de icono',
   footer_icon_style_favicon: 'Modo favicon activo',
@@ -146,6 +168,7 @@ const es = {
 
   /* Settings panel */
   settings_title: 'Configuración',
+  settings_language: 'Idioma',
   settings_search_engine: 'Motor de búsqueda',
   settings_layout: 'Diseño',
   settings_show_clock: 'Mostrar reloj',

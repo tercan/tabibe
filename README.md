@@ -4,7 +4,7 @@ Language: English | [Türkçe](docs/tr/README.md)
 
 A modern, minimalist, and high-performance new tab extension for Chromium-based browsers.
 
-**Current version:** `0.5.0`
+**Current version:** `0.6.0`
 
 ## About
 
@@ -19,6 +19,7 @@ Tabibe turns the new tab experience into a personal control and productivity spa
 - Add sites from inside folders, edit folders in place, and use a safe folder deletion decision screen
 - Drag and drop on the main screen, inside folders, and from folders back to the main screen
 - Clearer drop targets and move animations during drag and drop
+- Keyboard-accessible left/right reordering and site movement between the main screen and folders
 - Multi-note system with title, content, search, active/archive views, and pinning
 - Empty-note prevention
 - Note deletion confirmation with undo support
@@ -30,8 +31,10 @@ Tabibe turns the new tab experience into a personal control and productivity spa
 - Searchable icon selector with automatic, brand, site, and letter modes
 - WCAG-aware contrast, visible keyboard focus, reduced-motion support, and minimum target sizing
 - Recoverable loading and storage error states with retry, validated backup, guarded reset, and one-step undo
+- Explicit safety decisions for public HTTP addresses and duplicate URLs, with distinct local/private network notices
 - JSON import/export for all app data, including sites, folders, settings, and multi-note data
 - 10 UI languages: Türkçe, English, Español, Português, Русский, العربية, हिन्दी, বাংলা, 中文, 日本語
+- Persistent in-app language selection, localized extension metadata for all 10 languages, and right-to-left Arabic layouts
 - Daily quotes: Turkish and English quote pools; other UI languages fall back to English quotes
 
 ### Design Philosophy

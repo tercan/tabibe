@@ -109,6 +109,68 @@ function NoteIcon() {
   );
 }
 
+function UsageIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 11v5" />
+      <path d="M12 8h.01" />
+    </svg>
+  );
+}
+
+function UsageStats({ countLabel, memoryInfo, memoryLabel, tabCount, windowCount }) {
+  return (
+    <>
+      {tabCount > 0 && (
+        <span className="footer-tabs" aria-label={countLabel}>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            aria-hidden="true"
+          >
+            <rect x="3" y="4" width="18" height="16" rx="2" />
+            <path d="M3 8h18" />
+          </svg>
+          {tabCount}
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            aria-hidden="true"
+          >
+            <rect x="2" y="4" width="16" height="14" rx="2" />
+            <rect x="6" y="2" width="16" height="14" rx="2" />
+          </svg>
+          {windowCount}
+        </span>
+      )}
+      {memoryInfo && (
+        <span className="footer-tabs" aria-label={`${memoryLabel}: ${memoryInfo}`}>
+          {memoryInfo}
+        </span>
+      )}
+    </>
+  );
+}
+
 /**
  * 2. Footer component
  */
@@ -182,67 +244,13 @@ function Footer({
   return (
     <footer className="footer">
       <div className="footer-left">
-        {tab_count > 0 && (
-          <span className="footer-tabs">
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <rect x="3" y="4" width="18" height="16" rx="2" />
-              <path d="M3 8h18" />
-              <path d="M9 4v4" />
-            </svg>
-            {tab_count}
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <rect x="2" y="4" width="16" height="14" rx="2" />
-              <rect x="6" y="2" width="16" height="14" rx="2" />
-            </svg>
-            {window_count}
-          </span>
-        )}
-        {memory_info && (
-          <span className="footer-tabs">
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <rect x="2" y="6" width="20" height="12" rx="2" />
-              <path d="M6 6V4" />
-              <path d="M10 6V4" />
-              <path d="M14 6V4" />
-              <path d="M18 6V4" />
-              <path d="M6 18v2" />
-              <path d="M10 18v2" />
-              <path d="M14 18v2" />
-              <path d="M18 18v2" />
-            </svg>
-            {memory_info}
-          </span>
-        )}
+        <UsageStats
+          countLabel={t('footer_tabs', { tabs: tab_count, windows: window_count })}
+          memoryInfo={memory_info}
+          memoryLabel={t('settings_show_memory')}
+          tabCount={tab_count}
+          windowCount={window_count}
+        />
       </div>
       {/* /.footer-left */}
 
@@ -255,6 +263,26 @@ function Footer({
       {/* /.footer-center */}
 
       <div className="footer-right">
+        {(tab_count > 0 || memory_info) && (
+          <details className="footer-stats-menu">
+            <summary
+              className="footer-button"
+              aria-label={t('footer_usage_stats')}
+              title={t('footer_usage_stats')}
+            >
+              <UsageIcon />
+            </summary>
+            <div className="footer-stats-menu-content">
+              <UsageStats
+                countLabel={t('footer_tabs', { tabs: tab_count, windows: window_count })}
+                memoryInfo={memory_info}
+                memoryLabel={t('settings_show_memory')}
+                tabCount={tab_count}
+                windowCount={window_count}
+              />
+            </div>
+          </details>
+        )}
         <button
           className="footer-button"
           onClick={on_toggle_icon_style}

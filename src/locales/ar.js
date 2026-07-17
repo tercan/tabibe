@@ -100,10 +100,18 @@ const ar = {
   modal_error_save_failed: 'تعذر حفظ التغييرات. يرجى المحاولة مرة أخرى.',
   modal_cancel: 'إلغاء',
   modal_save: 'حفظ',
+  modal_saving: 'جارٍ الحفظ...',
   modal_placeholder_folder: 'اسم المجلد',
   modal_label_location: 'الموقع',
   modal_location_root: 'الشاشة الرئيسية',
   modal_duplicate_url: 'هذا الرابط محفوظ بالفعل.',
+  modal_duplicate_update: 'تحديث الموقع الموجود',
+  modal_duplicate_add_anyway: 'الإضافة على أي حال',
+  modal_duplicate_decision_required: 'اختر تحديث الموقع الموجود أو إضافة نسخة أخرى.',
+  modal_http_public_warning:
+    'عنوان HTTP العام هذا لا يشفّر حركة البيانات. تابع فقط إذا كنت تثق بالموقع.',
+  modal_http_local_notice: 'هذا عنوان تطوير محلي؛ تظل حركة HTTP الخاصة به محصورة في هذا الجهاز.',
+  modal_http_private_notice: 'عنوان HTTP هذا موجود على شبكة خاصة. استخدمه فقط على شبكة موثوقة.',
   modal_preview_title: 'معاينة',
   modal_preview_empty_name: 'اسم الموقع',
   modal_preview_empty_url: 'معاينة الرابط',
@@ -120,6 +128,12 @@ const ar = {
 
   /* Context menu */
   context_edit: 'تعديل',
+  context_actions_label: 'إجراءات العنصر',
+  context_move_left: 'نقل إلى اليسار',
+  context_move_right: 'نقل إلى اليمين',
+  context_folder_label: 'المجلد الوجهة',
+  context_move_to_folder: 'نقل إلى المجلد',
+  context_move_to_root: 'نقل إلى الشاشة الرئيسية',
   context_delete: 'حذف',
   context_remove_from_folder: 'إزالة من المجلد',
 
@@ -129,11 +143,16 @@ const ar = {
   toast_folder_deleted_with_contents: 'تم حذف المجلد والمواقع داخله.',
   toast_site_removed_from_folder: 'تم نقل الموقع إلى الشاشة الرئيسية.',
   toast_site_moved_folder: 'تم نقل الموقع إلى المجلد.',
+  toast_item_moved: 'تم تحديث موضع العنصر.',
+  speed_dial_position_announcement: 'تم نقل {name} إلى الموضع {position} من {total}.',
+  speed_dial_folder_announcement: 'تم نقل {name} إلى {folder}.',
+  speed_dial_root_announcement: 'تم نقل {name} إلى الشاشة الرئيسية.',
   toast_undo: 'تراجع',
   toast_restored: 'تمت الاستعادة.',
 
   /* Footer */
   footer_tabs: '{tabs} علامة تبويب، {windows} نافذة',
+  footer_usage_stats: 'معلومات الاستخدام',
   footer_theme_toggle: 'تبديل السمة',
   footer_icon_style: 'تبديل نمط الأيقونة',
   footer_icon_style_favicon: 'وضع favicon نشط',
@@ -142,6 +161,7 @@ const ar = {
 
   /* Settings panel */
   settings_title: 'الإعدادات',
+  settings_language: 'اللغة',
   settings_search_engine: 'محرك البحث',
   settings_layout: 'التخطيط',
   settings_show_clock: 'إظهار الساعة',

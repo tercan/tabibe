@@ -101,10 +101,21 @@ const hi = {
   modal_error_save_failed: 'बदलाव सहेजे नहीं जा सके। कृपया फिर से कोशिश करें।',
   modal_cancel: 'रद्द करें',
   modal_save: 'सहेजें',
+  modal_saving: 'सहेजा जा रहा है...',
   modal_placeholder_folder: 'फ़ोल्डर का नाम',
   modal_label_location: 'स्थान',
   modal_location_root: 'मुख्य स्क्रीन',
   modal_duplicate_url: 'यह URL पहले से सहेजा गया है।',
+  modal_duplicate_update: 'मौजूदा साइट अपडेट करें',
+  modal_duplicate_add_anyway: 'फिर भी जोड़ें',
+  modal_duplicate_decision_required:
+    'मौजूदा साइट को अपडेट करने या दूसरी प्रति जोड़ने में से एक चुनें।',
+  modal_http_public_warning:
+    'यह सार्वजनिक HTTP पता ट्रैफ़िक को एन्क्रिप्ट नहीं करता। केवल विश्वसनीय साइट के लिए आगे बढ़ें।',
+  modal_http_local_notice:
+    'यह स्थानीय विकास पता है; इसका HTTP ट्रैफ़िक इसी डिवाइस तक सीमित रहता है।',
+  modal_http_private_notice:
+    'यह HTTP पता निजी नेटवर्क पर है। इसे केवल विश्वसनीय नेटवर्क पर उपयोग करें।',
   modal_preview_title: 'पूर्वावलोकन',
   modal_preview_empty_name: 'साइट का नाम',
   modal_preview_empty_url: 'URL पूर्वावलोकन',
@@ -121,6 +132,12 @@ const hi = {
 
   /* Context menu */
   context_edit: 'संपादित करें',
+  context_actions_label: 'आइटम क्रियाएँ',
+  context_move_left: 'बाएँ ले जाएँ',
+  context_move_right: 'दाएँ ले जाएँ',
+  context_folder_label: 'गंतव्य फ़ोल्डर',
+  context_move_to_folder: 'फ़ोल्डर में ले जाएँ',
+  context_move_to_root: 'मुख्य स्क्रीन पर ले जाएँ',
   context_delete: 'हटाएँ',
   context_remove_from_folder: 'फ़ोल्डर से हटाएँ',
 
@@ -130,11 +147,16 @@ const hi = {
   toast_folder_deleted_with_contents: 'फ़ोल्डर और उसकी साइटें हटाई गईं।',
   toast_site_removed_from_folder: 'साइट मुख्य स्क्रीन पर ले जाई गई।',
   toast_site_moved_folder: 'साइट फ़ोल्डर में ले जाई गई।',
+  toast_item_moved: 'आइटम की स्थिति अपडेट की गई।',
+  speed_dial_position_announcement: '{name} को {total} में से {position} स्थान पर ले जाया गया।',
+  speed_dial_folder_announcement: '{name} को {folder} में ले जाया गया।',
+  speed_dial_root_announcement: '{name} को मुख्य स्क्रीन पर ले जाया गया।',
   toast_undo: 'पूर्ववत करें',
   toast_restored: 'पुनर्स्थापित किया गया।',
 
   /* Footer */
   footer_tabs: '{tabs} टैब, {windows} विंडो',
+  footer_usage_stats: 'उपयोग जानकारी',
   footer_theme_toggle: 'थीम बदलें',
   footer_icon_style: 'आइकन शैली बदलें',
   footer_icon_style_favicon: 'Favicon मोड सक्रिय है',
@@ -143,6 +165,7 @@ const hi = {
 
   /* Settings panel */
   settings_title: 'सेटिंग्स',
+  settings_language: 'भाषा',
   settings_search_engine: 'खोज इंजन',
   settings_layout: 'लेआउट',
   settings_show_clock: 'घड़ी दिखाएँ',

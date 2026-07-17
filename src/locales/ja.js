@@ -101,10 +101,21 @@ const ja = {
   modal_error_save_failed: '変更を保存できませんでした。もう一度お試しください。',
   modal_cancel: 'キャンセル',
   modal_save: '保存',
+  modal_saving: '保存中...',
   modal_placeholder_folder: 'フォルダ名',
   modal_label_location: '場所',
   modal_location_root: 'メイン画面',
   modal_duplicate_url: 'このURLはすでに保存されています。',
+  modal_duplicate_update: '既存のサイトを更新',
+  modal_duplicate_add_anyway: 'そのまま追加',
+  modal_duplicate_decision_required:
+    '既存のサイトを更新するか、別のコピーを追加するかを選択してください。',
+  modal_http_public_warning:
+    'この公開HTTPアドレスは通信を暗号化しません。サイトを信頼できる場合のみ続行してください。',
+  modal_http_local_notice:
+    'これはローカル開発用アドレスです。HTTP通信はこのデバイス内に限定されます。',
+  modal_http_private_notice:
+    'このHTTPアドレスはプライベートネットワーク上にあります。信頼できるネットワークでのみ使用してください。',
   modal_preview_title: 'プレビュー',
   modal_preview_empty_name: 'サイト名',
   modal_preview_empty_url: 'URLプレビュー',
@@ -121,6 +132,12 @@ const ja = {
 
   /* Context menu */
   context_edit: '編集',
+  context_actions_label: '項目の操作',
+  context_move_left: '左へ移動',
+  context_move_right: '右へ移動',
+  context_folder_label: '移動先フォルダ',
+  context_move_to_folder: 'フォルダへ移動',
+  context_move_to_root: 'メイン画面へ移動',
   context_delete: '削除',
   context_remove_from_folder: 'フォルダから削除',
 
@@ -130,11 +147,16 @@ const ja = {
   toast_folder_deleted_with_contents: 'フォルダと中のサイトを削除しました。',
   toast_site_removed_from_folder: 'サイトをメイン画面に移動しました。',
   toast_site_moved_folder: 'サイトをフォルダに移動しました。',
+  toast_item_moved: '項目の位置を更新しました。',
+  speed_dial_position_announcement: '{name}を{total}件中{position}番目に移動しました。',
+  speed_dial_folder_announcement: '{name}を{folder}へ移動しました。',
+  speed_dial_root_announcement: '{name}をメイン画面へ移動しました。',
   toast_undo: '元に戻す',
   toast_restored: '復元しました。',
 
   /* Footer */
   footer_tabs: '{tabs} タブ、{windows} ウィンドウ',
+  footer_usage_stats: '使用状況',
   footer_theme_toggle: 'テーマ切替',
   footer_icon_style: 'アイコンスタイル切替',
   footer_icon_style_favicon: 'Faviconモードが有効です',
@@ -143,6 +165,7 @@ const ja = {
 
   /* Settings panel */
   settings_title: '設定',
+  settings_language: '言語',
   settings_search_engine: '検索エンジン',
   settings_layout: 'レイアウト',
   settings_show_clock: '時計を表示',

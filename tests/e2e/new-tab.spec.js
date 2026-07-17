@@ -122,7 +122,22 @@ test('renders the unpacked new-tab experience without critical accessibility vio
     await page.keyboard.press('Escape');
     await expect(addSiteButton).toBeFocused();
 
-    const notesButton = page.locator('.footer-button').nth(2);
+    await page.locator('.speed-dial-toolbar-button').last().click();
+    const originalFirstItem = await page.locator('.speed-dial-label').first().textContent();
+    await page.locator('.speed-dial-action-button').first().click();
+    await expect(
+      page.locator('.context-menu-order-actions .context-menu-item').first(),
+    ).toBeDisabled();
+    await page.locator('.context-menu-order-actions .context-menu-item').nth(1).click();
+    await expect(page.locator('.speed-dial-label').nth(1)).toHaveText(originalFirstItem);
+    await expect(page.locator('.speed-dial > .visually-hidden')).not.toBeEmpty();
+    await expect(page.locator('.speed-dial-action-button').nth(1)).toBeFocused();
+    await page.locator('.speed-dial-action-button').nth(1).click();
+    await page.locator('.context-menu-order-actions .context-menu-item').first().click();
+    await expect(page.locator('.speed-dial-label').first()).toHaveText(originalFirstItem);
+    await page.locator('.speed-dial-toolbar-button').last().click();
+
+    const notesButton = page.locator('.footer-right > .footer-button').nth(2);
     await notesButton.click();
     await expect(page.locator('.note-panel')).toBeVisible();
     await page.locator('.note-panel-actions .note-panel-button').first().click();
@@ -136,7 +151,7 @@ test('renders the unpacked new-tab experience without critical accessibility vio
     await page.keyboard.press('Escape');
     await expect(notesButton).toBeFocused();
 
-    const settingsButton = page.locator('.footer-button').last();
+    const settingsButton = page.locator('.footer-right > .footer-button').last();
     await settingsButton.click();
     await expect(page.locator('.settings-close')).toBeFocused();
 
@@ -165,8 +180,41 @@ test('renders the unpacked new-tab experience without critical accessibility vio
     });
     expect(undersizedTargets).toEqual([]);
 
-    await page.keyboard.press('Escape');
+    await page.locator('#settings-language').selectOption('ar');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
+    await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+    expect(
+      await page
+        .locator('.settings-panel')
+        .evaluate((element) => getComputedStyle(element).direction),
+    ).toBe('rtl');
+
+    await page.locator('.settings-close').click();
     await expect(settingsButton).toBeFocused();
+    await page.reload();
+    await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
+    await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+
+    await page.locator('.speed-dial-toolbar-button').nth(1).click();
+    await page.locator('#site-name').fill('RTL Folder');
+    await page.locator('.modal-button--save').click();
+    await page.getByRole('button', { name: 'RTL Folder', exact: true }).click();
+    expect(
+      await page
+        .locator('.folder-modal')
+        .evaluate((element) => getComputedStyle(element).direction),
+    ).toBe('rtl');
+    await page.locator('.folder-modal .settings-close').click();
+
+    const localizedSettingsButton = page.locator('.footer-right > .footer-button').last();
+    await localizedSettingsButton.click();
+    await page.locator('#settings-language').selectOption('en');
+    await page.locator('.settings-close').click();
+
+    await page.setViewportSize({ width: 375, height: 800 });
+    await expect(page.locator('.footer-left')).toBeHidden();
+    await expect(page.locator('.footer-stats-menu')).toBeVisible();
+    await page.setViewportSize({ width: 1280, height: 720 });
 
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])

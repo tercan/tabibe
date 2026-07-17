@@ -110,10 +110,21 @@ const pt = {
   modal_error_save_failed: 'Não foi possível salvar as alterações. Tente novamente.',
   modal_cancel: 'Cancelar',
   modal_save: 'Salvar',
+  modal_saving: 'Salvando...',
   modal_placeholder_folder: 'Nome da pasta',
   modal_label_location: 'Localização',
   modal_location_root: 'Tela principal',
   modal_duplicate_url: 'Esta URL já está salva.',
+  modal_duplicate_update: 'Atualizar site existente',
+  modal_duplicate_add_anyway: 'Adicionar mesmo assim',
+  modal_duplicate_decision_required:
+    'Escolha entre atualizar o site existente ou adicionar outra cópia.',
+  modal_http_public_warning:
+    'Este endereço HTTP público não criptografa o tráfego. Continue apenas se confiar no site.',
+  modal_http_local_notice:
+    'Este é um endereço de desenvolvimento local; o tráfego HTTP fica limitado a este dispositivo.',
+  modal_http_private_notice:
+    'Este endereço HTTP está em uma rede privada. Use-o apenas em uma rede confiável.',
   modal_preview_title: 'Pré-visualização',
   modal_preview_empty_name: 'Nome do site',
   modal_preview_empty_url: 'Pré-visualização da URL',
@@ -130,6 +141,12 @@ const pt = {
 
   /* Context menu */
   context_edit: 'Editar',
+  context_actions_label: 'Ações do item',
+  context_move_left: 'Mover para a esquerda',
+  context_move_right: 'Mover para a direita',
+  context_folder_label: 'Pasta de destino',
+  context_move_to_folder: 'Mover para a pasta',
+  context_move_to_root: 'Mover para a tela principal',
   context_delete: 'Excluir',
   context_remove_from_folder: 'Remover da pasta',
 
@@ -139,11 +156,16 @@ const pt = {
   toast_folder_deleted_with_contents: 'Pasta e sites excluídos.',
   toast_site_removed_from_folder: 'Site movido para a tela principal.',
   toast_site_moved_folder: 'Site movido para a pasta.',
+  toast_item_moved: 'A posição do item foi atualizada.',
+  speed_dial_position_announcement: '{name} foi movido para a posição {position} de {total}.',
+  speed_dial_folder_announcement: '{name} foi movido para {folder}.',
+  speed_dial_root_announcement: '{name} foi movido para a tela principal.',
   toast_undo: 'Desfazer',
   toast_restored: 'Restaurado.',
 
   /* Footer */
   footer_tabs: '{tabs} abas, {windows} janelas',
+  footer_usage_stats: 'Informações de uso',
   footer_theme_toggle: 'Alternar tema',
   footer_icon_style: 'Alternar estilo de ícone',
   footer_icon_style_favicon: 'Modo favicon ativo',
@@ -152,6 +174,7 @@ const pt = {
 
   /* Settings panel */
   settings_title: 'Configurações',
+  settings_language: 'Idioma',
   settings_search_engine: 'Motor de busca',
   settings_layout: 'Layout',
   settings_show_clock: 'Mostrar relógio',

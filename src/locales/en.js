@@ -102,10 +102,21 @@ const en = {
   modal_error_save_failed: 'Changes could not be saved. Please try again.',
   modal_cancel: 'Cancel',
   modal_save: 'Save',
+  modal_saving: 'Saving...',
   modal_placeholder_folder: 'Folder name',
   modal_label_location: 'Location',
   modal_location_root: 'Main screen',
   modal_duplicate_url: 'This URL is already saved.',
+  modal_duplicate_update: 'Update existing site',
+  modal_duplicate_add_anyway: 'Add anyway',
+  modal_duplicate_decision_required:
+    'Choose whether to update the existing site or add another copy.',
+  modal_http_public_warning:
+    'This public HTTP address does not encrypt traffic. Continue only if you trust the site.',
+  modal_http_local_notice:
+    'This is a local development address; its HTTP traffic is limited to this device.',
+  modal_http_private_notice:
+    'This HTTP address is on a private network. Use it only on a network you trust.',
   modal_preview_title: 'Preview',
   modal_preview_empty_name: 'Site name',
   modal_preview_empty_url: 'URL preview',
@@ -122,6 +133,12 @@ const en = {
 
   /* Context menu */
   context_edit: 'Edit',
+  context_actions_label: 'Item actions',
+  context_move_left: 'Move left',
+  context_move_right: 'Move right',
+  context_folder_label: 'Destination folder',
+  context_move_to_folder: 'Move to folder',
+  context_move_to_root: 'Move to main screen',
   context_delete: 'Delete',
   context_remove_from_folder: 'Remove from folder',
 
@@ -131,11 +148,16 @@ const en = {
   toast_folder_deleted_with_contents: 'Folder and its sites deleted.',
   toast_site_removed_from_folder: 'Site moved to the main screen.',
   toast_site_moved_folder: 'Site moved to folder.',
+  toast_item_moved: 'Item position updated.',
+  speed_dial_position_announcement: '{name} moved to position {position} of {total}.',
+  speed_dial_folder_announcement: '{name} moved to {folder}.',
+  speed_dial_root_announcement: '{name} moved to the main screen.',
   toast_undo: 'Undo',
   toast_restored: 'Restored.',
 
   /* Footer */
   footer_tabs: '{tabs} tabs, {windows} windows',
+  footer_usage_stats: 'Usage information',
   footer_theme_toggle: 'Toggle theme',
   footer_icon_style: 'Toggle icon style',
   footer_icon_style_favicon: 'Favicon mode is active',
@@ -144,6 +166,7 @@ const en = {
 
   /* Settings panel */
   settings_title: 'Settings',
+  settings_language: 'Language',
   settings_search_engine: 'Search Engine',
   settings_layout: 'Layout',
   settings_show_clock: 'Show clock',

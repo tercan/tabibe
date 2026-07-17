@@ -6,6 +6,27 @@ This file documents all notable changes in the project.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.6.0] - 2026-07-17 03:42
+
+### Added
+
+- Added keyboard-accessible left/right ordering, move-to-folder, and move-to-main actions with live position announcements and undo
+- Added persistent language selection, root language/direction synchronization, and complete extension metadata for all 10 supported locales
+- Added explicit duplicate URL decisions to update the existing site or add another copy
+- Added public HTTP warnings with separate local development and private network notices
+- Added asynchronous save progress and disabled states to site and folder forms
+
+### Changed
+
+- Replaced the context menu role model with a simpler native button and select action list, including trigger focus restoration
+- Converted directional layout rules to logical CSS properties and added right-to-left handling for panels, toggles, toasts, and portals
+- Moved low-priority tab, window, and memory counters into a compact mobile information menu
+
+### Fixed
+
+- Preserved the user's selected UI language across new-tab reloads instead of always following the browser language
+- Prevented duplicate records from being silently accepted without an explicit user decision
+
 ## [0.5.0] - 2026-07-17 03:21
 
 ### Added

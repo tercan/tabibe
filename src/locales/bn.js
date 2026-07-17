@@ -100,10 +100,21 @@ const bn = {
   modal_error_save_failed: 'পরিবর্তনগুলো সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।',
   modal_cancel: 'বাতিল',
   modal_save: 'সংরক্ষণ',
+  modal_saving: 'সংরক্ষণ করা হচ্ছে...',
   modal_placeholder_folder: 'ফোল্ডারের নাম',
   modal_label_location: 'অবস্থান',
   modal_location_root: 'মূল স্ক্রিন',
   modal_duplicate_url: 'এই URL ইতিমধ্যে সংরক্ষিত আছে।',
+  modal_duplicate_update: 'বিদ্যমান সাইট আপডেট করুন',
+  modal_duplicate_add_anyway: 'তবুও যোগ করুন',
+  modal_duplicate_decision_required:
+    'বিদ্যমান সাইট আপডেট করা বা আরেকটি কপি যোগ করার মধ্যে একটি বেছে নিন।',
+  modal_http_public_warning:
+    'এই পাবলিক HTTP ঠিকানা ট্রাফিক এনক্রিপ্ট করে না। সাইটটি বিশ্বস্ত হলেই এগিয়ে যান।',
+  modal_http_local_notice:
+    'এটি একটি স্থানীয় ডেভেলপমেন্ট ঠিকানা; এর HTTP ট্রাফিক এই ডিভাইসেই সীমাবদ্ধ।',
+  modal_http_private_notice:
+    'এই HTTP ঠিকানাটি একটি ব্যক্তিগত নেটওয়ার্কে রয়েছে। শুধু বিশ্বস্ত নেটওয়ার্কে ব্যবহার করুন।',
   modal_preview_title: 'প্রিভিউ',
   modal_preview_empty_name: 'সাইটের নাম',
   modal_preview_empty_url: 'URL প্রিভিউ',
@@ -120,6 +131,12 @@ const bn = {
 
   /* Context menu */
   context_edit: 'সম্পাদনা',
+  context_actions_label: 'আইটেমের কাজ',
+  context_move_left: 'বামে সরান',
+  context_move_right: 'ডানে সরান',
+  context_folder_label: 'গন্তব্য ফোল্ডার',
+  context_move_to_folder: 'ফোল্ডারে সরান',
+  context_move_to_root: 'মূল স্ক্রিনে সরান',
   context_delete: 'মুছুন',
   context_remove_from_folder: 'ফোল্ডার থেকে সরান',
 
@@ -129,11 +146,17 @@ const bn = {
   toast_folder_deleted_with_contents: 'ফোল্ডার এবং এর সাইটগুলো মুছে ফেলা হয়েছে।',
   toast_site_removed_from_folder: 'সাইট মূল স্ক্রিনে সরানো হয়েছে।',
   toast_site_moved_folder: 'সাইট ফোল্ডারে সরানো হয়েছে।',
+  toast_item_moved: 'আইটেমের অবস্থান আপডেট হয়েছে।',
+  speed_dial_position_announcement:
+    '{name} কে {total}টির মধ্যে {position} নম্বর অবস্থানে সরানো হয়েছে।',
+  speed_dial_folder_announcement: '{name} কে {folder} ফোল্ডারে সরানো হয়েছে।',
+  speed_dial_root_announcement: '{name} কে মূল স্ক্রিনে সরানো হয়েছে।',
   toast_undo: 'পূর্বাবস্থায় ফেরান',
   toast_restored: 'পুনরুদ্ধার করা হয়েছে।',
 
   /* Footer */
   footer_tabs: '{tabs} ট্যাব, {windows} উইন্ডো',
+  footer_usage_stats: 'ব্যবহারের তথ্য',
   footer_theme_toggle: 'থিম পরিবর্তন',
   footer_icon_style: 'আইকন শৈলী পরিবর্তন',
   footer_icon_style_favicon: 'Favicon মোড সক্রিয়',
@@ -142,6 +165,7 @@ const bn = {
 
   /* Settings panel */
   settings_title: 'সেটিংস',
+  settings_language: 'ভাষা',
   settings_search_engine: 'সার্চ ইঞ্জিন',
   settings_layout: 'লেআউট',
   settings_show_clock: 'ঘড়ি দেখান',

@@ -1,14 +1,25 @@
-import { useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   DEFAULT_LOCALE,
   I18nContext,
   LOCALE_MAP,
   detectLocale,
+  resolveLocale,
 } from '../i18n/translationContext.js';
 
 function I18nProvider({ children }) {
+  const [locale, setLocaleState] = useState(detectLocale);
+
+  const setLocale = useCallback((nextLocale) => {
+    setLocaleState(resolveLocale(nextLocale));
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.lang = locale;
+    document.documentElement.dir = locale === 'ar' ? 'rtl' : 'ltr';
+  }, [locale]);
+
   const value = useMemo(() => {
-    const locale = detectLocale();
     const translations = LOCALE_MAP[locale] || LOCALE_MAP[DEFAULT_LOCALE];
 
     function t(key, params) {
@@ -23,8 +34,8 @@ function I18nProvider({ children }) {
       return result;
     }
 
-    return { locale, t, translations };
-  }, []);
+    return { locale, setLocale, t, translations };
+  }, [locale, setLocale]);
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
 }

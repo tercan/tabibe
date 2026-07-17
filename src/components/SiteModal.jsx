@@ -4,6 +4,7 @@ import useFocusTrap from '../hooks/useFocusTrap.jsx';
 import useBodyScrollLock from '../hooks/useBodyScrollLock.js';
 import { normalizeSiteUrl } from '../domain/dataSchema.js';
 import { getBrandIconUrl, resolveBrandIcon, searchIconCatalog } from '../lib/iconCatalog.js';
+import { getHttpConnectionKind } from '../lib/urlSafety.js';
 import SiteIcon from './SiteIcon.jsx';
 
 const ROOT_FOLDER_ID = 'root';
@@ -105,6 +106,8 @@ function SiteModal({
   const [brand_query, set_brand_query] = useState('');
   const [highlighted_brand_index, set_highlighted_brand_index] = useState(0);
   const [target_folder_id, set_target_folder_id] = useState(current_folder_id || ROOT_FOLDER_ID);
+  const [duplicate_decision, set_duplicate_decision] = useState(null);
+  const [is_saving, set_is_saving] = useState(false);
   const [error, set_error] = useState('');
   const first_field_ref = useRef(null);
   const overlay_ref = useRef(null);
@@ -123,6 +126,10 @@ function SiteModal({
         item.id !== site?.id && normalize_url_for_compare(item.url || '') === normalized_url,
     );
   }, [existing_sites, is_folder, normalized_url, site?.id, url]);
+  const connection_kind = useMemo(
+    () => (is_folder ? 'secure-or-internal' : getHttpConnectionKind(normalize_url(url))),
+    [is_folder, url],
+  );
   const brand_results = useMemo(
     () => searchIconCatalog(icon_catalog, brand_query),
     [brand_query, icon_catalog],
@@ -155,9 +162,15 @@ function SiteModal({
     set_brand_query(icon_catalog?.bySlug?.get(next_slug)?.title || '');
     set_highlighted_brand_index(0);
     set_target_folder_id(current_folder_id || ROOT_FOLDER_ID);
+    set_duplicate_decision(null);
+    set_is_saving(false);
     set_error('');
     name_touched_ref.current = !!site;
   }, [current_folder_id, icon_catalog?.bySlug, is_folder, site]);
+
+  useEffect(() => {
+    set_duplicate_decision(null);
+  }, [duplicate_site?.id, normalized_url]);
 
   function handle_overlay_click(event) {
     if (event.target === overlay_ref.current) {
@@ -241,15 +254,21 @@ function SiteModal({
 
   async function handle_save_result(payload, folder_id) {
     set_error('');
+    set_is_saving(true);
 
     try {
       const saved = await on_save(payload, folder_id);
 
       if (saved === false) {
         set_error(t('modal_error_save_failed'));
+        return false;
       }
+      return true;
     } catch {
       set_error(t('modal_error_save_failed'));
+      return false;
+    } finally {
+      set_is_saving(false);
     }
   }
 
@@ -294,10 +313,19 @@ function SiteModal({
       return;
     }
 
+    if (duplicate_site && !duplicate_decision) {
+      set_error(t('modal_duplicate_decision_required'));
+      return;
+    }
+
     set_error('');
+
+    const update_duplicate = duplicate_site && duplicate_decision === 'update';
 
     await handle_save_result(
       {
+        id: update_duplicate ? duplicate_site.id : site?.id,
+        replaceId: update_duplicate && site?.id !== duplicate_site.id ? site?.id : null,
         name: trimmed_name,
         url: final_url,
         icon: {
@@ -472,6 +500,22 @@ function SiteModal({
                 </select>
               </div>
 
+              {connection_kind === 'public-insecure' && (
+                <p className="modal-warning" role="status">
+                  {t('modal_http_public_warning')}
+                </p>
+              )}
+              {connection_kind === 'local' && (
+                <p className="modal-notice" role="status">
+                  {t('modal_http_local_notice')}
+                </p>
+              )}
+              {connection_kind === 'private' && (
+                <p className="modal-notice" role="status">
+                  {t('modal_http_private_notice')}
+                </p>
+              )}
+
               <div className="modal-site-preview" aria-label={t('modal_preview_title')}>
                 <span className="modal-site-preview-label">{t('modal_preview_title')}</span>
                 <div className="modal-site-preview-card">
@@ -491,17 +535,53 @@ function SiteModal({
                 </div>
               </div>
 
-              {duplicate_site && <p className="modal-warning">{t('modal_duplicate_url')}</p>}
+              {duplicate_site && (
+                <div className="modal-duplicate-decision">
+                  <p className="modal-warning">{t('modal_duplicate_url')}</p>
+                  <div
+                    className="modal-duplicate-actions"
+                    role="group"
+                    aria-label={t('modal_duplicate_url')}
+                  >
+                    <button
+                      type="button"
+                      className={`modal-button modal-button--cancel${duplicate_decision === 'update' ? ' modal-button--selected' : ''}`}
+                      aria-pressed={duplicate_decision === 'update'}
+                      onClick={() => set_duplicate_decision('update')}
+                    >
+                      {t('modal_duplicate_update')}
+                    </button>
+                    <button
+                      type="button"
+                      className={`modal-button modal-button--cancel${duplicate_decision === 'add' ? ' modal-button--selected' : ''}`}
+                      aria-pressed={duplicate_decision === 'add'}
+                      onClick={() => set_duplicate_decision('add')}
+                    >
+                      {t('modal_duplicate_add_anyway')}
+                    </button>
+                  </div>
+                </div>
+              )}
             </>
           )}
 
           {error && <p className="modal-error">{error}</p>}
           <div className="modal-actions">
-            <button type="button" className="modal-button modal-button--cancel" onClick={on_close}>
+            <button
+              type="button"
+              className="modal-button modal-button--cancel"
+              onClick={on_close}
+              disabled={is_saving}
+            >
               {t('modal_cancel')}
             </button>
-            <button type="submit" className="modal-button modal-button--save">
-              {t('modal_save')}
+            <button
+              type="submit"
+              className="modal-button modal-button--save"
+              disabled={is_saving}
+              aria-busy={is_saving}
+            >
+              {is_saving ? t('modal_saving') : t('modal_save')}
             </button>
           </div>
         </form>

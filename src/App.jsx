@@ -12,6 +12,7 @@ import {
   getEquivalentBackgroundPresetColor,
 } from './lib/backgroundPresets.js';
 import { createDefaultSettings, loadSettings, saveSettings } from './lib/storage.js';
+import { detectLocale } from './i18n/translationContext.js';
 import useFaviconPermission from './hooks/useFaviconPermission.js';
 
 function getSystemTheme() {
@@ -19,7 +20,7 @@ function getSystemTheme() {
 }
 
 function App() {
-  const { locale, t } = useTranslation();
+  const { locale, setLocale, t } = useTranslation();
   const faviconPermission = useFaviconPermission();
   const [settings, setSettings] = useState(() => createDefaultSettings(getSystemTheme()));
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -37,6 +38,7 @@ function App() {
     backgroundColor,
     backgroundImage,
     showMemory,
+    locale: selectedLocale,
   } = settings;
 
   useEffect(() => {
@@ -63,9 +65,8 @@ function App() {
   }, [theme]);
 
   useEffect(() => {
-    document.documentElement.lang = locale;
-    document.documentElement.dir = locale === 'ar' ? 'rtl' : 'ltr';
-  }, [locale]);
+    setLocale(selectedLocale || detectLocale());
+  }, [selectedLocale, setLocale]);
 
   useEffect(() => {
     if (backgroundImage) return;
@@ -146,6 +147,10 @@ function App() {
 
   function handleToggleNotePin() {
     updateSettings({ notePinned: !notePinned });
+  }
+
+  function handleChangeLocale(nextLocale) {
+    updateSettings({ locale: nextLocale });
   }
 
   async function handleRequestFaviconPermission() {
@@ -249,6 +254,8 @@ function App() {
         on_toggle_search={handleToggleSearch}
         show_memory={showMemory}
         on_toggle_memory={handleToggleMemory}
+        locale={locale}
+        on_change_locale={handleChangeLocale}
         favicon_permission={faviconPermission}
         on_request_favicon_permission={handleRequestFaviconPermission}
         on_revoke_favicon_permission={handleRevokeFaviconPermission}

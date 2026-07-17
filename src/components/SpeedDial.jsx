@@ -8,6 +8,9 @@ import {
   getAllSites,
   getCurrentFolderId,
   getFolders,
+  moveFolderChild,
+  moveRootItem,
+  moveSiteToFolder,
   moveSiteToRoot,
   renameFolder,
   upsertSite,
@@ -149,6 +152,7 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
   const [folder_delete_candidate, set_folder_delete_candidate] = useState(null);
   const [context_menu, set_context_menu] = useState(null);
   const [manage_mode, set_manage_mode] = useState(false);
+  const [move_announcement, set_move_announcement] = useState('');
 
   /**
    * 4. Navigation handlers
@@ -241,6 +245,7 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
       y: event.clientY || rect.bottom,
       site,
       folderId: folder_id,
+      trigger: event.currentTarget,
     });
   }
 
@@ -254,8 +259,17 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
       y: rect.bottom,
       site,
       folderId: folder_id,
+      trigger: event.currentTarget,
     });
   }
+
+  const handle_close_context_menu = useCallback(() => {
+    const trigger = context_menu?.trigger;
+    set_context_menu(null);
+    requestAnimationFrame(() => {
+      if (trigger?.isConnected) trigger.focus();
+    });
+  }, [context_menu]);
 
   function handle_add_click(folder_id = ROOT_FOLDER_ID) {
     set_editing_site(null);
@@ -307,11 +321,15 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
         if (!(await persist_sites(sites_list))) return false;
       }
     } else {
-      const sites_list = cloneSites(sites_ref.current);
+      let sites_list = cloneSites(sites_ref.current);
+      const { replaceId, ...site_input } = data;
+      if (replaceId) {
+        sites_list = deleteSite(sites_list, replaceId) || sites_list;
+      }
       const site_data = {
         ...(editing_site || {}),
-        ...data,
-        id: editing_site?.id || data.id || crypto.randomUUID(),
+        ...site_input,
+        id: site_input.id || editing_site?.id || crypto.randomUUID(),
       };
       const next_sites = upsertSite(sites_list, site_data, target_folder_id);
       if (!(await persist_sites(next_sites))) return false;
@@ -363,7 +381,65 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
     const sites_list = moveSiteToRoot(previous_sites, site.id);
     if (!sites_list) return;
     const was_saved = await persist_sites(sites_list, previous_sites);
-    if (was_saved) queue_undo(t('toast_site_removed_from_folder'), previous_sites);
+    if (was_saved) {
+      queue_undo(t('toast_site_removed_from_folder'), previous_sites);
+      set_move_announcement(t('speed_dial_root_announcement', { name: site.name }));
+    }
+  }
+
+  function get_context_position() {
+    if (!context_menu) return { index: -1, total: 0 };
+
+    if (context_menu.folderId) {
+      const folder = sites.find((item) => item.id === context_menu.folderId);
+      return {
+        index: folder?.children?.findIndex((item) => item.id === context_menu.site.id) ?? -1,
+        total: folder?.children?.length || 0,
+      };
+    }
+
+    return {
+      index: sites.findIndex((item) => item.id === context_menu.site.id),
+      total: sites.length,
+    };
+  }
+
+  async function handle_move_item(direction) {
+    if (!context_menu) return;
+    const { index, total } = get_context_position();
+    const target_index = index + direction;
+    if (index < 0 || target_index < 0 || target_index >= total) return;
+
+    const previous_sites = cloneSites(sites_ref.current);
+    const next_sites = context_menu.folderId
+      ? moveFolderChild(previous_sites, context_menu.folderId, index, target_index)
+      : moveRootItem(previous_sites, index, target_index);
+    if (!next_sites || !(await persist_sites(next_sites, previous_sites))) return;
+
+    queue_undo(t('toast_item_moved'), previous_sites);
+    set_move_announcement(
+      t('speed_dial_position_announcement', {
+        name: context_menu.site.name,
+        position: target_index + 1,
+        total,
+      }),
+    );
+  }
+
+  async function handle_move_to_folder(folder_id) {
+    if (!context_menu || context_menu.site.type === 'folder') return;
+    const previous_sites = cloneSites(sites_ref.current);
+    const next_sites = moveSiteToFolder(previous_sites, context_menu.site.id, folder_id);
+    if (!next_sites || !(await persist_sites(next_sites, previous_sites))) return;
+
+    const folder = next_sites.find((item) => item.id === folder_id);
+    queue_undo(t('toast_site_moved_folder'), previous_sites);
+    set_move_announcement(
+      t('speed_dial_folder_announcement', {
+        name: context_menu.site.name,
+        folder: folder?.name || '',
+      }),
+    );
   }
 
   if (is_loading) {
@@ -389,6 +465,7 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
 
   const folders = getFolders(sites);
   const all_sites = getAllSites(sites);
+  const context_position = get_context_position();
   const is_dragging_any = drag_index !== null || folder_child_drag_state !== null;
   const root_drop_preview_site = folder_child_drag_state
     ? sites.find((item) => item.id === folder_child_drag_state.folderId)?.children?.[
@@ -401,6 +478,9 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
       className={`speed-dial${manage_mode ? ' speed-dial--manage' : ''}${is_dragging_any ? ' speed-dial--dragging' : ''}`}
       aria-label={t('speed_dial_aria_label')}
     >
+      <p className="visually-hidden" aria-live="polite" aria-atomic="true">
+        {move_announcement}
+      </p>
       <div className="speed-dial-toolbar" role="toolbar" aria-label={t('speed_dial_toolbar_label')}>
         <div className="speed-dial-toolbar-actions">
           <button
@@ -531,6 +611,7 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
       <SpeedDialOverlays
         allSites={all_sites}
         contextMenu={context_menu}
+        contextPosition={context_position}
         editingSite={editing_site}
         faviconPermission={has_favicon_permission}
         folderDeleteCandidate={folder_delete_candidate}
@@ -541,12 +622,15 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
         modalMode={modal_mode}
         modalOpen={modal_open}
         onClearSaveError={clear_save_error}
-        onCloseContextMenu={() => set_context_menu(null)}
+        onCloseContextMenu={handle_close_context_menu}
         onCloseFolderDelete={() => set_folder_delete_candidate(null)}
         onCloseModal={handle_close_modal}
         onConfirmFolderDelete={handle_confirm_folder_delete}
         onDelete={handle_delete}
         onEdit={handle_edit}
+        onMoveLeft={() => handle_move_item(-1)}
+        onMoveRight={() => handle_move_item(1)}
+        onMoveToFolder={handle_move_to_folder}
         onRemoveFromFolder={handle_remove_from_folder}
         onRequestFaviconPermission={on_request_favicon_permission}
         onSave={handle_save}

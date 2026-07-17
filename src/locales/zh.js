@@ -100,10 +100,17 @@ const zh = {
   modal_error_save_failed: '无法保存更改。请重试。',
   modal_cancel: '取消',
   modal_save: '保存',
+  modal_saving: '正在保存...',
   modal_placeholder_folder: '文件夹名称',
   modal_label_location: '位置',
   modal_location_root: '主屏幕',
   modal_duplicate_url: '此网址已保存。',
+  modal_duplicate_update: '更新现有网站',
+  modal_duplicate_add_anyway: '仍然添加',
+  modal_duplicate_decision_required: '请选择更新现有网站或添加另一个副本。',
+  modal_http_public_warning: '此公共 HTTP 地址不会加密流量。仅在信任该网站时继续。',
+  modal_http_local_notice: '这是本地开发地址，其 HTTP 流量仅限此设备。',
+  modal_http_private_notice: '此 HTTP 地址位于专用网络中。请仅在可信网络中使用。',
   modal_preview_title: '预览',
   modal_preview_empty_name: '网站名称',
   modal_preview_empty_url: '网址预览',
@@ -120,6 +127,12 @@ const zh = {
 
   /* Context menu */
   context_edit: '编辑',
+  context_actions_label: '项目操作',
+  context_move_left: '向左移动',
+  context_move_right: '向右移动',
+  context_folder_label: '目标文件夹',
+  context_move_to_folder: '移至文件夹',
+  context_move_to_root: '移至主屏幕',
   context_delete: '删除',
   context_remove_from_folder: '从文件夹中移除',
 
@@ -129,11 +142,16 @@ const zh = {
   toast_folder_deleted_with_contents: '文件夹及其中的网站已删除。',
   toast_site_removed_from_folder: '网站已移动到主屏幕。',
   toast_site_moved_folder: '网站已移动到文件夹。',
+  toast_item_moved: '项目位置已更新。',
+  speed_dial_position_announcement: '{name} 已移至 {total} 项中的第 {position} 位。',
+  speed_dial_folder_announcement: '{name} 已移至 {folder}。',
+  speed_dial_root_announcement: '{name} 已移至主屏幕。',
   toast_undo: '撤销',
   toast_restored: '已恢复。',
 
   /* Footer */
   footer_tabs: '{tabs} 个标签页，{windows} 个窗口',
+  footer_usage_stats: '使用信息',
   footer_theme_toggle: '切换主题',
   footer_icon_style: '切换图标样式',
   footer_icon_style_favicon: 'Favicon 模式已启用',
@@ -142,6 +160,7 @@ const zh = {
 
   /* Settings panel */
   settings_title: '设置',
+  settings_language: '语言',
   settings_search_engine: '搜索引擎',
   settings_layout: '布局',
   settings_show_clock: '显示时钟',

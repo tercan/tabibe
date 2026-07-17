@@ -8,6 +8,7 @@ import { downloadBackupFile } from '../lib/backupFile.js';
 import { BACKGROUND_PRESET_GROUPS } from '../lib/backgroundPresets.js';
 import CloseIcon from './icons/CloseIcon.jsx';
 import { SEARCH_ENGINES } from '../config/searchEngines.js';
+import { LOCALE_OPTIONS } from '../i18n/translationContext.js';
 
 const APP_VERSION = import.meta.env.VITE_APP_VERSION;
 
@@ -26,6 +27,8 @@ function SettingsPanel({
   on_toggle_search,
   show_memory,
   on_toggle_memory,
+  locale,
+  on_change_locale,
   favicon_permission,
   on_request_favicon_permission,
   on_revoke_favicon_permission,
@@ -177,6 +180,26 @@ function SettingsPanel({
         {/* /.settings-header */}
 
         <div className="settings-body">
+          <div className="settings-group">
+            <h3 className="settings-group-title">{t('settings_language')}</h3>
+            <label className="settings-field" htmlFor="settings-language">
+              <span className="visually-hidden">{t('settings_language')}</span>
+              <select
+                id="settings-language"
+                className="modal-input modal-select"
+                value={locale}
+                onChange={(event) => on_change_locale(event.target.value)}
+              >
+                {LOCALE_OPTIONS.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          {/* /.settings-group */}
+
           <div className="settings-group">
             <h3 className="settings-group-title">{t('settings_search_engine')}</h3>
             <div className="settings-options">

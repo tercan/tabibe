@@ -101,10 +101,21 @@ const ru = {
   modal_error_save_failed: 'Не удалось сохранить изменения. Попробуйте еще раз.',
   modal_cancel: 'Отмена',
   modal_save: 'Сохранить',
+  modal_saving: 'Сохранение...',
   modal_placeholder_folder: 'Название папки',
   modal_label_location: 'Расположение',
   modal_location_root: 'Главный экран',
   modal_duplicate_url: 'Этот URL уже сохранен.',
+  modal_duplicate_update: 'Обновить существующий сайт',
+  modal_duplicate_add_anyway: 'Все равно добавить',
+  modal_duplicate_decision_required:
+    'Выберите: обновить существующий сайт или добавить еще одну копию.',
+  modal_http_public_warning:
+    'Этот общедоступный HTTP-адрес не шифрует трафик. Продолжайте, только если доверяете сайту.',
+  modal_http_local_notice:
+    'Это локальный адрес разработки; его HTTP-трафик ограничен этим устройством.',
+  modal_http_private_notice:
+    'Этот HTTP-адрес находится в частной сети. Используйте его только в доверенной сети.',
   modal_preview_title: 'Предпросмотр',
   modal_preview_empty_name: 'Название сайта',
   modal_preview_empty_url: 'Предпросмотр URL',
@@ -121,6 +132,12 @@ const ru = {
 
   /* Context menu */
   context_edit: 'Редактировать',
+  context_actions_label: 'Действия с элементом',
+  context_move_left: 'Переместить влево',
+  context_move_right: 'Переместить вправо',
+  context_folder_label: 'Папка назначения',
+  context_move_to_folder: 'Переместить в папку',
+  context_move_to_root: 'Переместить на главный экран',
   context_delete: 'Удалить',
   context_remove_from_folder: 'Убрать из папки',
 
@@ -130,11 +147,16 @@ const ru = {
   toast_folder_deleted_with_contents: 'Папка и сайты внутри нее удалены.',
   toast_site_removed_from_folder: 'Сайт перемещен на главный экран.',
   toast_site_moved_folder: 'Сайт перемещен в папку.',
+  toast_item_moved: 'Позиция элемента обновлена.',
+  speed_dial_position_announcement: '{name} перемещен на позицию {position} из {total}.',
+  speed_dial_folder_announcement: '{name} перемещен в {folder}.',
+  speed_dial_root_announcement: '{name} перемещен на главный экран.',
   toast_undo: 'Отменить',
   toast_restored: 'Восстановлено.',
 
   /* Footer */
   footer_tabs: '{tabs} вкладок, {windows} окон',
+  footer_usage_stats: 'Сведения об использовании',
   footer_theme_toggle: 'Сменить тему',
   footer_icon_style: 'Сменить стиль иконок',
   footer_icon_style_favicon: 'Активен режим favicon',
@@ -143,6 +165,7 @@ const ru = {
 
   /* Settings panel */
   settings_title: 'Настройки',
+  settings_language: 'Язык',
   settings_search_engine: 'Поисковая система',
   settings_layout: 'Оформление',
   settings_show_clock: 'Показать часы',

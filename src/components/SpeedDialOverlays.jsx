@@ -6,6 +6,7 @@ import SiteModal from './SiteModal.jsx';
 function SpeedDialOverlays({
   allSites,
   contextMenu,
+  contextPosition,
   editingSite,
   faviconPermission,
   folderDeleteCandidate,
@@ -22,6 +23,9 @@ function SpeedDialOverlays({
   onConfirmFolderDelete,
   onDelete,
   onEdit,
+  onMoveLeft,
+  onMoveRight,
+  onMoveToFolder,
   onRemoveFromFolder,
   onRequestFaviconPermission,
   onSave,
@@ -57,8 +61,18 @@ function SpeedDialOverlays({
         <ContextMenu
           x={contextMenu.x}
           y={contextMenu.y}
+          can_move_left={contextPosition.index > 0}
+          can_move_right={
+            contextPosition.index >= 0 && contextPosition.index < contextPosition.total - 1
+          }
+          move_folders={!contextMenu.folderId && contextMenu.site.type !== 'folder' ? folders : []}
           on_edit={() => onEdit(contextMenu.site)}
           on_delete={() => onDelete(contextMenu.site)}
+          on_move_left={onMoveLeft}
+          on_move_right={onMoveRight}
+          on_move_to_folder={
+            !contextMenu.folderId && contextMenu.site.type !== 'folder' ? onMoveToFolder : null
+          }
           on_remove_from_folder={
             contextMenu.folderId ? () => onRemoveFromFolder(contextMenu.site) : null
           }

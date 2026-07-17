@@ -12,6 +12,18 @@ import zh from '../locales/zh.js';
 
 const DEFAULT_LOCALE = 'en';
 const LOCALE_MAP = { en, tr, zh, es, hi, ar, pt, bn, ru, ja };
+const LOCALE_OPTIONS = [
+  { id: 'en', name: 'English' },
+  { id: 'tr', name: 'Türkçe' },
+  { id: 'es', name: 'Español' },
+  { id: 'pt', name: 'Português' },
+  { id: 'ru', name: 'Русский' },
+  { id: 'ar', name: 'العربية' },
+  { id: 'hi', name: 'हिन्दी' },
+  { id: 'bn', name: 'বাংলা' },
+  { id: 'zh', name: '中文' },
+  { id: 'ja', name: '日本語' },
+];
 const I18nContext = createContext(null);
 
 function detectLocale() {
@@ -20,4 +32,8 @@ function detectLocale() {
   return LOCALE_MAP[shortLanguage] ? shortLanguage : DEFAULT_LOCALE;
 }
 
-export { DEFAULT_LOCALE, I18nContext, LOCALE_MAP, detectLocale };
+function resolveLocale(locale) {
+  return LOCALE_MAP[locale] ? locale : detectLocale();
+}
+
+export { DEFAULT_LOCALE, I18nContext, LOCALE_MAP, LOCALE_OPTIONS, detectLocale, resolveLocale };

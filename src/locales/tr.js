@@ -100,10 +100,21 @@ const tr = {
   modal_error_save_failed: 'Değişiklikler kaydedilemedi. Lütfen tekrar deneyin.',
   modal_cancel: 'İptal',
   modal_save: 'Kaydet',
+  modal_saving: 'Kaydediliyor...',
   modal_placeholder_folder: 'Klasör adı',
   modal_label_location: 'Konum',
   modal_location_root: 'Ana ekran',
   modal_duplicate_url: 'Bu URL zaten kayıtlı.',
+  modal_duplicate_update: 'Mevcut siteyi güncelle',
+  modal_duplicate_add_anyway: 'Yine de ekle',
+  modal_duplicate_decision_required:
+    'Mevcut siteyi güncellemeyi veya ikinci bir kayıt eklemeyi seçin.',
+  modal_http_public_warning:
+    'Bu genel HTTP adresi trafiği şifrelemez. Yalnızca siteye güveniyorsanız devam edin.',
+  modal_http_local_notice:
+    'Bu yerel geliştirme adresinin HTTP trafiği yalnızca bu cihazla sınırlıdır.',
+  modal_http_private_notice:
+    'Bu HTTP adresi özel bir ağdadır. Yalnızca güvendiğiniz bir ağda kullanın.',
   modal_preview_title: 'Önizleme',
   modal_preview_empty_name: 'Site adı',
   modal_preview_empty_url: 'URL önizlemesi',
@@ -120,6 +131,12 @@ const tr = {
 
   /* Context menu */
   context_edit: 'Düzenle',
+  context_actions_label: 'Öğe işlemleri',
+  context_move_left: 'Sola taşı',
+  context_move_right: 'Sağa taşı',
+  context_folder_label: 'Hedef klasör',
+  context_move_to_folder: 'Klasöre taşı',
+  context_move_to_root: 'Ana ekrana taşı',
   context_delete: 'Sil',
   context_remove_from_folder: 'Klasörden çıkar',
 
@@ -129,11 +146,16 @@ const tr = {
   toast_folder_deleted_with_contents: 'Klasör ve içindeki siteler silindi.',
   toast_site_removed_from_folder: 'Site ana ekrana taşındı.',
   toast_site_moved_folder: 'Site klasöre taşındı.',
+  toast_item_moved: 'Öğenin sırası güncellendi.',
+  speed_dial_position_announcement: '{name}, {total} öğe içinde {position}. sıraya taşındı.',
+  speed_dial_folder_announcement: '{name}, {folder} klasörüne taşındı.',
+  speed_dial_root_announcement: '{name} ana ekrana taşındı.',
   toast_undo: 'Geri al',
   toast_restored: 'Geri alındı.',
 
   /* Footer */
   footer_tabs: '{tabs} sekme, {windows} pencere',
+  footer_usage_stats: 'Kullanım bilgileri',
   footer_theme_toggle: 'Tema değiştir',
   footer_icon_style: 'Simge stilini değiştir',
   footer_icon_style_favicon: 'Favicon modu kullanılıyor',
@@ -142,6 +164,7 @@ const tr = {
 
   /* Ayarlar paneli */
   settings_title: 'Ayarlar',
+  settings_language: 'Dil',
   settings_search_engine: 'Arama Motoru',
   settings_layout: 'Görünüm',
   settings_show_clock: 'Saati göster',
