@@ -4,7 +4,7 @@ Language: English | [Türkçe](docs/tr/README.md)
 
 A modern, minimalist, and high-performance new tab extension for Chromium-based browsers.
 
-**Current version:** `1.1.0`
+**Current version:** `1.2.0`
 
 ## About
 
@@ -21,6 +21,8 @@ Tabibe turns the new tab experience into a personal control and productivity spa
 - Clearer drop targets and move animations during drag and drop
 - Keyboard-accessible left/right reordering and site movement between the main screen and folders
 - Multi-note workspace with title, content, search, active/archive views, pinning, left/right placement, and responsive full-screen layouts
+- Central note tags with multi-tag assignment, pinned/date filters, persistent sorting, and result counts
+- Revision-aware cross-tab conflict decisions that preserve local, external, or duplicate note versions
 - Empty-note prevention
 - Note deletion confirmation with undo support
 - Light and dark theme support

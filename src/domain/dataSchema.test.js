@@ -88,5 +88,36 @@ describe('data schema', () => {
 
     expect(state.notes).toHaveLength(1);
     expect(state.notes[0].id).toBe('kept');
+    expect(state.notes[0]).toMatchObject({ tagIds: [], revision: 1 });
+  });
+
+  it('normalizes central note tags and removes broken references', () => {
+    const state = normalizeAppState({
+      sites: [],
+      noteTags: [
+        {
+          id: 'work',
+          name: ' Work ',
+          colorToken: 'green',
+          createdAt: '2026-01-01',
+          updatedAt: '2026-01-02',
+        },
+      ],
+      notes: [
+        {
+          id: 'note',
+          title: 'Plan',
+          content: '',
+          tagIds: ['work', 'missing', 'work'],
+          revision: 3,
+        },
+      ],
+      settings: { noteSort: 'title-asc' },
+    });
+
+    expect(state.schemaVersion).toBe(2);
+    expect(state.noteTags[0]).toMatchObject({ id: 'work', name: 'Work', colorToken: 'green' });
+    expect(state.notes[0]).toMatchObject({ tagIds: ['work'], revision: 3 });
+    expect(state.settings.noteSort).toBe('title-asc');
   });
 });

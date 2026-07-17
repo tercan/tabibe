@@ -6,6 +6,23 @@ This file documents all notable changes in the project.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Versioning follows [Semantic Versioning](https://semver.org/).
 
+## [1.2.0] - 2026-07-18 00:12
+
+### Added
+
+- Added centralized, color-token-based note tags with create, rename, delete, multi-tag assignment, and tag-aware search
+- Added pinned, tag, and date filters with persistent updated/created/title sorting and visible result counts
+- Added explicit cross-tab conflict decisions to keep the local version, use the other tab version, or preserve both as copies
+
+### Changed
+
+- Migrated application data to schema v2 with note `tagIds`, monotonic revisions, centralized `noteTags`, and safe broken-reference cleanup
+- Extended backup format v2 and import previews with note tags while preserving v1 and v0.3 backup compatibility
+
+### Security
+
+- Added optimistic revision checks that block stale note writes before they can silently overwrite a newer tab version
+
 ## [1.1.0] - 2026-07-17 23:43
 
 ### Added

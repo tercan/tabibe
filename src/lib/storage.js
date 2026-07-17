@@ -4,6 +4,7 @@ import {
   createBackupEnvelope,
   createDefaultSettings,
   normalizeAppState,
+  normalizeNoteTags,
   normalizeNotes,
   normalizeSettings,
   normalizeSites,
@@ -40,7 +41,7 @@ const ROLLBACK_KEY = 'tabibe-state-rollback';
 const LEGACY_SITES_KEY = 'tabibe-sites';
 const LEGACY_NOTES_KEY = 'tabibe-notes';
 const LEGACY_NOTE_KEY = 'tabibe-note';
-const APP_VERSION = import.meta.env.VITE_APP_VERSION || '1.1.0';
+const APP_VERSION = import.meta.env.VITE_APP_VERSION || '1.2.0';
 
 let writeQueue = Promise.resolve();
 
@@ -50,6 +51,14 @@ class StorageError extends Error {
     this.name = 'StorageError';
     this.code = code;
     this.cause = cause;
+  }
+}
+
+class StorageConflictError extends StorageError {
+  constructor(conflicts) {
+    super('note_revision_conflict');
+    this.name = 'StorageConflictError';
+    this.conflicts = conflicts;
   }
 }
 
@@ -174,6 +183,7 @@ function getLegacySettings(values) {
       notePinned: readLegacy('note-pinned', false),
       notePanelSide: readLegacy('note-panel-side', 'left'),
       notePanelMode: readLegacy('note-panel-mode', 'panel'),
+      noteSort: readLegacy('note-sort', 'updated-desc'),
       backgroundColor: readLegacy('bg-color', ''),
       backgroundImage: readLegacy('bg-image', ''),
       showMemory: readLegacy('show-memory', false),
@@ -212,6 +222,7 @@ async function migrateLegacyState(values) {
       revision: 0,
       sites: legacySites,
       notes: migrateLegacyNotes(values),
+      noteTags: [],
       settings: getLegacySettings(values),
     },
     { defaultSites: createDefaultSites(), systemTheme: getSystemTheme() },
@@ -275,12 +286,71 @@ async function loadNotes() {
 }
 
 async function saveNotes(notes) {
-  const normalizedNotes = normalizeNotes(notes);
   const state = await updateState((draft) => {
-    draft.notes = normalizedNotes;
+    draft.notes = normalizeNotes(notes, draft.noteTags);
     return draft;
   });
   return structuredClone(state.notes);
+}
+
+function createRevisionSnapshot(notes) {
+  return Object.fromEntries(notes.map((note) => [note.id, note.revision]));
+}
+
+function findNoteRevisionConflicts(currentNotes, candidateNotes, expectedRevisions) {
+  const currentById = new Map(currentNotes.map((note) => [note.id, note]));
+  const candidateById = new Map(candidateNotes.map((note) => [note.id, note]));
+  const noteIds = new Set([
+    ...currentById.keys(),
+    ...candidateById.keys(),
+    ...Object.keys(expectedRevisions),
+  ]);
+  const conflicts = [];
+
+  noteIds.forEach((noteId) => {
+    const currentNote = currentById.get(noteId) || null;
+    const candidateNote = candidateById.get(noteId) || null;
+    const hasExpectedRevision = Object.prototype.hasOwnProperty.call(expectedRevisions, noteId);
+    const expectedRevision = hasExpectedRevision ? expectedRevisions[noteId] : undefined;
+    const currentRevision = currentNote?.revision ?? null;
+    const notesMatch = JSON.stringify(currentNote) === JSON.stringify(candidateNote);
+
+    if (
+      (hasExpectedRevision && currentRevision !== expectedRevision && !notesMatch) ||
+      (!hasExpectedRevision && currentNote && !notesMatch)
+    ) {
+      conflicts.push({ noteId, localNote: candidateNote, externalNote: currentNote });
+    }
+  });
+
+  return conflicts;
+}
+
+function toNoteWorkspace(state) {
+  return {
+    notes: structuredClone(state.notes),
+    noteTags: structuredClone(state.noteTags),
+    stateRevision: state.revision,
+    noteRevisions: createRevisionSnapshot(state.notes),
+  };
+}
+
+async function loadNoteWorkspace() {
+  return toNoteWorkspace(await loadState());
+}
+
+async function saveNoteWorkspace(workspace, options = {}) {
+  const normalizedTags = normalizeNoteTags(workspace.noteTags || []);
+  const normalizedNotes = normalizeNotes(workspace.notes || [], normalizedTags);
+  const expectedRevisions = options.expectedRevisions || {};
+  const state = await updateState((draft) => {
+    const conflicts = findNoteRevisionConflicts(draft.notes, normalizedNotes, expectedRevisions);
+    if (conflicts.length > 0) throw new StorageConflictError(conflicts);
+    draft.notes = normalizedNotes;
+    draft.noteTags = normalizedTags;
+    return draft;
+  });
+  return toNoteWorkspace(state);
 }
 
 async function loadSettings() {
@@ -320,7 +390,12 @@ function parseLegacyBackup(data) {
 }
 
 function parseBackup(data) {
-  if (data?.backupVersion === BACKUP_VERSION && data.data) {
+  if (
+    Number.isSafeInteger(data?.backupVersion) &&
+    data.backupVersion >= 1 &&
+    data.backupVersion <= BACKUP_VERSION &&
+    data.data
+  ) {
     return normalizeAppState({ revision: 0, ...data.data }, { systemTheme: getSystemTheme() });
   }
   return parseLegacyBackup(data);
@@ -335,6 +410,7 @@ async function inspectBackup(data) {
       folders: state.sites.filter((item) => item.type === 'folder').length,
       folderSites: state.sites.reduce((total, item) => total + (item.children?.length || 0), 0),
       notes: state.notes.length,
+      noteTags: state.noteTags.length,
     },
   };
 }
@@ -393,6 +469,7 @@ async function resetApplicationData() {
       revision: (rollbackState?.revision || 0) + 1,
       sites: createDefaultSites(),
       notes: [],
+      noteTags: [],
       settings: createDefaultSettings(getSystemTheme()),
     },
     { defaultSites: createDefaultSites(), systemTheme: getSystemTheme() },
@@ -406,21 +483,66 @@ async function resetApplicationData() {
   return structuredClone(nextState);
 }
 
+function subscribeToStateChanges(listener) {
+  if (globalThis.chrome?.storage?.onChanged) {
+    const handleChange = (changes, areaName) => {
+      const nextState = changes[STATE_KEY]?.newValue;
+      if (areaName !== 'local' || !nextState) return;
+      try {
+        listener(
+          toNoteWorkspace(
+            normalizeAppState(nextState, {
+              defaultSites: createDefaultSites(),
+              systemTheme: getSystemTheme(),
+            }),
+          ),
+        );
+      } catch {
+        // Ignore malformed external writes; the repository will reject them on the next read.
+      }
+    };
+    chrome.storage.onChanged.addListener(handleChange);
+    return () => chrome.storage.onChanged.removeListener(handleChange);
+  }
+
+  const handleStorage = (event) => {
+    if (event.key !== STATE_KEY || !event.newValue) return;
+    try {
+      listener(
+        toNoteWorkspace(
+          normalizeAppState(JSON.parse(event.newValue), {
+            defaultSites: createDefaultSites(),
+            systemTheme: getSystemTheme(),
+          }),
+        ),
+      );
+    } catch {
+      // Ignore malformed external writes; the repository will reject them on the next read.
+    }
+  };
+  window.addEventListener('storage', handleStorage);
+  return () => window.removeEventListener('storage', handleStorage);
+}
+
 export {
   DEFAULT_SITES,
   DataValidationError,
   StorageError,
+  StorageConflictError,
   createDefaultSettings,
   exportBackup,
   inspectBackup,
   loadNotes,
+  loadNoteWorkspace,
   loadSettings,
   loadSites,
   loadState,
   restoreBackup,
   resetApplicationData,
   saveNotes,
+  saveNoteWorkspace,
   saveSettings,
   saveSites,
+  subscribeToStateChanges,
   undoLastRestore,
 };

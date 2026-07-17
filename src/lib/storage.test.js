@@ -2,11 +2,13 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   exportBackup,
   inspectBackup,
+  loadNoteWorkspace,
   loadNotes,
   loadSettings,
   loadSites,
   resetApplicationData,
   restoreBackup,
+  saveNoteWorkspace,
   saveSettings,
   saveSites,
   undoLastRestore,
@@ -36,8 +38,9 @@ describe('storage repository', () => {
     await saveSettings({ theme: 'dark' });
     const backup = await exportBackup();
 
-    expect(backup.backupVersion).toBe(1);
+    expect(backup.backupVersion).toBe(2);
     expect(backup.data.sites[0].url).toBe('https://example.com/');
+    expect(backup.data.noteTags).toEqual([]);
 
     await saveSites([]);
     await restoreBackup(backup);
@@ -90,24 +93,108 @@ describe('storage repository', () => {
     };
 
     const preview = await inspectBackup(legacyBackup);
-    expect(preview.summary).toEqual({ sites: 1, folders: 1, folderSites: 1, notes: 1 });
+    expect(preview.summary).toEqual({
+      sites: 1,
+      folders: 1,
+      folderSites: 1,
+      notes: 1,
+      noteTags: 0,
+    });
 
     await restoreBackup(legacyBackup);
     const migratedBackup = await exportBackup();
 
-    expect(migratedBackup.backupVersion).toBe(1);
+    expect(migratedBackup.backupVersion).toBe(2);
     expect(migratedBackup.data.sites[0].icon).toEqual({ preference: 'auto', slug: 'google' });
     expect(migratedBackup.data.sites[1].children[0].icon).toEqual({
       preference: 'auto',
       slug: null,
     });
     expect(migratedBackup.data.notes).toHaveLength(1);
+    expect(migratedBackup.data.notes[0]).toMatchObject({ tagIds: [], revision: 1 });
+    expect(migratedBackup.data.noteTags).toEqual([]);
     expect((await loadNotes())[0].content).toBe('Migrated note content');
     expect(migratedBackup.data.settings).toMatchObject({
       theme: 'dark',
       iconStyle: 'simple',
       searchEngine: 'duckduckgo',
     });
+  });
+
+  it('restores v1 backups and migrates note organization fields', async () => {
+    await restoreBackup({
+      backupVersion: 1,
+      appVersion: '1.0.1',
+      exportedAt: new Date().toISOString(),
+      data: {
+        sites: [],
+        notes: [{ id: 'legacy-note', title: 'Legacy', content: '' }],
+        settings: { notePinned: true },
+      },
+    });
+
+    const workspace = await loadNoteWorkspace();
+    expect(workspace.noteTags).toEqual([]);
+    expect(workspace.notes[0]).toMatchObject({
+      id: 'legacy-note',
+      tagIds: [],
+      revision: 1,
+    });
+    expect((await loadSettings()).notePinned).toBe(true);
+  });
+
+  it('saves tags with notes and rejects stale note revisions', async () => {
+    const initialWorkspace = await loadNoteWorkspace();
+    const note = {
+      id: 'shared-note',
+      title: 'Shared',
+      content: 'Initial',
+      tagIds: ['work'],
+      isPinned: false,
+      isArchived: false,
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+      revision: 1,
+    };
+    const tag = {
+      id: 'work',
+      name: 'Work',
+      colorToken: 'blue',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+    };
+    const firstSave = await saveNoteWorkspace(
+      { notes: [note], noteTags: [tag] },
+      {
+        expectedRevisions: initialWorkspace.noteRevisions,
+      },
+    );
+    const secondSave = await saveNoteWorkspace(
+      {
+        notes: [{ ...firstSave.notes[0], content: 'External', revision: 2 }],
+        noteTags: firstSave.noteTags,
+      },
+      { expectedRevisions: firstSave.noteRevisions },
+    );
+
+    await expect(
+      saveNoteWorkspace(
+        {
+          notes: [{ ...firstSave.notes[0], content: 'Stale local', revision: 2 }],
+          noteTags: firstSave.noteTags,
+        },
+        { expectedRevisions: firstSave.noteRevisions },
+      ),
+    ).rejects.toMatchObject({
+      code: 'note_revision_conflict',
+      conflicts: [
+        expect.objectContaining({
+          noteId: 'shared-note',
+          externalNote: expect.objectContaining({ content: 'External', revision: 2 }),
+        }),
+      ],
+    });
+    expect(secondSave.noteTags[0].name).toBe('Work');
   });
 
   it('rolls back the current state when the final restore write fails', async () => {

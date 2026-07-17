@@ -34,6 +34,16 @@
   --color-error-surface: #b3261e;
   --color-success: #1b6e36;
   --color-warning: #f9a825;
+  --color-tag-blue: #315f9f;
+  --color-tag-blue-surface: #e5eefb;
+  --color-tag-green: #34724d;
+  --color-tag-green-surface: #e4f3e9;
+  --color-tag-yellow: #80651e;
+  --color-tag-yellow-surface: #f8f0cf;
+  --color-tag-red: #9b3d38;
+  --color-tag-red-surface: #f8e7e5;
+  --color-tag-gray: #59636d;
+  --color-tag-gray-surface: #e9ecef;
   --color-footer-bg: #f1f3f5;
 
   /* Typography */
@@ -140,6 +150,16 @@
   --color-error-surface: #b3261e;
   --color-success: #69f0ae;
   --color-warning: #ffd740;
+  --color-tag-blue: #a9c7f5;
+  --color-tag-blue-surface: #263b5c;
+  --color-tag-green: #9bd4ac;
+  --color-tag-green-surface: #263f31;
+  --color-tag-yellow: #ead68e;
+  --color-tag-yellow-surface: #443d25;
+  --color-tag-red: #f0aaa5;
+  --color-tag-red-surface: #4a2d31;
+  --color-tag-gray: #c7cbd1;
+  --color-tag-gray-surface: #34343f;
 
   --shadow-sm: 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.4);
   --shadow-md: 0 0.25rem 0.375rem rgba(0, 0, 0, 0.5);

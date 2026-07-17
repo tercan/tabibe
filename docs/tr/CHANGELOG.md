@@ -6,6 +6,23 @@ Bu dosya, projede yapılan tüm önemli değişiklikleri belgelemektedir.
 Format [Keep a Changelog](https://keepachangelog.com/tr/1.0.0/) standardına dayanmaktadır.
 Versiyon numaralandırması [Semantic Versioning](https://semver.org/lang/tr/) prensiplerine uymaktadır.
 
+## [1.2.0] - 2026-07-18 00:12
+
+### Added
+
+- Oluşturma, yeniden adlandırma, silme, çoklu atama ve etiket duyarlı arama sunan merkezi ve renk tokenı tabanlı not etiketleri eklendi
+- Görünür sonuç sayıları ve kalıcı güncelleme/oluşturma/başlık sıralamasıyla sabitlenmiş, etiket ve tarih filtreleri eklendi
+- Yerel sürümü, diğer sekmedeki sürümü veya iki sürümü kopya olarak koruyan açık sekmeler arası çakışma kararları eklendi
+
+### Changed
+
+- Uygulama verileri not `tagIds` alanları, monoton revision değerleri, merkezi `noteTags` ve bozuk referans temizliğiyle şema v2'ye geçirildi
+- Yedek formatı v2 ve içe aktarma önizlemesi not etiketlerini kapsayacak şekilde genişletilirken v1 ve v0.3 yedek uyumluluğu korundu
+
+### Security
+
+- Eski bir not yazımının başka sekmedeki daha yeni sürümün üzerine sessizce yazmasını engelleyen iyimser revision kontrolleri eklendi
+
 ## [1.1.0] - 2026-07-17 23:43
 
 ### Added

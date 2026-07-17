@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 
 test('renders the unpacked new-tab experience without critical accessibility violations', async () => {
+  test.setTimeout(60_000);
   const extensionPath = resolve('dist');
   const userDataDir = await mkdtemp(join(tmpdir(), 'tabibe-e2e-'));
   const context = await chromium.launchPersistentContext(userDataDir, {
@@ -185,7 +186,61 @@ test('renders the unpacked new-tab experience without critical accessibility vio
     await page.locator('.note-panel-actions .note-panel-button').first().click();
     await page.locator('.note-title-input').fill('E2E note');
     await page.locator('.note-panel-textarea').fill('Persistent note content');
+    await page.getByRole('button', { name: 'Manage tags' }).click();
+    const tagManager = page.getByRole('dialog', { name: 'Manage tags' });
+    await tagManager.getByRole('textbox', { name: 'Tag name' }).fill('Work');
+    await tagManager.getByRole('combobox', { name: 'Tag color' }).selectOption('green');
+    await tagManager.getByRole('button', { name: 'Add tag' }).click();
+    await expect(tagManager.getByText('Work', { exact: true })).toBeVisible();
+    await tagManager.getByRole('button', { name: 'Cancel' }).click();
+    await page.getByRole('button', { name: 'Work', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Work', exact: true })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
     await expect(page.locator('.note-save-status--saved')).toBeVisible();
+
+    const secondPage = await context.newPage();
+    await secondPage.goto('chrome://newtab/');
+    await secondPage.locator('.footer-right > .footer-button').nth(2).click();
+    await secondPage.getByRole('button', { name: 'E2E note', exact: true }).click();
+    await page.locator('.note-panel-textarea').fill('Local pending version');
+    await page.waitForTimeout(50);
+    await secondPage.evaluate(
+      () =>
+        new Promise((resolveWrite, rejectWrite) => {
+          chrome.storage.local.get('tabibe-state', (result) => {
+            const state = structuredClone(result['tabibe-state']);
+            const note = state.notes.find((item) => item.title === 'E2E note');
+            note.content = 'Other tab version';
+            note.revision += 1;
+            note.updatedAt = new Date().toISOString();
+            state.revision += 1;
+            chrome.storage.local.set({ 'tabibe-state': state }, () => {
+              if (chrome.runtime.lastError) {
+                rejectWrite(new Error(chrome.runtime.lastError.message));
+                return;
+              }
+              resolveWrite();
+            });
+          });
+        }),
+    );
+    const conflictDialog = page.getByRole('alertdialog', {
+      name: 'This note changed in another tab',
+    });
+    await expect(conflictDialog).toBeVisible();
+    await conflictDialog.getByRole('button', { name: 'Keep both as copies' }).click();
+    await expect(page.locator('.note-save-status--saved')).toBeVisible();
+    await expect(page.locator('.note-list-title', { hasText: 'E2E note' })).toHaveCount(2);
+    await secondPage.close();
+
+    await page.locator('.note-filter-menu summary').click();
+    await page.getByRole('checkbox', { name: 'Work' }).check();
+    await expect(page.locator('.note-result-count')).toHaveText('2 notes');
+    await page.locator('.note-filter-menu summary').click();
+    await page.getByRole('button', { name: 'Clear filters' }).click();
+
     await page.setViewportSize({ width: 375, height: 800 });
     expect(
       await page
@@ -204,7 +259,7 @@ test('renders the unpacked new-tab experience without critical accessibility vio
     await page.keyboard.press('Escape');
     await expect(page.locator('.note-panel')).toHaveCount(0);
     await notesButton.click();
-    await expect(page.locator('.note-list-title', { hasText: 'E2E note' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'E2E note', exact: true })).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(page.locator('.note-panel')).toHaveCount(0);
     await expect(notesButton).toBeFocused();

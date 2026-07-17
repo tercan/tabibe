@@ -5,6 +5,10 @@ import useBodyScrollLock from '../hooks/useBodyScrollLock.js';
 import useNotes from '../hooks/useNotes.js';
 import { isNoteEmpty } from '../domain/noteOperations.js';
 import CloseIcon from './icons/CloseIcon.jsx';
+import NoteConflictDialog from './notes/NoteConflictDialog.jsx';
+import NoteFilters from './notes/NoteFilters.jsx';
+import NoteTagManager from './notes/NoteTagManager.jsx';
+import NoteTagPicker from './notes/NoteTagPicker.jsx';
 
 /**
  * 2. Icons
@@ -187,15 +191,21 @@ function NotePanel({
   is_pinned,
   layout_side,
   layout_mode,
+  note_sort,
   on_close,
   on_toggle_pin,
   on_change_side,
   on_toggle_fullscreen,
+  on_change_sort,
 }) {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [showArchived, setShowArchived] = useState(false);
+  const [selectedTagIds, setSelectedTagIds] = useState([]);
+  const [pinnedOnly, setPinnedOnly] = useState(false);
+  const [dateRange, setDateRange] = useState('all');
   const [noteView, setNoteView] = useState('list');
+  const [isTagManagerOpen, setIsTagManagerOpen] = useState(false);
   const [pendingDeleteNoteId, setPendingDeleteNoteId] = useState(null);
   const wasVisibleRef = useRef(false);
   const panelRef = useRef(null);
@@ -206,20 +216,35 @@ function NotePanel({
   const {
     activeNote,
     activeNoteId,
+    addNoteTag,
+    conflictState,
     deleteNote,
+    editNoteTag,
     ensureEditableNote,
     filteredNotes,
     isLoaded,
     notes,
+    noteTags,
     removeEmptyNote,
+    removeNoteTag,
+    resolveConflict,
     restoreDeletedNote,
+    retrySave,
     saveStatus,
     setActiveNoteId,
     toggleNoteArchive,
     toggleNotePin,
+    toggleNoteTag,
     undoState,
     updateActiveNote,
-  } = useNotes({ searchQuery, showArchived });
+  } = useNotes({
+    dateRange,
+    pinnedOnly,
+    searchQuery,
+    selectedTagIds,
+    showArchived,
+    sortBy: note_sort,
+  });
   const pendingDeleteNote = notes.find((note) => note.id === pendingDeleteNoteId) || null;
   const isEditorView = noteView === 'editor' && activeNote;
   const isPanelVisible = is_open || is_pinned;
@@ -227,7 +252,13 @@ function NotePanel({
 
   useFocusTrap({
     containerRef: panelRef,
-    isActive: isLoaded && is_open && (!is_pinned || isFullscreen) && !pendingDeleteNoteId,
+    isActive:
+      isLoaded &&
+      is_open &&
+      (!is_pinned || isFullscreen) &&
+      !pendingDeleteNoteId &&
+      !isTagManagerOpen &&
+      !conflictState,
     initialFocusRef: isEditorView ? titleInputRef : createButtonRef,
     onEscape: handleClosePanel,
   });
@@ -300,6 +331,7 @@ function NotePanel({
     }
 
     setPendingDeleteNoteId(null);
+    setIsTagManagerOpen(false);
     setNoteView('list');
     on_close();
   }
@@ -343,13 +375,41 @@ function NotePanel({
     if (restoredNote) setShowArchived(restoredNote.isArchived);
   }
 
+  function handleToggleFilterTag(tagId) {
+    setSelectedTagIds((currentIds) =>
+      currentIds.includes(tagId) ? currentIds.filter((id) => id !== tagId) : [...currentIds, tagId],
+    );
+  }
+
+  function handleClearFilters() {
+    setSelectedTagIds([]);
+    setPinnedOnly(false);
+    setDateRange('all');
+  }
+
+  function handleClearSearchAndFilters() {
+    setSearchQuery('');
+    handleClearFilters();
+  }
+
+  function handleRemoveNoteTag(tagId) {
+    removeNoteTag(tagId);
+    setSelectedTagIds((currentIds) => currentIds.filter((id) => id !== tagId));
+  }
+
+  function handleResolveConflict(strategy) {
+    resolveConflict(strategy, t('note_conflict_copy_suffix'));
+  }
+
   if (!isLoaded) return null;
   if (!is_open && !is_pinned) return null;
 
   const isSearchEmpty = searchQuery.trim().length > 0 && filteredNotes.length === 0;
+  const hasAdvancedFilters = selectedTagIds.length > 0 || pinnedOnly || dateRange !== 'all';
+  const hasNoMatches = isSearchEmpty || hasAdvancedFilters;
   const emptyMessage = showArchived
     ? t('note_archived_empty')
-    : isSearchEmpty
+    : hasNoMatches
       ? t('note_search_empty')
       : t('note_empty');
   const activeNoteCount = notes.filter((note) => !note.isArchived).length;
@@ -495,6 +555,21 @@ function NotePanel({
               </div>
             </div>
 
+            <NoteFilters
+              dateRange={dateRange}
+              noteTags={noteTags}
+              onChangeDateRange={setDateRange}
+              onChangeSort={on_change_sort}
+              onClear={handleClearFilters}
+              onManageTags={() => setIsTagManagerOpen(true)}
+              onTogglePinned={() => setPinnedOnly((currentValue) => !currentValue)}
+              onToggleTag={handleToggleFilterTag}
+              pinnedOnly={pinnedOnly}
+              resultCount={filteredNotes.length}
+              selectedTagIds={selectedTagIds}
+              sortBy={note_sort}
+            />
+
             {filteredNotes.length > 0 ? (
               <ul className="note-list" aria-label={t('note_list_label')}>
                 {filteredNotes.map((note) => (
@@ -550,9 +625,9 @@ function NotePanel({
                 <button
                   className="modal-button modal-button--save"
                   type="button"
-                  onClick={isSearchEmpty ? () => setSearchQuery('') : createNewNote}
+                  onClick={hasNoMatches ? handleClearSearchAndFilters : createNewNote}
                 >
-                  {isSearchEmpty ? t('note_clear_search') : t('note_add')}
+                  {hasNoMatches ? t('note_clear_search') : t('note_add')}
                 </button>
               </div>
             )}
@@ -586,6 +661,12 @@ function NotePanel({
                   onChange={(event) => updateActiveNote('title', event.target.value)}
                   placeholder={t('note_title_placeholder')}
                 />
+                <NoteTagPicker
+                  activeNote={activeNote}
+                  noteTags={noteTags}
+                  onManageTags={() => setIsTagManagerOpen(true)}
+                  onToggleTag={toggleNoteTag}
+                />
                 <label className="visually-hidden" htmlFor="note-content">
                   {t('note_content_label')}
                 </label>
@@ -608,7 +689,13 @@ function NotePanel({
                   {saveStatus === 'saving' && t('note_save_saving')}
                   {saveStatus === 'saved' && t('note_save_saved')}
                   {saveStatus === 'error' && t('note_save_error')}
+                  {saveStatus === 'conflict' && t('note_save_conflict')}
                 </p>
+                {saveStatus === 'error' && (
+                  <button className="note-save-retry" type="button" onClick={retrySave}>
+                    {t('note_save_retry')}
+                  </button>
+                )}
               </div>
             ) : (
               <div className="note-panel-empty note-panel-empty--editor">
@@ -624,6 +711,15 @@ function NotePanel({
             )}
           </div>
         </div>
+
+        <NoteTagManager
+          isOpen={isTagManagerOpen && !conflictState}
+          noteTags={noteTags}
+          onAdd={addNoteTag}
+          onClose={() => setIsTagManagerOpen(false)}
+          onDelete={handleRemoveNoteTag}
+          onEdit={editNoteTag}
+        />
 
         {pendingDeleteNote && (
           <div
@@ -666,6 +762,8 @@ function NotePanel({
             </div>
           </div>
         )}
+
+        <NoteConflictDialog conflict={conflictState} onResolve={handleResolveConflict} />
 
         {undoState && (
           <div className="note-panel-toast" role="status" aria-live="polite">

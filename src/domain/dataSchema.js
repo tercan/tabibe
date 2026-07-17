@@ -1,16 +1,20 @@
-const SCHEMA_VERSION = 1;
-const BACKUP_VERSION = 1;
+const SCHEMA_VERSION = 2;
+const BACKUP_VERSION = 2;
 const MAX_ROOT_ITEMS = 500;
 const MAX_FOLDER_ITEMS = 500;
 const MAX_NOTES = 500;
+const MAX_NOTE_TAGS = 100;
+const MAX_TAGS_PER_NOTE = 8;
 const MAX_NAME_LENGTH = 200;
 const MAX_URL_LENGTH = 2048;
 const MAX_ICON_SLUG_LENGTH = 100;
 const MAX_NOTE_TITLE_LENGTH = 300;
 const MAX_NOTE_CONTENT_LENGTH = 100_000;
+const MAX_NOTE_TAG_NAME_LENGTH = 40;
 const MAX_BACKGROUND_DATA_LENGTH = 7_000_000;
 const ALLOWED_PROTOCOLS = new Set(['http:', 'https:', 'chrome:', 'edge:', 'about:']);
 const ICON_PREFERENCES = new Set(['auto', 'brand', 'favicon', 'monogram']);
+const NOTE_TAG_COLOR_TOKENS = new Set(['blue', 'green', 'yellow', 'red', 'gray']);
 const SUPPORTED_LOCALES = new Set(['en', 'tr', 'zh', 'es', 'hi', 'ar', 'pt', 'bn', 'ru', 'ja']);
 
 class DataValidationError extends Error {
@@ -131,7 +135,47 @@ function normalizeDate(value, fallback) {
   return new Date(value).toISOString();
 }
 
-function normalizeNote(note) {
+function normalizeNoteTag(tag) {
+  if (!tag || typeof tag !== 'object' || Array.isArray(tag)) {
+    throw new DataValidationError('invalid_note_tag', 'noteTags');
+  }
+
+  const now = new Date().toISOString();
+  const createdAt = normalizeDate(tag.createdAt, now);
+
+  return {
+    id: typeof tag.id === 'string' && tag.id.trim() ? tag.id.trim() : createId('tag'),
+    name: getString(tag.name, 'noteTagName', MAX_NOTE_TAG_NAME_LENGTH),
+    colorToken: NOTE_TAG_COLOR_TOKENS.has(tag.colorToken) ? tag.colorToken : 'blue',
+    createdAt,
+    updatedAt: normalizeDate(tag.updatedAt, createdAt),
+  };
+}
+
+function normalizeNoteTags(value) {
+  if (!Array.isArray(value)) throw new DataValidationError('invalid_note_tags', 'noteTags');
+  if (value.length > MAX_NOTE_TAGS) {
+    throw new DataValidationError('too_many_note_tags', 'noteTags');
+  }
+
+  const tags = value.map(normalizeNoteTag);
+  const ids = new Set();
+  const names = new Set();
+
+  tags.forEach((tag) => {
+    const normalizedName = tag.name.toLocaleLowerCase();
+    if (ids.has(tag.id)) throw new DataValidationError('duplicate_note_tag_id', 'noteTags');
+    if (names.has(normalizedName)) {
+      throw new DataValidationError('duplicate_note_tag_name', 'noteTags');
+    }
+    ids.add(tag.id);
+    names.add(normalizedName);
+  });
+
+  return tags;
+}
+
+function normalizeNote(note, validTagIds = new Set()) {
   if (!note || typeof note !== 'object' || Array.isArray(note)) {
     throw new DataValidationError('invalid_note', 'notes');
   }
@@ -144,22 +188,30 @@ function normalizeNote(note) {
 
   const now = new Date().toISOString();
   const createdAt = normalizeDate(note.createdAt, now);
+  const rawTagIds = Array.isArray(note.tagIds) ? note.tagIds : [];
+  const tagIds = [...new Set(rawTagIds.filter((tagId) => validTagIds.has(tagId)))].slice(
+    0,
+    MAX_TAGS_PER_NOTE,
+  );
 
   return {
     id: typeof note.id === 'string' && note.id.trim() ? note.id.trim() : createId('note'),
     title,
     content,
+    tagIds,
     isPinned: Boolean(note.isPinned),
     isArchived: Boolean(note.isArchived),
     createdAt,
     updatedAt: normalizeDate(note.updatedAt, createdAt),
+    revision: Number.isSafeInteger(note.revision) && note.revision >= 1 ? note.revision : 1,
   };
 }
 
-function normalizeNotes(value) {
+function normalizeNotes(value, noteTags = []) {
   if (!Array.isArray(value)) throw new DataValidationError('invalid_notes', 'notes');
   if (value.length > MAX_NOTES) throw new DataValidationError('too_many_notes', 'notes');
-  return value.map(normalizeNote).filter(Boolean);
+  const validTagIds = new Set(noteTags.map((tag) => tag.id));
+  return value.map((note) => normalizeNote(note, validTagIds)).filter(Boolean);
 }
 
 function createDefaultSettings(systemTheme = 'light') {
@@ -172,6 +224,7 @@ function createDefaultSettings(systemTheme = 'light') {
     notePinned: false,
     notePanelSide: 'left',
     notePanelMode: 'panel',
+    noteSort: 'updated-desc',
     backgroundColor: '',
     backgroundImage: '',
     showMemory: false,
@@ -212,6 +265,9 @@ function normalizeSettings(value, systemTheme = 'light') {
       source.notePanelMode === 'panel' || source.notePanelMode === 'fullscreen'
         ? source.notePanelMode
         : defaults.notePanelMode,
+    noteSort: ['updated-desc', 'created-desc', 'title-asc'].includes(source.noteSort)
+      ? source.noteSort
+      : defaults.noteSort,
     backgroundColor:
       typeof source.backgroundColor === 'string'
         ? source.backgroundColor.slice(0, 32)
@@ -233,13 +289,17 @@ function normalizeAppState(value, options = {}) {
 
   const { defaultSites = [], systemTheme = 'light' } = options;
   const sites = Object.prototype.hasOwnProperty.call(value, 'sites') ? value.sites : defaultSites;
+  const noteTags = normalizeNoteTags(
+    Object.prototype.hasOwnProperty.call(value, 'noteTags') ? value.noteTags : [],
+  );
   const notes = Object.prototype.hasOwnProperty.call(value, 'notes') ? value.notes : [];
 
   return {
     schemaVersion: SCHEMA_VERSION,
     revision: Number.isSafeInteger(value.revision) && value.revision >= 0 ? value.revision : 0,
     sites: normalizeSites(sites),
-    notes: normalizeNotes(notes),
+    notes: normalizeNotes(notes, noteTags),
+    noteTags,
     settings: normalizeSettings(value.settings, systemTheme),
   };
 }
@@ -253,6 +313,7 @@ function createBackupEnvelope(state, appVersion) {
     data: {
       sites: normalizedState.sites,
       notes: normalizedState.notes,
+      noteTags: normalizedState.noteTags,
       settings: normalizedState.settings,
     },
   };
@@ -266,6 +327,7 @@ export {
   createDefaultSettings,
   normalizeAppState,
   normalizeNotes,
+  normalizeNoteTags,
   normalizeSettings,
   normalizeSiteUrl,
   normalizeSites,

@@ -39,6 +39,7 @@ function App() {
     notePinned,
     notePanelSide,
     notePanelMode,
+    noteSort,
     backgroundColor,
     backgroundImage,
     showMemory,
@@ -164,6 +165,10 @@ function App() {
     updateSettings({ notePanelMode: nextMode });
   }
 
+  function handleChangeNoteSort(nextSort) {
+    updateSettings({ noteSort: nextSort });
+  }
+
   function handleChangeLocale(nextLocale) {
     updateSettings({ locale: nextLocale });
   }
@@ -257,10 +262,12 @@ function App() {
             is_pinned={isNotePanelPinned}
             layout_side={notePanelSide}
             layout_mode={notePanelMode}
+            note_sort={noteSort}
             on_close={() => setNotePanelOpen(false)}
             on_toggle_pin={handleToggleNotePin}
             on_change_side={handleChangeNotePanelSide}
             on_toggle_fullscreen={handleToggleNoteFullscreen}
+            on_change_sort={handleChangeNoteSort}
           />
         )}
       </Suspense>
