@@ -6,6 +6,25 @@ Bu dosya, projede yapılan tüm önemli değişiklikleri belgelemektedir.
 Format [Keep a Changelog](https://keepachangelog.com/tr/1.0.0/) standardına dayanmaktadır.
 Versiyon numaralandırması [Semantic Versioning](https://semver.org/lang/tr/) prensiplerine uymaktadır.
 
+## [1.0.0] - 2026-07-17 04:16
+
+### Added
+
+- Sürüm eşitliği, izin kapsamı, CSP, yerelleştirme, çalışma zamanı simge kaynakları, secret taraması, dokümantasyon ve ZIP içeriği için yayın hazırlığı kapısı eklendi
+- v0.3.0 yedeklerinin güncel biçime eksiksiz yeniden dışa aktarımı ve başarısız geri yükleme yazımlarında otomatik rollback davranışı testlerle güvenceye alındı
+- Eşlenmiş İngilizce ve Türkçe Chrome Web Mağazası listeleme metinleri ile eklenti ve herkese açık proje sayfalarına doğrudan gizlilik politikası bağlantıları eklendi
+- 10 arayüz dilinin tamamını aynı mesaj sözleşmesinde tutan çeviri testi eklendi
+
+### Changed
+
+- 0.x yol haritasında tamamlanan veri, simge, erişilebilirlik, mimari, yerelleştirme ve performans çalışmaları kararlı 1.0.0 sürüm tabanına taşındı
+- Eski sürüm numarası, geniş izin, yasak dosya, harici çalışma zamanı simge servisi veya eksik mağaza dokümantasyonu içeren sürümleri engelleyecek şekilde CI genişletildi
+- Belgelenen ve zorunlu geliştirme çalışma zamanı kalite araç zincirinin Node.js 20.19+ gereksinimiyle eşitlendi
+
+### Security
+
+- Kararlı paketin yalnızca `storage` zorunlu iznini istediği, `favicon` ve `system.memory` izinlerini isteğe bağlı tuttuğu, uzaktan kod çalıştırmadığı ve bilinen bağımlılık açığı içermediği doğrulandı
+
 ## [0.6.1] - 2026-07-17 04:04
 
 ### Added

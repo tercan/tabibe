@@ -1,8 +1,11 @@
 {
   "name": "tabibe",
   "private": true,
-  "version": "0.6.1",
+  "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": "^20.19.0 || ^22.13.0 || >=24"
+  },
   "scripts": {
     "prepare:icons": "node scripts/build-brand-icons.mjs",
     "predev": "npm run prepare:icons",
@@ -23,6 +26,7 @@
     "budget:bundle": "node scripts/check-bundle.mjs",
     "lighthouse": "lhci autorun --config=./lighthouserc.cjs",
     "package:extension": "node scripts/package-extension.mjs",
+    "check:release": "node scripts/check-release-readiness.mjs",
     "quality": "npm run lint && npm run lint:css && npm run lint:css:standards && npm run format:check && npm run test && npm run build && npm run budget:bundle"
   },
   "dependencies": {

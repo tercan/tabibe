@@ -4,7 +4,7 @@ Dil: [English](../../README.md) | Türkçe
 
 Chromium tabanlı tarayıcılar için modern, minimalist ve yüksek performanslı yeni sekme (new tab) açılış sayfası eklentisi.
 
-**Güncel sürüm:** `0.6.1`
+**Güncel sürüm:** `1.0.0`
 
 ## Hakkında
 
@@ -63,13 +63,13 @@ Tabibe verileri kullanıcının tarayıcısında saklar. Siteler, klasörler, no
 
 Marka simgeleri eklenti içinde yerel olarak paketlenir ve üçüncü taraf simge servisi gerektirmez. Chrome favicon sağlayıcısı yalnızca kullanıcının açık izniyle etkinleştirilir; marka veya favicon çözümlenemediğinde yerel monogram her zaman kullanılabilir.
 
-Tabibe analiz, reklam, telemetri veya uzak uygulama sunucusu içermez. İzinler ve veri işleme ayrıntıları için [Gizlilik Politikası](../privacy-policy.tr.md) belgesine bakabilirsiniz.
+Tabibe analiz, reklam, telemetri veya uzak uygulama sunucusu içermez. İzinler ve veri işleme ayrıntıları için [Gizlilik Politikası](../privacy-policy.tr.md) belgesine bakabilirsiniz. Herkese açık [Chrome Web Mağazası listeleme metni](store-listing.md) aynı davranış ve izin kapsamını belgeler.
 
 ## Geliştirme
 
 ### Gereksinimler
 
-- Node.js (v18+)
+- Node.js 20.19+ (Node.js 22 önerilir)
 - npm veya yarn
 - Chromium tabanlı tarayıcı (Chrome, Edge, Brave, Opera vb.)
 
@@ -94,6 +94,8 @@ npm run quality
 npm run test:e2e
 npm run lighthouse
 npm run audit
+npm run package:extension
+npm run check:release
 ```
 
 ### Eklenti olarak yükleme

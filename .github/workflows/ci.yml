@@ -28,6 +28,7 @@ jobs:
       - run: npm run lighthouse
       - run: npm run audit
       - run: npm run package:extension
+      - run: npm run check:release
 
   extension-smoke:
     runs-on: ubuntu-latest

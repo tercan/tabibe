@@ -221,6 +221,7 @@ const tr = {
   common_retry: 'Tekrar dene',
   settings_about_by: 'tarafından',
   settings_about_developer: 'Geliştirici',
+  settings_privacy_policy: 'Gizlilik Politikası',
 };
 
 export default tr;

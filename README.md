@@ -4,7 +4,7 @@ Language: English | [Türkçe](docs/tr/README.md)
 
 A modern, minimalist, and high-performance new tab extension for Chromium-based browsers.
 
-**Current version:** `0.6.1`
+**Current version:** `1.0.0`
 
 ## About
 
@@ -63,13 +63,13 @@ Tabibe stores data in the user's browser. Sites, folders, notes, settings, and b
 
 Brand icons are bundled with the extension and do not require a third-party icon service. Chrome's favicon provider is optional and is enabled only after explicit user permission; a local monogram remains available when no brand or favicon can be resolved.
 
-Tabibe does not include analytics, advertising, telemetry, or a remote application backend. See the [Privacy Policy](docs/privacy-policy.md) for the complete permission and data-handling disclosure.
+Tabibe does not include analytics, advertising, telemetry, or a remote application backend. See the [Privacy Policy](docs/privacy-policy.md) for the complete permission and data-handling disclosure. The public [Chrome Web Store listing copy](docs/store-listing.md) documents the same behavior and permission scope.
 
 ## Development
 
 ### Requirements
 
-- Node.js (v18+)
+- Node.js 20.19+ (Node.js 22 recommended)
 - npm or yarn
 - Chromium-based browser such as Chrome, Edge, Brave, or Opera
 
@@ -94,6 +94,8 @@ npm run quality
 npm run test:e2e
 npm run lighthouse
 npm run audit
+npm run package:extension
+npm run check:release
 ```
 
 ### Load as an Extension

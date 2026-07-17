@@ -224,6 +224,7 @@ const en = {
   common_retry: 'Try again',
   settings_about_by: 'by',
   settings_about_developer: 'Developer',
+  settings_privacy_policy: 'Privacy Policy',
 };
 
 export default en;

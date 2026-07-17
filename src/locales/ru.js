@@ -223,6 +223,7 @@ const ru = {
   common_retry: 'Повторить',
   settings_about_by: 'от',
   settings_about_developer: 'Разработчик',
+  settings_privacy_policy: 'Политика конфиденциальности',
 };
 
 export default ru;

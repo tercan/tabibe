@@ -222,6 +222,7 @@ const bn = {
   common_retry: 'আবার চেষ্টা করুন',
   settings_about_by: 'দ্বারা',
   settings_about_developer: 'ডেভেলপার',
+  settings_privacy_policy: 'গোপনীয়তা নীতি',
 };
 
 export default bn;

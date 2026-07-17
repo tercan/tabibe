@@ -15,4 +15,14 @@ describe('translation locale coverage', () => {
       expect(messages.extension_description.message.length).toBeGreaterThan(20);
     });
   });
+
+  it('keeps every UI locale aligned with the English message contract', () => {
+    const referenceKeys = Object.keys(LOCALE_MAP.en).sort();
+
+    Object.entries(LOCALE_MAP).forEach(([localeId, messages]) => {
+      expect(Object.keys(messages).sort(), `${localeId} message keys`).toEqual(referenceKeys);
+      expect(messages.day_names, `${localeId} day names`).toHaveLength(7);
+      expect(messages.month_names, `${localeId} month names`).toHaveLength(12);
+    });
+  });
 });

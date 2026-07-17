@@ -1,6 +1,8 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   exportBackup,
+  inspectBackup,
+  loadNotes,
   loadSettings,
   loadSites,
   resetApplicationData,
@@ -11,6 +13,10 @@ import {
 } from './storage.js';
 
 describe('storage repository', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('preserves an empty legacy dashboard instead of reseeding defaults', async () => {
     localStorage.setItem('tabibe-sites', JSON.stringify([]));
     expect(await loadSites()).toEqual([]);
@@ -46,6 +52,91 @@ describe('storage repository', () => {
         ]),
       }),
     ).rejects.toThrow('unsafe_url_protocol');
+  });
+
+  it('migrates a v0.3.0 backup and re-exports the complete current model', async () => {
+    const legacyBackup = {
+      'tabibe-sites': JSON.stringify([
+        {
+          id: 'legacy-site',
+          name: 'Legacy site',
+          url: 'https://legacy.example',
+          icon_slug: 'google',
+        },
+        {
+          type: 'folder',
+          id: 'legacy-folder',
+          name: 'Legacy folder',
+          children: [
+            {
+              id: 'legacy-child',
+              name: 'Legacy child',
+              url: 'https://child.example',
+            },
+          ],
+        },
+      ]),
+      'tabibe-notes': JSON.stringify([
+        {
+          id: 'legacy-note',
+          title: 'Legacy note',
+          content: 'Migrated note content',
+          isPinned: true,
+        },
+      ]),
+      'tabibe-theme': 'dark',
+      'tabibe-icon-style': 'simple',
+      'tabibe-search-engine': 'duckduckgo',
+    };
+
+    const preview = await inspectBackup(legacyBackup);
+    expect(preview.summary).toEqual({ sites: 1, folders: 1, folderSites: 1, notes: 1 });
+
+    await restoreBackup(legacyBackup);
+    const migratedBackup = await exportBackup();
+
+    expect(migratedBackup.backupVersion).toBe(1);
+    expect(migratedBackup.data.sites[0].icon).toEqual({ preference: 'auto', slug: 'google' });
+    expect(migratedBackup.data.sites[1].children[0].icon).toEqual({
+      preference: 'auto',
+      slug: null,
+    });
+    expect(migratedBackup.data.notes).toHaveLength(1);
+    expect((await loadNotes())[0].content).toBe('Migrated note content');
+    expect(migratedBackup.data.settings).toMatchObject({
+      theme: 'dark',
+      iconStyle: 'simple',
+      searchEngine: 'duckduckgo',
+    });
+  });
+
+  it('rolls back the current state when the final restore write fails', async () => {
+    await saveSites([{ id: 'before', name: 'Before', url: 'https://before.example' }]);
+    const originalSetItem = Storage.prototype.setItem;
+    let shouldFail = true;
+
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function setItem(key, value) {
+      if (key === 'tabibe-state' && shouldFail) {
+        shouldFail = false;
+        throw new Error('simulated quota failure');
+      }
+      return originalSetItem.call(this, key, value);
+    });
+
+    await expect(
+      restoreBackup({
+        backupVersion: 1,
+        appVersion: '0.3.0',
+        exportedAt: new Date().toISOString(),
+        data: {
+          sites: [{ id: 'after', name: 'After', url: 'https://after.example' }],
+          notes: [],
+          settings: {},
+        },
+      }),
+    ).rejects.toMatchObject({ code: 'storage_write_failed' });
+
+    expect((await loadSites())[0].name).toBe('Before');
   });
 
   it('can undo the last successful restore', async () => {

@@ -412,6 +412,16 @@ function SettingsPanel({
                 Tercan Keskin
               </a>
             </p>
+            <p className="settings-about-privacy">
+              <a
+                href={`https://tercan.github.io/tabibe/privacy-policy${locale === 'tr' ? '.tr' : ''}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="settings-author-link"
+              >
+                {t('settings_privacy_policy')}
+              </a>
+            </p>
           </div>
           {/* /.settings-about */}
         </div>

@@ -155,6 +155,10 @@ test('renders the unpacked new-tab experience without critical accessibility vio
     const settingsButton = page.locator('.footer-right > .footer-button').last();
     await settingsButton.click();
     await expect(page.locator('.settings-close')).toBeFocused();
+    await expect(page.locator('.settings-about-privacy a')).toHaveAttribute(
+      'href',
+      'https://tercan.github.io/tabibe/privacy-policy',
+    );
 
     const undersizedTargets = await page.locator('.settings-panel').evaluate((panel) => {
       const controls = [

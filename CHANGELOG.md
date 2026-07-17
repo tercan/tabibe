@@ -6,6 +6,25 @@ This file documents all notable changes in the project.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Versioning follows [Semantic Versioning](https://semver.org/).
 
+## [1.0.0] - 2026-07-17 04:16
+
+### Added
+
+- Added a release-readiness gate for version synchronization, permission scope, CSP, localization, runtime icon sources, secret scanning, documentation, and ZIP contents
+- Added tested v0.3.0 backup migration with complete current-format re-export and automatic rollback verification for failed restore writes
+- Added synchronized English and Turkish Chrome Web Store listing copy and direct privacy-policy links in the extension and public project pages
+- Added a translation contract test that keeps all 10 UI locales aligned
+
+### Changed
+
+- Promoted the tested data, icon, accessibility, architecture, localization, and performance work from the 0.x roadmap to the stable 1.0.0 release baseline
+- Extended CI to block releases that contain stale versions, broad permissions, forbidden files, external runtime icon services, or incomplete store documentation
+- Aligned the documented and enforced development runtime with the Node.js 20.19+ requirement of the quality toolchain
+
+### Security
+
+- Verified that the stable package requires only `storage`, keeps `favicon` and `system.memory` optional, executes no remote code, and contains no known dependency vulnerabilities
+
 ## [0.6.1] - 2026-07-17 04:04
 
 ### Added

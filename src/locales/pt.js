@@ -232,6 +232,7 @@ const pt = {
   common_retry: 'Tentar novamente',
   settings_about_by: 'por',
   settings_about_developer: 'Desenvolvedor',
+  settings_privacy_policy: 'Política de Privacidade',
 };
 
 export default pt;

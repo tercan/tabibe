@@ -218,6 +218,7 @@ const ar = {
   common_retry: 'حاول مرة أخرى',
   settings_about_by: 'بواسطة',
   settings_about_developer: 'المطوّر',
+  settings_privacy_policy: 'سياسة الخصوصية',
 };
 
 export default ar;

@@ -222,6 +222,7 @@ const hi = {
   common_retry: 'फिर प्रयास करें',
   settings_about_by: 'द्वारा',
   settings_about_developer: 'डेवलपर',
+  settings_privacy_policy: 'गोपनीयता नीति',
 };
 
 export default hi;

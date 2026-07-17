@@ -226,6 +226,7 @@ const es = {
   common_retry: 'Reintentar',
   settings_about_by: 'por',
   settings_about_developer: 'Desarrollador',
+  settings_privacy_policy: 'Política de privacidad',
 };
 
 export default es;

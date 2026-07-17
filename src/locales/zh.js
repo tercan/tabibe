@@ -215,6 +215,7 @@ const zh = {
   common_retry: '重试',
   settings_about_by: '由',
   settings_about_developer: '开发者',
+  settings_privacy_policy: '隐私政策',
 };
 
 export default zh;

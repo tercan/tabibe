@@ -223,6 +223,7 @@ const ja = {
   common_retry: '再試行',
   settings_about_by: '作者',
   settings_about_developer: '開発者',
+  settings_privacy_policy: 'プライバシーポリシー',
 };
 
 export default ja;
