@@ -6,6 +6,27 @@ This file documents all notable changes in the project.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.5.0] - 2026-07-17 03:21
+
+### Added
+
+- Added tested domain operation modules for site, folder, and note mutations
+- Added dedicated hooks for speed-dial persistence, drag coordination, note lifecycle management, and reference-counted body scroll locking
+- Added application loading, storage recovery, guarded reset, backup-before-reset, and undo recovery states
+- Added unit coverage for recovery flows, storage reset/undo, navigation, shared scroll locking, and extracted domain operations
+
+### Changed
+
+- Split speed-dial data, drag behavior, overlays, navigation, and mutation logic out of the main presentation component
+- Split note persistence, filtering, creation, update, archive, restore, and delete behavior out of the note panel
+- Centralized search-engine configuration and backup-file generation to remove component coupling and duplicated resource handling
+
+### Fixed
+
+- Replaced full-page reload recovery with an isolated speed-dial storage retry
+- Prevented concurrent panels and modals from releasing another surface's body scroll lock
+- Ensured object URLs created for backup downloads are always revoked
+
 ## [0.4.1] - 2026-07-17 02:53
 
 ### Added

@@ -183,6 +183,13 @@ const tr = {
   settings_bg_unsupported_type: 'PNG, JPEG, WebP veya AVIF görsel kullanın.',
   settings_bg_upload_error: 'Arka plan görseli işlenemedi.',
   app_storage_error: 'Değişiklik kaydedilemedi. Lütfen tekrar deneyin.',
+  app_loading: 'Tabibe yükleniyor...',
+  app_recovery_title: 'Tabibe güvenli biçimde açılamadı',
+  app_recovery_description:
+    'Verileriniz değiştirilmedi. Tekrar deneyin veya yerel verileri sıfırlamadan önce yedek dışa aktarın.',
+  app_recovery_reset_confirm:
+    'Sıfırlama işlemi mevcut yerel verilerin yerine varsayılan içeriği getirecek. Devam edilsin mi?',
+  app_recovery_reset_error: 'Yerel veriler sıfırlanamadı.',
   note_save_saving: 'Kaydediliyor...',
   note_save_saved: 'Kaydedildi',
   note_save_error: 'Kaydedilemedi',

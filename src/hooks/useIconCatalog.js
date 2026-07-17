@@ -10,7 +10,9 @@ function useIconCatalog() {
       .then((loadedCatalog) => {
         if (active) setCatalog(loadedCatalog);
       })
-      .catch(() => undefined);
+      .catch(() => {
+        if (active) setCatalog(EMPTY_ICON_CATALOG);
+      });
 
     return () => {
       active = false;

@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from '../hooks/useTranslation.js';
 import useFocusTrap from '../hooks/useFocusTrap.jsx';
+import useBodyScrollLock from '../hooks/useBodyScrollLock.js';
 import { normalizeSiteUrl } from '../domain/dataSchema.js';
 import { getBrandIconUrl, resolveBrandIcon, searchIconCatalog } from '../lib/iconCatalog.js';
 import SiteIcon from './SiteIcon.jsx';
@@ -143,17 +144,7 @@ function SiteModal({
     initialFocusRef: first_field_ref,
     onEscape: on_close,
   });
-
-  useEffect(() => {
-    const hadNoScroll = document.body.classList.contains('no-scroll');
-    document.body.classList.add('no-scroll');
-
-    return () => {
-      if (!hadNoScroll) {
-        document.body.classList.remove('no-scroll');
-      }
-    };
-  }, []);
+  useBodyScrollLock(true);
 
   useEffect(() => {
     set_name(site ? site.name || '' : '');

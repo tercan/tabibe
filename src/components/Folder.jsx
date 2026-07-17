@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from '../hooks/useTranslation.js';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 import speedDialMoveAnimation from '../lib/speedDialMotion.js';
 import useFocusTrap from '../hooks/useFocusTrap.jsx';
+import useBodyScrollLock from '../hooks/useBodyScrollLock.js';
 import CloseIcon from './icons/CloseIcon.jsx';
 
 function MoreIcon() {
@@ -132,18 +133,7 @@ function Folder({
     initialFocusRef: close_button_ref,
     onEscape: () => set_is_open(false),
   });
-
-  useEffect(() => {
-    if (is_open) {
-      document.body.classList.add('no-scroll');
-    } else {
-      document.body.classList.remove('no-scroll');
-    }
-
-    return () => {
-      document.body.classList.remove('no-scroll');
-    };
-  }, [is_open]);
+  useBodyScrollLock(is_open);
 
   function toggle_folder(event) {
     event.stopPropagation();
@@ -173,7 +163,7 @@ function Folder({
   }
 
   function is_dragging_child_from_folder() {
-    return folder_child_drag_state?.folder_id === folder.id;
+    return folder_child_drag_state?.folderId === folder.id;
   }
 
   function is_event_outside_modal(event) {
@@ -260,16 +250,16 @@ function Folder({
             </header>
 
             <ul
-              className={`folder-grid${folder_child_drag_state?.folder_id === folder.id ? ' folder-grid--dragging' : ''}`}
+              className={`folder-grid${folder_child_drag_state?.folderId === folder.id ? ' folder-grid--dragging' : ''}`}
               ref={folder_animation_parent}
             >
               {folder.children && folder.children.length > 0 ? (
                 folder.children.map((site, child_index) => {
                   const is_child_dragging =
-                    folder_child_drag_state?.folder_id === folder.id &&
+                    folder_child_drag_state?.folderId === folder.id &&
                     folder_child_drag_state.index === child_index;
                   const is_child_drag_over =
-                    folder_child_drag_state?.folder_id === folder.id &&
+                    folder_child_drag_state?.folderId === folder.id &&
                     folder_child_drag_over_index === child_index;
 
                   return (

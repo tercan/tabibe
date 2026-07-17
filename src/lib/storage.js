@@ -40,7 +40,7 @@ const ROLLBACK_KEY = 'tabibe-state-rollback';
 const LEGACY_SITES_KEY = 'tabibe-sites';
 const LEGACY_NOTES_KEY = 'tabibe-notes';
 const LEGACY_NOTE_KEY = 'tabibe-note';
-const APP_VERSION = import.meta.env.VITE_APP_VERSION || '0.4.1';
+const APP_VERSION = import.meta.env.VITE_APP_VERSION || '0.5.0';
 
 let writeQueue = Promise.resolve();
 
@@ -247,7 +247,11 @@ function updateState(updater) {
     return saveState(nextState);
   });
 
-  writeQueue = operation.catch(() => undefined);
+  // Keep later writes available while returning the original rejection to the current caller.
+  writeQueue = operation.then(
+    () => undefined,
+    () => undefined,
+  );
   return operation;
 }
 
@@ -352,7 +356,7 @@ async function restoreBackup(data) {
     await storageRemove(STAGING_KEY);
   } catch (error) {
     await storageSet({ [STATE_KEY]: currentState });
-    await storageRemove(STAGING_KEY).catch(() => undefined);
+    await Promise.allSettled([storageRemove(STAGING_KEY)]);
     throw error;
   }
 
@@ -367,10 +371,38 @@ async function undoLastRestore() {
   return true;
 }
 
-const load_sites = loadSites;
-const save_sites = saveSites;
-const get_all_data = exportBackup;
-const set_all_data = restoreBackup;
+async function resetApplicationData() {
+  const values = await storageGet([STATE_KEY]);
+  let rollbackState = null;
+
+  if (values[STATE_KEY]) {
+    try {
+      rollbackState = normalizeAppState(values[STATE_KEY], {
+        defaultSites: createDefaultSites(),
+        systemTheme: getSystemTheme(),
+      });
+    } catch {
+      rollbackState = null;
+    }
+  }
+
+  const nextState = normalizeAppState(
+    {
+      revision: (rollbackState?.revision || 0) + 1,
+      sites: createDefaultSites(),
+      notes: [],
+      settings: createDefaultSettings(getSystemTheme()),
+    },
+    { defaultSites: createDefaultSites(), systemTheme: getSystemTheme() },
+  );
+
+  const write = rollbackState
+    ? { [ROLLBACK_KEY]: rollbackState, [STATE_KEY]: nextState }
+    : { [STATE_KEY]: nextState };
+  await storageSet(write);
+  await storageRemove(STAGING_KEY);
+  return structuredClone(nextState);
+}
 
 export {
   DEFAULT_SITES,
@@ -378,18 +410,15 @@ export {
   StorageError,
   createDefaultSettings,
   exportBackup,
-  get_all_data,
   inspectBackup,
   loadNotes,
   loadSettings,
   loadSites,
   loadState,
-  load_sites,
   restoreBackup,
+  resetApplicationData,
   saveNotes,
   saveSettings,
   saveSites,
-  save_sites,
-  set_all_data,
   undoLastRestore,
 };

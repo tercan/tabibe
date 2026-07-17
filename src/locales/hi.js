@@ -184,6 +184,13 @@ const hi = {
   settings_bg_unsupported_type: 'PNG, JPEG, WebP या AVIF चित्र का उपयोग करें।',
   settings_bg_upload_error: 'पृष्ठभूमि चित्र संसाधित नहीं किया जा सका।',
   app_storage_error: 'बदलाव सहेजा नहीं जा सका। फिर प्रयास करें।',
+  app_loading: 'Tabibe लोड हो रहा है...',
+  app_recovery_title: 'Tabibe सुरक्षित रूप से नहीं खुल सका',
+  app_recovery_description:
+    'आपका डेटा बदला नहीं गया। फिर प्रयास करें या स्थानीय डेटा रीसेट करने से पहले बैकअप निर्यात करें।',
+  app_recovery_reset_confirm:
+    'रीसेट वर्तमान स्थानीय डेटा को डिफ़ॉल्ट सामग्री से बदल देगा। जारी रखें?',
+  app_recovery_reset_error: 'स्थानीय डेटा रीसेट नहीं किया जा सका।',
   note_save_saving: 'सहेजा जा रहा है...',
   note_save_saved: 'सहेजा गया',
   note_save_error: 'सहेजा नहीं जा सका',

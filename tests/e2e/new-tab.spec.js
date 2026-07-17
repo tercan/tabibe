@@ -122,6 +122,20 @@ test('renders the unpacked new-tab experience without critical accessibility vio
     await page.keyboard.press('Escape');
     await expect(addSiteButton).toBeFocused();
 
+    const notesButton = page.locator('.footer-button').nth(2);
+    await notesButton.click();
+    await expect(page.locator('.note-panel')).toBeVisible();
+    await page.locator('.note-panel-actions .note-panel-button').first().click();
+    await page.locator('.note-title-input').fill('E2E note');
+    await page.locator('.note-panel-textarea').fill('Persistent note content');
+    await expect(page.locator('.note-save-status--saved')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.note-panel')).toHaveCount(0);
+    await notesButton.click();
+    await expect(page.locator('.note-list-title', { hasText: 'E2E note' })).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(notesButton).toBeFocused();
+
     const settingsButton = page.locator('.footer-button').last();
     await settingsButton.click();
     await expect(page.locator('.settings-close')).toBeFocused();

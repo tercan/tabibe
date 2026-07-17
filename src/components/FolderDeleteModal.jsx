@@ -1,7 +1,8 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from '../hooks/useTranslation.js';
 import useFocusTrap from '../hooks/useFocusTrap.jsx';
+import useBodyScrollLock from '../hooks/useBodyScrollLock.js';
 
 /**
  * 1. Folder delete decision modal
@@ -22,17 +23,7 @@ function FolderDeleteModal({ folder, onMoveContents, onDeleteContents, onClose }
     initialFocusRef: primaryActionRef,
     onEscape: onClose,
   });
-
-  useEffect(() => {
-    const hadNoScroll = document.body.classList.contains('no-scroll');
-    document.body.classList.add('no-scroll');
-
-    return () => {
-      if (!hadNoScroll) {
-        document.body.classList.remove('no-scroll');
-      }
-    };
-  }, []);
+  useBodyScrollLock(true);
 
   function handleOverlayClick(event) {
     if (event.target === event.currentTarget) {

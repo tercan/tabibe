@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from '../hooks/useTranslation.js';
-import { SEARCH_ENGINES } from './SettingsPanel.jsx';
+import { SEARCH_ENGINES } from '../config/searchEngines.js';
 
 /**
  * 1. Search icon SVG component

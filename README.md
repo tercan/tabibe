@@ -4,7 +4,7 @@ Language: English | [Türkçe](docs/tr/README.md)
 
 A modern, minimalist, and high-performance new tab extension for Chromium-based browsers.
 
-**Current version:** `0.4.1`
+**Current version:** `0.5.0`
 
 ## About
 
@@ -29,6 +29,7 @@ Tabibe turns the new tab experience into a personal control and productivity spa
 - Resilient site icons with a pinned local Simple Icons catalog, optional Chrome favicons, and an always-available monogram fallback
 - Searchable icon selector with automatic, brand, site, and letter modes
 - WCAG-aware contrast, visible keyboard focus, reduced-motion support, and minimum target sizing
+- Recoverable loading and storage error states with retry, validated backup, guarded reset, and one-step undo
 - JSON import/export for all app data, including sites, folders, settings, and multi-note data
 - 10 UI languages: Türkçe, English, Español, Português, Русский, العربية, हिन्दी, বাংলা, 中文, 日本語
 - Daily quotes: Turkish and English quote pools; other UI languages fall back to English quotes
@@ -47,6 +48,10 @@ Tabibe turns the new tab experience into a personal control and productivity spa
 - **Styling:** Vanilla CSS
 - **Extension Manifest:** Chrome Extension Manifest V3
 - **Data Layer:** chrome.storage.local / localStorage
+
+## Architecture
+
+Tabibe separates persisted data access, domain operations, drag-and-drop coordination, and presentation overlays. Site, folder, and note mutations are implemented as tested pure operations; React hooks own asynchronous persistence and lifecycle behavior; top-level recovery boundaries keep unexpected rendering or storage failures from producing a blank new tab.
 
 ## Data and Privacy
 

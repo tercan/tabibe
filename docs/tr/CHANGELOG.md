@@ -6,6 +6,27 @@ Bu dosya, projede yapılan tüm önemli değişiklikleri belgelemektedir.
 Format [Keep a Changelog](https://keepachangelog.com/tr/1.0.0/) standardına dayanmaktadır.
 Versiyon numaralandırması [Semantic Versioning](https://semver.org/lang/tr/) prensiplerine uymaktadır.
 
+## [0.5.0] - 2026-07-17 03:21
+
+### Added
+
+- Site, klasör ve not değişiklikleri için test edilmiş alan işlem modülleri eklendi
+- Hızlı erişim kalıcılığı, sürükleme koordinasyonu, not yaşam döngüsü ve referans sayımlı gövde kaydırma kilidi için ayrı kancalar eklendi
+- Uygulama yükleme, depolama kurtarma, korumalı sıfırlama, sıfırlama öncesi yedekleme ve geri alma durumları eklendi
+- Kurtarma akışları, depolama sıfırlama/geri alma, gezinme, ortak kaydırma kilidi ve ayrıştırılan alan işlemleri için birim testleri eklendi
+
+### Changed
+
+- Hızlı erişim verisi, sürükleme davranışı, overlay'ler, gezinme ve değişiklik mantığı ana sunum bileşeninden ayrıldı
+- Not kalıcılığı, filtreleme, oluşturma, güncelleme, arşivleme, geri yükleme ve silme davranışları not panelinden ayrıldı
+- Bileşen bağımlılığını ve tekrarlanan kaynak yönetimini kaldırmak için arama motoru yapılandırması ile yedek dosyası üretimi merkezileştirildi
+
+### Fixed
+
+- Tam sayfa yenileme tabanlı kurtarma, yalnızca hızlı erişim depolamasını yeniden deneyen akışla değiştirildi
+- Eş zamanlı panel ve modal kullanımında bir yüzeyin başka bir yüzeye ait gövde kaydırma kilidini kaldırması engellendi
+- Yedek indirmeleri için oluşturulan nesne URL'lerinin her durumda iptal edilmesi sağlandı
+
 ## [0.4.1] - 2026-07-17 02:53
 
 ### Added

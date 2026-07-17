@@ -4,7 +4,7 @@ Dil: [English](../../README.md) | Türkçe
 
 Chromium tabanlı tarayıcılar için modern, minimalist ve yüksek performanslı yeni sekme (new tab) açılış sayfası eklentisi.
 
-**Güncel sürüm:** `0.4.1`
+**Güncel sürüm:** `0.5.0`
 
 ## Hakkında
 
@@ -29,6 +29,7 @@ Tabibe, yeni sekme deneyimini kişisel bir kontrol ve üretkenlik alanına dön�
 - Sabitlenmiş yerel Simple Icons kataloğu, isteğe bağlı Chrome favicon'ları ve her zaman kullanılabilen monogram fallback'i ile dayanıklı site simgeleri
 - Otomatik, marka, site ve harf modlarını sunan aranabilir simge seçici
 - WCAG odaklı kontrast, görünür klavye odağı, reduced-motion desteği ve minimum hedef boyutları
+- Yeniden deneme, doğrulanmış yedekleme, korumalı sıfırlama ve tek adımlı geri alma sunan kurtarılabilir yükleme/depolama hata durumları
 - Tüm uygulama verileri için JSON import/export desteği (siteler, klasörler, ayarlar ve çoklu notlar dahil)
 - 10 arayüz dili desteği: Türkçe, English, Español, Português, Русский, العربية, हिन्दी, বাংলা, 中文, 日本語
 - Günlük alıntı sözler: Türkçe ve İngilizce havuz; diğer arayüz dillerinde İngilizce fallback kullanılır
@@ -47,6 +48,10 @@ Tabibe, yeni sekme deneyimini kişisel bir kontrol ve üretkenlik alanına dön�
 - **Stil Mimarisi:** Vanilla CSS
 - **Eklenti Manifestosu:** Chrome Extension Manifest V3
 - **Veri Katmanı:** chrome.storage.local / localStorage
+
+## Mimari
+
+Tabibe; kalıcı veri erişimini, alan işlemlerini, sürükle-bırak koordinasyonunu ve sunum katmanını birbirinden ayırır. Site, klasör ve not değişiklikleri test edilmiş saf işlemlerle yürütülür; React kancaları asenkron kayıt ve yaşam döngüsü davranışını yönetir; üst seviye kurtarma sınırları beklenmeyen render veya depolama hatalarının boş yeni sekme üretmesini engeller.
 
 ## Veri ve Gizlilik
 

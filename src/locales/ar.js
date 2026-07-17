@@ -183,6 +183,13 @@ const ar = {
   settings_bg_unsupported_type: 'استخدم صورة PNG أو JPEG أو WebP أو AVIF.',
   settings_bg_upload_error: 'تعذرت معالجة صورة الخلفية.',
   app_storage_error: 'تعذر حفظ التغيير. حاول مرة أخرى.',
+  app_loading: 'جارٍ تحميل Tabibe...',
+  app_recovery_title: 'تعذر فتح Tabibe بأمان',
+  app_recovery_description:
+    'لم تتغير بياناتك. حاول مرة أخرى أو صدّر نسخة احتياطية قبل إعادة تعيين البيانات المحلية.',
+  app_recovery_reset_confirm:
+    'ستستبدل إعادة التعيين البيانات المحلية الحالية بالمحتوى الافتراضي. هل تريد المتابعة؟',
+  app_recovery_reset_error: 'تعذرت إعادة تعيين البيانات المحلية.',
   note_save_saving: 'جارٍ الحفظ...',
   note_save_saved: 'تم الحفظ',
   note_save_error: 'تعذر الحفظ',

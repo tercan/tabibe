@@ -185,6 +185,13 @@ const ja = {
   settings_bg_unsupported_type: 'PNG、JPEG、WebP、AVIF画像を使用してください。',
   settings_bg_upload_error: '背景画像を処理できませんでした。',
   app_storage_error: '変更を保存できませんでした。もう一度お試しください。',
+  app_loading: 'Tabibe を読み込んでいます...',
+  app_recovery_title: 'Tabibe を安全に開けませんでした',
+  app_recovery_description:
+    'データは変更されていません。再試行するか、ローカルデータをリセットする前にバックアップを書き出してください。',
+  app_recovery_reset_confirm:
+    'リセットすると現在のローカルデータが既定の内容に置き換わります。続行しますか？',
+  app_recovery_reset_error: 'ローカルデータをリセットできませんでした。',
   note_save_saving: '保存中...',
   note_save_saved: '保存済み',
   note_save_error: '保存できませんでした',

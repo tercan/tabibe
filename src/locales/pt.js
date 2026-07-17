@@ -194,6 +194,13 @@ const pt = {
   settings_bg_unsupported_type: 'Use uma imagem PNG, JPEG, WebP ou AVIF.',
   settings_bg_upload_error: 'Não foi possível processar a imagem de fundo.',
   app_storage_error: 'Não foi possível salvar a alteração. Tente novamente.',
+  app_loading: 'Carregando o Tabibe...',
+  app_recovery_title: 'O Tabibe não pôde ser aberto com segurança',
+  app_recovery_description:
+    'Os seus dados não foram alterados. Tente novamente ou exporte um backup antes de redefinir os dados locais.',
+  app_recovery_reset_confirm:
+    'A redefinição substituirá os dados locais atuais pelo conteúdo padrão. Continuar?',
+  app_recovery_reset_error: 'Não foi possível redefinir os dados locais.',
   note_save_saving: 'Salvando...',
   note_save_saved: 'Salvo',
   note_save_error: 'Não foi possível salvar',

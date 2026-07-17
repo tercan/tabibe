@@ -1,23 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from '../hooks/useTranslation.js';
 import useFocusTrap from '../hooks/useFocusTrap.jsx';
+import useBodyScrollLock from '../hooks/useBodyScrollLock.js';
 import { exportBackup, inspectBackup, restoreBackup, undoLastRestore } from '../lib/storage.js';
 import { prepareBackgroundImage } from '../lib/backgroundImage.js';
+import { downloadBackupFile } from '../lib/backupFile.js';
 import { BACKGROUND_PRESET_GROUPS } from '../lib/backgroundPresets.js';
 import CloseIcon from './icons/CloseIcon.jsx';
+import { SEARCH_ENGINES } from '../config/searchEngines.js';
 
 const APP_VERSION = import.meta.env.VITE_APP_VERSION;
-
-/**
- * 1. Search engine definitions
- */
-
-const SEARCH_ENGINES = [
-  { id: 'google', name: 'Google', url: 'https://www.google.com/search?q=' },
-  { id: 'bing', name: 'Bing', url: 'https://www.bing.com/search?q=' },
-  { id: 'duckduckgo', name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=' },
-  { id: 'yandex', name: 'Yandex', url: 'https://yandex.com/search/?text=' },
-];
 
 /**
  * 3. SettingsPanel component
@@ -57,27 +49,12 @@ function SettingsPanel({
     initialFocusRef: close_button_ref,
     onEscape: on_close,
   });
+  useBodyScrollLock(is_open);
 
   async function handle_export() {
     try {
       const data = await exportBackup();
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      const now = new Date();
-      const date =
-        now.getFullYear().toString() +
-        String(now.getMonth() + 1).padStart(2, '0') +
-        String(now.getDate()).padStart(2, '0') +
-        '-' +
-        String(now.getHours()).padStart(2, '0') +
-        String(now.getMinutes()).padStart(2, '0');
-      link.href = url;
-      link.download = `tabibe-backup-${date}.json`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      downloadBackupFile(data);
       set_status({ type: 'success', message: t('settings_export_success') });
     } catch {
       set_status({ type: 'error', message: t('settings_export_error') });
@@ -159,20 +136,14 @@ function SettingsPanel({
     }
   }
 
-  useEffect(() => {
-    if (is_open) {
-      document.body.classList.add('no-scroll');
-    } else {
-      document.body.classList.remove('no-scroll');
-    }
-
-    return () => {
-      document.body.classList.remove('no-scroll');
+  useEffect(
+    () => () => {
       if (reload_timer_ref.current) {
         clearTimeout(reload_timer_ref.current);
       }
-    };
-  }, [is_open]);
+    },
+    [],
+  );
 
   function handle_overlay_click(event) {
     if (event.target === event.currentTarget) {
@@ -428,5 +399,4 @@ function SettingsPanel({
   );
 }
 
-export { SEARCH_ENGINES };
 export default SettingsPanel;

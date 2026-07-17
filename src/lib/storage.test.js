@@ -3,6 +3,7 @@ import {
   exportBackup,
   loadSettings,
   loadSites,
+  resetApplicationData,
   restoreBackup,
   saveSettings,
   saveSites,
@@ -63,5 +64,16 @@ describe('storage repository', () => {
     expect((await loadSites())[0].name).toBe('After');
     expect(await undoLastRestore()).toBe(true);
     expect((await loadSites())[0].name).toBe('Before');
+  });
+
+  it('resets corruptible application data while preserving an undo snapshot', async () => {
+    await saveSites([{ id: 'custom', name: 'Custom', url: 'https://custom.example' }]);
+
+    const resetState = await resetApplicationData();
+    expect(resetState.sites).toHaveLength(18);
+    expect((await loadSites())[0].name).toBe('Google');
+
+    expect(await undoLastRestore()).toBe(true);
+    expect((await loadSites())[0].name).toBe('Custom');
   });
 });

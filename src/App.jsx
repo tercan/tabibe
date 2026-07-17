@@ -6,6 +6,7 @@ import SpeedDial from './components/SpeedDial.jsx';
 import NotePanel from './components/NotePanel.jsx';
 import SettingsPanel from './components/SettingsPanel.jsx';
 import Footer from './components/Footer.jsx';
+import { AppLoading, AppRecovery } from './components/AppRecovery.jsx';
 import {
   getBackgroundPresetTheme,
   getEquivalentBackgroundPresetColor,
@@ -24,6 +25,7 @@ function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [notePanelOpen, setNotePanelOpen] = useState(false);
   const [storageError, setStorageError] = useState(false);
+  const [settingsLoadState, setSettingsLoadState] = useState('loading');
 
   const {
     theme,
@@ -42,10 +44,13 @@ function App() {
 
     loadSettings()
       .then((savedSettings) => {
-        if (active) setSettings(savedSettings);
+        if (active) {
+          setSettings(savedSettings);
+          setSettingsLoadState('ready');
+        }
       })
       .catch(() => {
-        if (active) setStorageError(true);
+        if (active) setSettingsLoadState('error');
       });
 
     return () => {
@@ -80,7 +85,7 @@ function App() {
       setStorageError(true);
       loadSettings()
         .then(setSettings)
-        .catch(() => undefined);
+        .catch(() => setSettingsLoadState('error'));
       return false;
     }
   }
@@ -187,6 +192,19 @@ function App() {
     }
     return backgroundColor ? { backgroundColor } : {};
   }
+
+  function handleRetrySettingsLoad() {
+    setSettingsLoadState('loading');
+    loadSettings()
+      .then((savedSettings) => {
+        setSettings(savedSettings);
+        setSettingsLoadState('ready');
+      })
+      .catch(() => setSettingsLoadState('error'));
+  }
+
+  if (settingsLoadState === 'loading') return <AppLoading />;
+  if (settingsLoadState === 'error') return <AppRecovery onRetry={handleRetrySettingsLoad} />;
 
   const className = [
     'new-tab',

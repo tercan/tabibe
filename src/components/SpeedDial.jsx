@@ -1,23 +1,29 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useCallback } from 'react';
 import { useTranslation } from '../hooks/useTranslation.js';
-import { useAutoAnimate } from '@formkit/auto-animate/react';
-import { load_sites, save_sites } from '../lib/storage.js';
-import { normalizeSiteUrl } from '../domain/dataSchema.js';
-import speedDialMoveAnimation from '../lib/speedDialMotion.js';
+import {
+  ROOT_FOLDER_ID,
+  cloneSites,
+  deleteFolder,
+  deleteSite,
+  getAllSites,
+  getCurrentFolderId,
+  getFolders,
+  moveSiteToRoot,
+  renameFolder,
+  upsertSite,
+} from '../domain/speedDialOperations.js';
 import useIconCatalog from '../hooks/useIconCatalog.js';
-import SiteModal from './SiteModal.jsx';
-import ContextMenu from './ContextMenu.jsx';
+import useSpeedDialData from '../hooks/useSpeedDialData.js';
+import useSpeedDialDrag from '../hooks/useSpeedDialDrag.js';
+import { openSiteUrl } from '../lib/siteNavigation.js';
 import Folder from './Folder.jsx';
 import SiteIcon from './SiteIcon.jsx';
-import FolderDeleteModal from './FolderDeleteModal.jsx';
+import SpeedDialOverlays from './SpeedDialOverlays.jsx';
 
 /**
  * 1. Icon URL helpers
  */
 
-const ROOT_FOLDER_ID = 'root';
-const FOLDER_DROP_DELAY = 250;
-const FOLDER_SWAP_DELAY = 650;
 function MoreIcon() {
   return (
     <svg
@@ -115,186 +121,27 @@ function CheckIcon() {
 }
 
 /**
- * 2. Site list helpers
- */
-
-function clone_sites(sites) {
-  return sites.map((item) => {
-    if (item.type === 'folder') {
-      return {
-        ...item,
-        children: Array.isArray(item.children) ? item.children.map((child) => ({ ...child })) : [],
-      };
-    }
-
-    return { ...item };
-  });
-}
-
-function get_all_sites(sites) {
-  const all_sites = [];
-
-  sites.forEach((item) => {
-    if (item.type === 'folder') {
-      (item.children || []).forEach((child) => all_sites.push(child));
-      return;
-    }
-
-    all_sites.push(item);
-  });
-
-  return all_sites;
-}
-
-function get_folders(sites) {
-  return sites.filter((item) => item.type === 'folder');
-}
-
-function locate_site(sites, site_id) {
-  for (let index = 0; index < sites.length; index += 1) {
-    const item = sites[index];
-
-    if (item.type !== 'folder' && item.id === site_id) {
-      return { type: 'root', index };
-    }
-
-    if (item.type === 'folder' && Array.isArray(item.children)) {
-      const child_index = item.children.findIndex((child) => child.id === site_id);
-      if (child_index !== -1) {
-        return { type: 'folder', folder_id: item.id, folder_index: index, child_index };
-      }
-    }
-  }
-
-  return null;
-}
-
-function get_current_folder_id(sites, site) {
-  if (!site || site.type === 'folder') return ROOT_FOLDER_ID;
-
-  const location = locate_site(sites, site.id);
-  if (location && location.type === 'folder') return location.folder_id;
-
-  return ROOT_FOLDER_ID;
-}
-
-function remove_site_by_id(sites, site_id) {
-  const location = locate_site(sites, site_id);
-  if (!location) return null;
-
-  if (location.type === 'root') {
-    const [removed] = sites.splice(location.index, 1);
-    return removed;
-  }
-
-  const folder = sites[location.folder_index];
-  const [removed] = folder.children.splice(location.child_index, 1);
-  return removed;
-}
-
-function insert_site(sites, site, folder_id) {
-  if (folder_id && folder_id !== ROOT_FOLDER_ID) {
-    const folder = sites.find((item) => item.type === 'folder' && item.id === folder_id);
-    if (folder) {
-      folder.children = Array.isArray(folder.children) ? folder.children : [];
-      folder.children.push(site);
-      return;
-    }
-  }
-
-  sites.push(site);
-}
-
-function upsert_site(sites, site_data, folder_id) {
-  const updated_sites = clone_sites(sites);
-  const existing_location = site_data.id ? locate_site(updated_sites, site_data.id) : null;
-  const site = {
-    ...site_data,
-    id: site_data.id || crypto.randomUUID(),
-  };
-
-  if (!existing_location) {
-    insert_site(updated_sites, site, folder_id);
-    return updated_sites;
-  }
-
-  if (existing_location.type === 'root' && folder_id === ROOT_FOLDER_ID) {
-    updated_sites[existing_location.index] = site;
-    return updated_sites;
-  }
-
-  if (existing_location.type === 'folder' && existing_location.folder_id === folder_id) {
-    updated_sites[existing_location.folder_index].children[existing_location.child_index] = site;
-    return updated_sites;
-  }
-
-  remove_site_by_id(updated_sites, site.id);
-  insert_site(updated_sites, site, folder_id);
-  return updated_sites;
-}
-
-function update_folder_name(sites, folder_id, name) {
-  const updated_sites = clone_sites(sites);
-  const folder_index = updated_sites.findIndex(
-    (item) => item.type === 'folder' && item.id === folder_id,
-  );
-
-  if (folder_index === -1) {
-    return null;
-  }
-
-  updated_sites[folder_index] = {
-    ...updated_sites[folder_index],
-    name,
-  };
-
-  return updated_sites;
-}
-
-function move_folder_child(sites, folder_id, from_index, to_index) {
-  const updated_sites = clone_sites(sites);
-  const folder = updated_sites.find((item) => item.type === 'folder' && item.id === folder_id);
-
-  if (!folder || !Array.isArray(folder.children)) {
-    return null;
-  }
-
-  if (
-    from_index < 0 ||
-    to_index < 0 ||
-    from_index >= folder.children.length ||
-    to_index >= folder.children.length
-  ) {
-    return null;
-  }
-
-  const [removed_site] = folder.children.splice(from_index, 1);
-  folder.children.splice(to_index, 0, removed_site);
-
-  return updated_sites;
-}
-
-function is_in_folder_swap_zone(event) {
-  const rect = event.currentTarget.getBoundingClientRect();
-  const x = event.clientX - rect.left;
-  const y = event.clientY - rect.top;
-  const edge_x = rect.width * 0.12;
-  const edge_y = rect.height * 0.12;
-
-  return x < edge_x || x > rect.width - edge_x || y < edge_y || y > rect.height - edge_y;
-}
-
-/**
  * 3. SpeedDial component
  */
 
 function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favicon_permission }) {
   const { t } = useTranslation();
   const icon_catalog = useIconCatalog();
-  const [sites, set_sites] = useState([]);
-  const [is_loading, set_is_loading] = useState(true);
-  const [load_error, set_load_error] = useState(false);
-  const [save_error, set_save_error] = useState(false);
+  const {
+    clearSaveError: clear_save_error,
+    isLoading: is_loading,
+    loadError: load_error,
+    persistSites: persist_sites,
+    queueUndo: queue_undo,
+    reportSaveError: report_save_error,
+    retryLoad: retry_load,
+    saveError: save_error,
+    setSites: set_sites,
+    sites,
+    sitesRef: sites_ref,
+    undo: handle_undo,
+    undoState: undo_state,
+  } = useSpeedDialData(t('toast_restored'));
   const [modal_open, set_modal_open] = useState(false);
   const [modal_mode, set_modal_mode] = useState('site');
   const [editing_site, set_editing_site] = useState(null);
@@ -302,95 +149,19 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
   const [folder_delete_candidate, set_folder_delete_candidate] = useState(null);
   const [context_menu, set_context_menu] = useState(null);
   const [manage_mode, set_manage_mode] = useState(false);
-  const [undo_state, set_undo_state] = useState(null);
-  const [drag_index, set_drag_index] = useState(null);
-  const [drag_over_index, set_drag_over_index] = useState(null);
-  const [drag_over_folder_id, set_drag_over_folder_id] = useState(null);
-  const [folder_child_drag_state, set_folder_child_drag_state] = useState(null);
-  const [folder_child_drag_over_index, set_folder_child_drag_over_index] = useState(null);
-  const drag_node = useRef(null);
-  const dragging_site_ref = useRef(null);
-  const drag_start_sites_ref = useRef(null);
-  const drag_click_block_ref = useRef(false);
-  const sites_ref = useRef([]);
-  const drag_index_ref = useRef(null);
-  const folder_child_drag_state_ref = useRef(null);
-  const drag_click_timer_ref = useRef(null);
-  const folder_drop_timer_ref = useRef(null);
-  const folder_drop_candidate_ref = useRef(null);
-  const folder_drop_target_ref = useRef(null);
-  const folder_swap_timer_ref = useRef(null);
-  const folder_swap_candidate_ref = useRef(null);
-  const undo_timer_ref = useRef(null);
-  const [animation_parent] = useAutoAnimate(speedDialMoveAnimation);
-
-  useEffect(() => {
-    sites_ref.current = sites;
-  }, [sites]);
-
-  useEffect(() => {
-    drag_index_ref.current = drag_index;
-  }, [drag_index]);
-
-  useEffect(() => {
-    load_sites()
-      .then((loaded) => {
-        set_sites(loaded);
-        set_load_error(false);
-        set_is_loading(false);
-      })
-      .catch(() => {
-        set_load_error(true);
-        set_is_loading(false);
-      });
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (undo_timer_ref.current) {
-        clearTimeout(undo_timer_ref.current);
-      }
-      if (drag_click_timer_ref.current) {
-        clearTimeout(drag_click_timer_ref.current);
-      }
-      if (folder_drop_timer_ref.current) {
-        clearTimeout(folder_drop_timer_ref.current);
-      }
-      if (folder_swap_timer_ref.current) {
-        clearTimeout(folder_swap_timer_ref.current);
-      }
-    };
-  }, []);
 
   /**
    * 4. Navigation handlers
    */
 
   function handle_click(url) {
-    if (drag_node.current || drag_click_block_ref.current || !url) return;
+    if (is_click_blocked() || !url) return;
 
-    let trimmed_url = '';
     try {
-      trimmed_url = normalizeSiteUrl(url);
+      openSiteUrl(url);
     } catch {
-      set_save_error(true);
-      return;
+      report_save_error();
     }
-    const is_browser_protocol =
-      trimmed_url.startsWith('chrome://') ||
-      trimmed_url.startsWith('edge://') ||
-      trimmed_url.startsWith('about:');
-
-    if (is_browser_protocol && typeof chrome !== 'undefined' && chrome.tabs) {
-      chrome.tabs.update({ url: trimmed_url }, () => {
-        if (chrome.runtime.lastError) {
-          chrome.tabs.create({ url: trimmed_url });
-        }
-      });
-      return;
-    }
-
-    window.location.href = trimmed_url;
   }
 
   function handle_key_down(event, site) {
@@ -423,374 +194,39 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
    * 6. Drag and drop handlers
    */
 
-  function block_click_after_drag() {
-    drag_click_block_ref.current = true;
-
-    if (drag_click_timer_ref.current) {
-      clearTimeout(drag_click_timer_ref.current);
-    }
-
-    drag_click_timer_ref.current = setTimeout(() => {
-      drag_click_block_ref.current = false;
-      drag_click_timer_ref.current = null;
-    }, 150);
-  }
-
-  function handle_drag_start(event, index) {
-    drag_node.current = event.currentTarget;
-    dragging_site_ref.current = sites[index];
-    drag_start_sites_ref.current = clone_sites(sites_ref.current);
-    set_drag_index(index);
-    drag_index_ref.current = index;
-    event.dataTransfer.effectAllowed = 'move';
-    event.dataTransfer.setData('text/plain', sites[index]?.id || '');
-  }
-
-  function handle_drag_enter(event) {
-    event.preventDefault();
-  }
-
-  function clear_folder_drop_candidate() {
-    if (folder_drop_timer_ref.current) {
-      clearTimeout(folder_drop_timer_ref.current);
-      folder_drop_timer_ref.current = null;
-    }
-
-    folder_drop_candidate_ref.current = null;
-    folder_drop_target_ref.current = null;
-    set_drag_over_folder_id(null);
-  }
-
-  function clear_folder_swap_candidate() {
-    if (folder_swap_timer_ref.current) {
-      clearTimeout(folder_swap_timer_ref.current);
-      folder_swap_timer_ref.current = null;
-    }
-
-    folder_swap_candidate_ref.current = null;
-  }
-
-  function queue_folder_drop_candidate(folder_id) {
-    if (folder_drop_candidate_ref.current === folder_id) return;
-
-    clear_folder_drop_candidate();
-    folder_drop_candidate_ref.current = folder_id;
-
-    folder_drop_timer_ref.current = setTimeout(() => {
-      if (folder_drop_candidate_ref.current === folder_id) {
-        folder_drop_target_ref.current = folder_id;
-        set_drag_over_folder_id(folder_id);
-        set_drag_over_index(null);
-      }
-      folder_drop_timer_ref.current = null;
-    }, FOLDER_DROP_DELAY);
-  }
-
-  function queue_folder_swap_candidate(index) {
-    if (folder_swap_candidate_ref.current === index) return;
-
-    clear_folder_swap_candidate();
-    folder_swap_candidate_ref.current = index;
-
-    folder_swap_timer_ref.current = setTimeout(() => {
-      if (folder_swap_candidate_ref.current === index && folder_drop_target_ref.current === null) {
-        perform_swap(index);
-      }
-      folder_swap_timer_ref.current = null;
-    }, FOLDER_SWAP_DELAY);
-  }
-
-  function handle_drag_over(event, index) {
-    event.preventDefault();
-    const current_drag_index = drag_index_ref.current;
-    if (current_drag_index === null) return;
-
-    event.dataTransfer.dropEffect = 'move';
-
-    const current_sites = sites_ref.current;
-    const dragged_site = current_sites[current_drag_index];
-    const target_site = current_sites[index];
-    if (!dragged_site || !target_site) return;
-
-    if (target_site.type === 'folder' && dragged_site.type !== 'folder') {
-      if (is_in_folder_swap_zone(event)) {
-        clear_folder_drop_candidate();
-        set_drag_over_index(index);
-        queue_folder_swap_candidate(index);
-      } else {
-        clear_folder_swap_candidate();
-        set_drag_over_index(index);
-        queue_folder_drop_candidate(target_site.id);
-      }
-      return;
-    }
-
-    clear_folder_drop_candidate();
-    clear_folder_swap_candidate();
-
-    if (index !== current_drag_index) {
-      set_drag_over_index(index);
-      perform_swap(index);
-    }
-  }
-
-  function perform_swap(index) {
-    const current_drag_index = drag_index_ref.current;
-    if (current_drag_index === null) return;
-    if (current_drag_index === index) return;
-
-    const new_sites = [...sites_ref.current];
-    if (
-      current_drag_index < 0 ||
-      index < 0 ||
-      current_drag_index >= new_sites.length ||
-      index >= new_sites.length
-    ) {
-      return;
-    }
-
-    const [removed] = new_sites.splice(current_drag_index, 1);
-    new_sites.splice(index, 0, removed);
-    set_sites(new_sites);
-    sites_ref.current = new_sites;
-    set_drag_index(index);
-    drag_index_ref.current = index;
-    set_drag_over_index(index);
-  }
-
-  function handle_drag_leave(event) {
-    const related = event.relatedTarget;
-    if (related && event.currentTarget.contains(related)) return;
-
-    clear_folder_swap_candidate();
-    set_drag_over_index(null);
-  }
-
-  async function handle_drop(event, target_index = null) {
-    event.preventDefault();
-
-    if (
-      typeof target_index === 'number' &&
-      folder_drop_target_ref.current === null &&
-      drag_index_ref.current !== target_index
-    ) {
-      perform_swap(target_index);
-    }
-
-    await persist_sites(clone_sites(sites_ref.current), drag_start_sites_ref.current);
-    handle_drag_end();
-  }
-
-  function handle_drag_end() {
-    if (drag_node.current) {
-      block_click_after_drag();
-    }
-
-    clear_folder_swap_candidate();
-    drag_node.current = null;
-    dragging_site_ref.current = null;
-    drag_start_sites_ref.current = null;
-    set_drag_index(null);
-    drag_index_ref.current = null;
-    set_drag_over_index(null);
-    clear_folder_drop_candidate();
-  }
-
-  async function handle_drop_on_folder(folder_id) {
-    const site = dragging_site_ref.current;
-    if (!site || site.type === 'folder') return;
-
-    const current_sites = clone_sites(sites_ref.current);
-    const previous_sites = clone_sites(current_sites);
-    const removed_site = remove_site_by_id(current_sites, site.id);
-
-    if (!removed_site) return;
-
-    const folder = current_sites.find((item) => item.type === 'folder' && item.id === folder_id);
-    if (!folder || folder.children.find((child) => child.url === removed_site.url)) {
-      handle_drag_end();
-      return;
-    }
-
-    folder.children.push(removed_site);
-    const was_saved = await persist_sites(current_sites, previous_sites);
-    if (was_saved) queue_undo(t('toast_site_moved_folder'), previous_sites);
-    handle_drag_end();
-  }
-
-  function handle_folder_child_drag_start(event, folder_id, child_index) {
-    event.stopPropagation();
-    const folder = sites_ref.current.find(
-      (item) => item.type === 'folder' && item.id === folder_id,
-    );
-    const child = folder?.children?.[child_index] || null;
-    const next_drag_state = { folder_id, index: child_index };
-
-    drag_node.current = event.currentTarget;
-    dragging_site_ref.current = child;
-    drag_start_sites_ref.current = clone_sites(sites_ref.current);
-    folder_child_drag_state_ref.current = next_drag_state;
-    set_folder_child_drag_state(next_drag_state);
-    set_folder_child_drag_over_index(child_index);
-    event.dataTransfer.effectAllowed = 'move';
-    event.dataTransfer.setData('text/plain', child?.id || '');
-  }
-
-  function handle_folder_child_drag_enter(event) {
-    event.preventDefault();
-    event.stopPropagation();
-  }
-
-  function handle_folder_child_drag_over(event, folder_id, child_index) {
-    event.preventDefault();
-    event.stopPropagation();
-
-    const current_drag_state = folder_child_drag_state_ref.current;
-    if (!current_drag_state || current_drag_state.folder_id !== folder_id) return;
-
-    event.dataTransfer.dropEffect = 'move';
-
-    if (child_index === current_drag_state.index) return;
-
-    set_folder_child_drag_over_index(child_index);
-    perform_folder_child_swap(folder_id, child_index);
-  }
-
-  function perform_folder_child_swap(folder_id, child_index) {
-    const current_drag_state = folder_child_drag_state_ref.current;
-    if (!current_drag_state || current_drag_state.folder_id !== folder_id) return;
-    if (current_drag_state.index === child_index) return;
-
-    const next_sites = move_folder_child(
-      sites_ref.current,
-      folder_id,
-      current_drag_state.index,
-      child_index,
-    );
-
-    if (!next_sites) return;
-
-    const next_drag_state = { folder_id, index: child_index };
-    set_sites(next_sites);
-    sites_ref.current = next_sites;
-    folder_child_drag_state_ref.current = next_drag_state;
-    set_folder_child_drag_state(next_drag_state);
-    set_folder_child_drag_over_index(child_index);
-  }
-
-  function handle_folder_child_drag_leave(event) {
-    event.stopPropagation();
-    const related = event.relatedTarget;
-    if (related && event.currentTarget.contains(related)) return;
-
-    set_folder_child_drag_over_index(null);
-  }
-
-  async function handle_folder_child_drop(event, folder_id, child_index) {
-    event.preventDefault();
-    event.stopPropagation();
-
-    const current_drag_state = folder_child_drag_state_ref.current;
-    if (current_drag_state && current_drag_state.folder_id === folder_id) {
-      perform_folder_child_swap(folder_id, child_index);
-      await persist_sites(clone_sites(sites_ref.current), drag_start_sites_ref.current);
-    }
-
-    handle_folder_child_drag_end();
-  }
-
-  async function handle_folder_child_drop_to_root(event, folder_id) {
-    event.preventDefault();
-    event.stopPropagation();
-
-    const dragged_site = dragging_site_ref.current;
-    const current_drag_state = folder_child_drag_state_ref.current;
-
-    if (!dragged_site || !current_drag_state || current_drag_state.folder_id !== folder_id) {
-      handle_folder_child_drag_end(event);
-      return;
-    }
-
-    const current_sites = clone_sites(sites_ref.current);
-    const previous_sites = clone_sites(current_sites);
-    const removed_site = remove_site_by_id(current_sites, dragged_site.id);
-
-    if (!removed_site) {
-      handle_folder_child_drag_end(event);
-      return;
-    }
-
-    current_sites.push(removed_site);
-    const was_saved = await persist_sites(current_sites, previous_sites);
-    if (was_saved) queue_undo(t('toast_site_removed_from_folder'), previous_sites);
-    handle_folder_child_drag_end(event);
-  }
-
-  function handle_folder_child_drag_end(event) {
-    event?.stopPropagation();
-
-    if (drag_node.current) {
-      block_click_after_drag();
-    }
-
-    drag_node.current = null;
-    dragging_site_ref.current = null;
-    drag_start_sites_ref.current = null;
-    folder_child_drag_state_ref.current = null;
-    set_folder_child_drag_state(null);
-    set_folder_child_drag_over_index(null);
-  }
-
-  /**
-   * 7. Undo and persistence helpers
-   */
-
-  async function persist_sites(next_sites, rollback_sites = sites_ref.current) {
-    const previous_sites = clone_sites(rollback_sites || sites_ref.current);
-    set_sites(next_sites);
-    sites_ref.current = next_sites;
-    set_save_error(false);
-
-    try {
-      await save_sites(next_sites);
-      return true;
-    } catch {
-      set_sites(previous_sites);
-      sites_ref.current = previous_sites;
-      set_save_error(true);
-      return false;
-    }
-  }
-
-  function queue_undo(message, previous_sites) {
-    if (undo_timer_ref.current) {
-      clearTimeout(undo_timer_ref.current);
-    }
-
-    set_undo_state({ message, previous_sites });
-    undo_timer_ref.current = setTimeout(() => {
-      set_undo_state(null);
-      undo_timer_ref.current = null;
-    }, 7000);
-  }
-
-  async function handle_undo() {
-    if (!undo_state) return;
-
-    if (undo_timer_ref.current) {
-      clearTimeout(undo_timer_ref.current);
-      undo_timer_ref.current = null;
-    }
-
-    const was_saved = await persist_sites(undo_state.previous_sites);
-    if (!was_saved) return;
-    set_undo_state({ message: t('toast_restored'), previous_sites: null });
-
-    undo_timer_ref.current = setTimeout(() => {
-      set_undo_state(null);
-      undo_timer_ref.current = null;
-    }, 2500);
-  }
+  const {
+    animationParent: animation_parent,
+    dragIndex: drag_index,
+    dragOverFolderId: drag_over_folder_id,
+    dragOverIndex: drag_over_index,
+    folderChildDragOverIndex: folder_child_drag_over_index,
+    folderChildDragState: folder_child_drag_state,
+    handleDragEnd: handle_drag_end,
+    handleDragEnter: handle_drag_enter,
+    handleDragLeave: handle_drag_leave,
+    handleDragOver: handle_drag_over,
+    handleDragStart: handle_drag_start,
+    handleDrop: handle_drop,
+    handleDropOnItem: handle_drop_on_item,
+    handleFolderChildDragEnd: handle_folder_child_drag_end,
+    handleFolderChildDragEnter: handle_folder_child_drag_enter,
+    handleFolderChildDragLeave: handle_folder_child_drag_leave,
+    handleFolderChildDragOver: handle_folder_child_drag_over,
+    handleFolderChildDragStart: handle_folder_child_drag_start,
+    handleFolderChildDrop: handle_folder_child_drop,
+    handleFolderChildDropToRoot: handle_folder_child_drop_to_root,
+    isClickBlocked: is_click_blocked,
+  } = useSpeedDialDrag({
+    sites,
+    setSites: set_sites,
+    sitesRef: sites_ref,
+    persistSites: persist_sites,
+    queueUndo: queue_undo,
+    messages: {
+      siteMovedToFolder: t('toast_site_moved_folder'),
+      siteMovedToRoot: t('toast_site_removed_from_folder'),
+    },
+  });
 
   /**
    * 8. Context menu and modal handlers
@@ -804,8 +240,7 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
       x: event.clientX || rect.right,
       y: event.clientY || rect.bottom,
       site,
-      is_folder: site.type === 'folder',
-      folder_id,
+      folderId: folder_id,
     });
   }
 
@@ -818,8 +253,7 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
       x: rect.right,
       y: rect.bottom,
       site,
-      is_folder: site.type === 'folder',
-      folder_id,
+      folderId: folder_id,
     });
   }
 
@@ -839,7 +273,7 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
 
   function handle_edit(site) {
     set_editing_site(site);
-    set_modal_folder_id(get_current_folder_id(sites, site));
+    set_modal_folder_id(getCurrentFolderId(sites, site));
     set_modal_mode(site.type === 'folder' ? 'folder' : 'site');
     set_modal_open(true);
   }
@@ -852,13 +286,11 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
 
   async function handle_save(data, target_folder_id = ROOT_FOLDER_ID) {
     if (modal_mode === 'folder') {
-      const sites_list = clone_sites(sites_ref.current);
+      const sites_list = cloneSites(sites_ref.current);
 
       if (editing_site) {
         const folder_id = data.id || editing_site?.id;
-        const next_sites =
-          update_folder_name(sites_list, folder_id, data.name) ||
-          update_folder_name(await load_sites(), folder_id, data.name);
+        const next_sites = renameFolder(sites_list, folder_id, data.name);
 
         if (!next_sites) {
           return false;
@@ -875,13 +307,13 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
         if (!(await persist_sites(sites_list))) return false;
       }
     } else {
-      const sites_list = clone_sites(sites_ref.current);
+      const sites_list = cloneSites(sites_ref.current);
       const site_data = {
         ...(editing_site || {}),
         ...data,
         id: editing_site?.id || data.id || crypto.randomUUID(),
       };
-      const next_sites = upsert_site(sites_list, site_data, target_folder_id);
+      const next_sites = upsertSite(sites_list, site_data, target_folder_id);
       if (!(await persist_sites(next_sites))) return false;
     }
 
@@ -895,11 +327,9 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
       return;
     }
 
-    const sites_list = clone_sites(await load_sites());
-    const previous_sites = clone_sites(sites_list);
-
-    const removed_site = remove_site_by_id(sites_list, item.id);
-    if (!removed_site) return;
+    const previous_sites = cloneSites(sites_ref.current);
+    const sites_list = deleteSite(previous_sites, item.id);
+    if (!sites_list) return;
 
     const was_saved = await persist_sites(sites_list, previous_sites);
     if (was_saved) queue_undo(t('toast_site_deleted'), previous_sites);
@@ -908,46 +338,30 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
   async function handle_confirm_folder_delete(mode) {
     if (!folder_delete_candidate) return;
 
-    const sites_list = clone_sites(await load_sites());
-    const previous_sites = clone_sites(sites_list);
-    const index = sites_list.findIndex(
-      (site) => site.id === folder_delete_candidate.id && site.type === 'folder',
-    );
+    const previous_sites = cloneSites(sites_ref.current);
+    const sites_list = deleteFolder(previous_sites, folder_delete_candidate.id, mode);
 
-    if (index === -1) {
+    if (!sites_list) {
       set_folder_delete_candidate(null);
       return;
     }
 
-    const folder = sites_list[index];
-    const children = Array.isArray(folder.children) ? folder.children : [];
-
     if (mode === 'move') {
-      sites_list.splice(index, 1, ...children);
       if (!(await persist_sites(sites_list, previous_sites))) return;
       set_folder_delete_candidate(null);
       queue_undo(t('toast_folder_deleted'), previous_sites);
       return;
     }
 
-    sites_list.splice(index, 1);
     if (!(await persist_sites(sites_list, previous_sites))) return;
     set_folder_delete_candidate(null);
     queue_undo(t('toast_folder_deleted_with_contents'), previous_sites);
   }
 
-  async function handle_remove_from_folder(site, folder_id) {
-    const sites_list = clone_sites(await load_sites());
-    const previous_sites = clone_sites(sites_list);
-    const folder = sites_list.find((item) => item.id === folder_id && item.type === 'folder');
-
-    if (!folder) return;
-
-    const child_index = folder.children.findIndex((child) => child.id === site.id);
-    if (child_index === -1) return;
-
-    const [removed_site] = folder.children.splice(child_index, 1);
-    sites_list.push(removed_site);
+  async function handle_remove_from_folder(site) {
+    const previous_sites = cloneSites(sites_ref.current);
+    const sites_list = moveSiteToRoot(previous_sites, site.id);
+    if (!sites_list) return;
     const was_saved = await persist_sites(sites_list, previous_sites);
     if (was_saved) queue_undo(t('toast_site_removed_from_folder'), previous_sites);
   }
@@ -966,22 +380,18 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
     return (
       <nav className="speed-dial speed-dial--error" aria-label={t('speed_dial_aria_label')}>
         <p>{t('speed_dial_load_error')}</p>
-        <button
-          type="button"
-          className="modal-button modal-button--primary"
-          onClick={() => window.location.reload()}
-        >
+        <button type="button" className="modal-button modal-button--primary" onClick={retry_load}>
           {t('common_retry')}
         </button>
       </nav>
     );
   }
 
-  const folders = get_folders(sites);
-  const all_sites = get_all_sites(sites);
+  const folders = getFolders(sites);
+  const all_sites = getAllSites(sites);
   const is_dragging_any = drag_index !== null || folder_child_drag_state !== null;
   const root_drop_preview_site = folder_child_drag_state
-    ? sites.find((item) => item.id === folder_child_drag_state.folder_id)?.children?.[
+    ? sites.find((item) => item.id === folder_child_drag_state.folderId)?.children?.[
         folder_child_drag_state.index
       ] || null
     : null;
@@ -1050,19 +460,7 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
                 on_drag_enter={handle_drag_enter}
                 on_drag_over={(e) => handle_drag_over(e, index)}
                 on_drag_leave={handle_drag_leave}
-                on_drop={(e) => {
-                  e.preventDefault();
-                  if (dragging_site_ref.current?.type === 'folder') {
-                    handle_drop(e);
-                  } else if (
-                    folder_drop_target_ref.current === item.id ||
-                    folder_drop_candidate_ref.current === item.id
-                  ) {
-                    handle_drop_on_folder(item.id);
-                  } else {
-                    handle_drop(e, index);
-                  }
-                }}
+                on_drop={(event) => handle_drop_on_item(event, item, index)}
                 on_drag_end={handle_drag_end}
                 on_child_drag_start={handle_folder_child_drag_start}
                 on_child_drag_enter={handle_folder_child_drag_enter}
@@ -1130,69 +528,35 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
       </ul>
       {/* /.speed-dial-grid */}
 
-      {undo_state && (
-        <div className="toast" role="status" aria-live="polite">
-          <span>{undo_state.message}</span>
-          {undo_state.previous_sites && (
-            <button className="toast-action" type="button" onClick={handle_undo}>
-              {t('toast_undo')}
-            </button>
-          )}
-        </div>
-      )}
-
-      {save_error && (
-        <div className="toast toast--error" role="alert">
-          <span>{t('speed_dial_save_error')}</span>
-          <button className="toast-action" type="button" onClick={() => set_save_error(false)}>
-            {t('modal_cancel')}
-          </button>
-        </div>
-      )}
-
-      {context_menu && (
-        <ContextMenu
-          x={context_menu.x}
-          y={context_menu.y}
-          on_edit={() => handle_edit(context_menu.site)}
-          on_delete={() => handle_delete(context_menu.site)}
-          on_remove_from_folder={
-            context_menu.folder_id
-              ? () => handle_remove_from_folder(context_menu.site, context_menu.folder_id)
-              : null
-          }
-          on_close={() => set_context_menu(null)}
-        />
-      )}
-
-      {modal_open && (
-        <SiteModal
-          key={`${modal_mode}-${editing_site?.id || 'new'}-${modal_folder_id}`}
-          site={editing_site}
-          mode={modal_mode}
-          folders={folders}
-          current_folder_id={modal_folder_id}
-          existing_sites={all_sites}
-          icon_catalog={icon_catalog}
-          icon_style={icon_style}
-          has_favicon_permission={has_favicon_permission}
-          on_request_favicon_permission={on_request_favicon_permission}
-          on_save={handle_save}
-          on_close={handle_close_modal}
-        />
-      )}
-      {folder_delete_candidate && (
-        <FolderDeleteModal
-          folder={folder_delete_candidate}
-          onMoveContents={() => handle_confirm_folder_delete('move')}
-          onDeleteContents={() => handle_confirm_folder_delete('delete')}
-          onClose={() => set_folder_delete_candidate(null)}
-        />
-      )}
+      <SpeedDialOverlays
+        allSites={all_sites}
+        contextMenu={context_menu}
+        editingSite={editing_site}
+        faviconPermission={has_favicon_permission}
+        folderDeleteCandidate={folder_delete_candidate}
+        folders={folders}
+        iconCatalog={icon_catalog}
+        iconStyle={icon_style}
+        modalFolderId={modal_folder_id}
+        modalMode={modal_mode}
+        modalOpen={modal_open}
+        onClearSaveError={clear_save_error}
+        onCloseContextMenu={() => set_context_menu(null)}
+        onCloseFolderDelete={() => set_folder_delete_candidate(null)}
+        onCloseModal={handle_close_modal}
+        onConfirmFolderDelete={handle_confirm_folder_delete}
+        onDelete={handle_delete}
+        onEdit={handle_edit}
+        onRemoveFromFolder={handle_remove_from_folder}
+        onRequestFaviconPermission={on_request_favicon_permission}
+        onSave={handle_save}
+        onUndo={handle_undo}
+        saveError={save_error}
+        undoState={undo_state}
+      />
       {/* /.speed-dial */}
     </nav>
   );
 }
 
-export { ROOT_FOLDER_ID };
 export default SpeedDial;

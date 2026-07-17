@@ -1,48 +1,10 @@
-import { useCallback, useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from '../hooks/useTranslation.js';
 import useFocusTrap from '../hooks/useFocusTrap.jsx';
-import { loadNotes, saveNotes } from '../lib/storage.js';
+import useBodyScrollLock from '../hooks/useBodyScrollLock.js';
+import useNotes from '../hooks/useNotes.js';
+import { isNoteEmpty } from '../domain/noteOperations.js';
 import CloseIcon from './icons/CloseIcon.jsx';
-
-/**
- * 1. Storage helpers for notes
- */
-
-const NOTE_SAVE_DELAY = 450;
-const UNDO_TIMEOUT = 7000;
-
-function getSafeString(value) {
-  return typeof value === 'string' ? value : '';
-}
-
-function createId() {
-  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-    return crypto.randomUUID();
-  }
-
-  return `note-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-}
-
-function createNote(overrides = {}) {
-  const now = new Date().toISOString();
-
-  return {
-    id: createId(),
-    title: '',
-    content: '',
-    isPinned: false,
-    isArchived: false,
-    createdAt: now,
-    updatedAt: now,
-    ...overrides,
-  };
-}
-
-function isNoteEmpty(note) {
-  if (!note) return true;
-
-  return !getSafeString(note.title).trim() && !getSafeString(note.content).trim();
-}
 
 /**
  * 2. Icons
@@ -171,66 +133,36 @@ function BackIcon() {
 
 function NotePanel({ is_open, is_pinned, on_close, on_toggle_pin }) {
   const { t } = useTranslation();
-  const [notes, setNotes] = useState([]);
-  const [activeNoteId, setActiveNoteId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showArchived, setShowArchived] = useState(false);
   const [noteView, setNoteView] = useState('list');
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [undoState, setUndoState] = useState(null);
   const [pendingDeleteNoteId, setPendingDeleteNoteId] = useState(null);
-  const [saveStatus, setSaveStatus] = useState('idle');
-  const saveTimer = useRef(null);
-  const notesRef = useRef([]);
-  const isLoadedRef = useRef(false);
-  const undoTimer = useRef(null);
   const wasVisibleRef = useRef(false);
   const panelRef = useRef(null);
   const titleInputRef = useRef(null);
   const createButtonRef = useRef(null);
   const deleteDialogRef = useRef(null);
   const deleteCancelButtonRef = useRef(null);
-
-  const filteredNotes = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-
-    return notes
-      .filter((note) => !isNoteEmpty(note))
-      .filter((note) => note.isArchived === showArchived)
-      .filter((note) => {
-        if (!query) return true;
-
-        return `${note.title} ${note.content}`.toLowerCase().includes(query);
-      })
-      .sort((firstNote, secondNote) => {
-        if (firstNote.isPinned !== secondNote.isPinned) {
-          return firstNote.isPinned ? -1 : 1;
-        }
-
-        return new Date(secondNote.updatedAt).getTime() - new Date(firstNote.updatedAt).getTime();
-      });
-  }, [notes, searchQuery, showArchived]);
-
-  const activeNote = notes.find((note) => note.id === activeNoteId) || null;
+  const {
+    activeNote,
+    activeNoteId,
+    deleteNote,
+    ensureEditableNote,
+    filteredNotes,
+    isLoaded,
+    notes,
+    removeEmptyNote,
+    restoreDeletedNote,
+    saveStatus,
+    setActiveNoteId,
+    toggleNoteArchive,
+    toggleNotePin,
+    undoState,
+    updateActiveNote,
+  } = useNotes({ searchQuery, showArchived });
   const pendingDeleteNote = notes.find((note) => note.id === pendingDeleteNoteId) || null;
   const isEditorView = noteView === 'editor' && activeNote;
   const isPanelVisible = is_open || is_pinned;
-
-  const flushPendingNotes = useCallback(async () => {
-    if (!isLoaded) return;
-    if (saveTimer.current) {
-      clearTimeout(saveTimer.current);
-      saveTimer.current = null;
-    }
-
-    setSaveStatus('saving');
-    try {
-      await saveNotes(notesRef.current.filter((note) => !isNoteEmpty(note)));
-      setSaveStatus('saved');
-    } catch {
-      setSaveStatus('error');
-    }
-  }, [isLoaded]);
 
   useFocusTrap({
     containerRef: panelRef,
@@ -238,6 +170,7 @@ function NotePanel({ is_open, is_pinned, on_close, on_toggle_pin }) {
     initialFocusRef: isEditorView ? titleInputRef : createButtonRef,
     onEscape: handleClosePanel,
   });
+  useBodyScrollLock(is_open && !is_pinned);
 
   useFocusTrap({
     containerRef: deleteDialogRef,
@@ -245,62 +178,6 @@ function NotePanel({ is_open, is_pinned, on_close, on_toggle_pin }) {
     initialFocusRef: deleteCancelButtonRef,
     onEscape: cancelDeleteConfirmation,
   });
-
-  useEffect(() => {
-    loadNotes()
-      .then((savedNotes) => {
-        notesRef.current = savedNotes;
-        isLoadedRef.current = true;
-        setNotes(savedNotes);
-        setActiveNoteId(
-          savedNotes.find((note) => !note.isArchived)?.id || savedNotes[0]?.id || null,
-        );
-        setIsLoaded(true);
-      })
-      .catch(() => {
-        isLoadedRef.current = true;
-        setSaveStatus('error');
-        setIsLoaded(true);
-      });
-  }, []);
-
-  useEffect(() => {
-    notesRef.current = notes;
-  }, [notes]);
-
-  useEffect(() => {
-    if (!isLoaded) return undefined;
-
-    if (saveTimer.current) {
-      clearTimeout(saveTimer.current);
-    }
-
-    setSaveStatus('saving');
-    saveTimer.current = setTimeout(flushPendingNotes, NOTE_SAVE_DELAY);
-
-    return () => {
-      if (saveTimer.current) {
-        clearTimeout(saveTimer.current);
-      }
-    };
-  }, [flushPendingNotes, isLoaded, notes]);
-
-  useEffect(() => {
-    function handlePageLifecycle() {
-      if (document.visibilityState === 'hidden') void flushPendingNotes();
-    }
-
-    function handlePageHide() {
-      void flushPendingNotes();
-    }
-
-    document.addEventListener('visibilitychange', handlePageLifecycle);
-    window.addEventListener('pagehide', handlePageHide);
-    return () => {
-      document.removeEventListener('visibilitychange', handlePageLifecycle);
-      window.removeEventListener('pagehide', handlePageHide);
-    };
-  }, [flushPendingNotes]);
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -313,19 +190,7 @@ function NotePanel({ is_open, is_pinned, on_close, on_toggle_pin }) {
       return;
 
     setActiveNoteId(filteredNotes[0]?.id || null);
-  }, [activeNote, filteredNotes, isLoaded, noteView, showArchived]);
-
-  useEffect(() => {
-    if (is_open && !is_pinned) {
-      document.body.classList.add('no-scroll');
-    } else {
-      document.body.classList.remove('no-scroll');
-    }
-
-    return () => {
-      document.body.classList.remove('no-scroll');
-    };
-  }, [is_open, is_pinned]);
+  }, [activeNote, filteredNotes, isLoaded, noteView, setActiveNoteId, showArchived]);
 
   useEffect(() => {
     if (isPanelVisible && !wasVisibleRef.current) {
@@ -334,22 +199,6 @@ function NotePanel({ is_open, is_pinned, on_close, on_toggle_pin }) {
 
     wasVisibleRef.current = isPanelVisible;
   }, [isPanelVisible]);
-
-  useEffect(
-    () => () => {
-      if (saveTimer.current) {
-        clearTimeout(saveTimer.current);
-      }
-
-      if (undoTimer.current) {
-        clearTimeout(undoTimer.current);
-      }
-
-      if (isLoadedRef.current)
-        void saveNotes(notesRef.current.filter((note) => !isNoteEmpty(note)));
-    },
-    [],
-  );
 
   function formatNoteDate(value) {
     try {
@@ -374,14 +223,6 @@ function NotePanel({ is_open, is_pinned, on_close, on_toggle_pin }) {
     });
   }
 
-  function removeEmptyNote(noteId) {
-    if (!noteId) return;
-
-    setNotes((currentNotes) =>
-      currentNotes.filter((note) => note.id !== noteId || !isNoteEmpty(note)),
-    );
-  }
-
   function handleBackToList() {
     if (activeNote && isNoteEmpty(activeNote)) {
       removeEmptyNote(activeNote.id);
@@ -403,23 +244,9 @@ function NotePanel({ is_open, is_pinned, on_close, on_toggle_pin }) {
   }
 
   function createNewNote() {
-    const emptyNote = notes.find((note) => isNoteEmpty(note));
-
-    if (emptyNote) {
-      setShowArchived(false);
-      setSearchQuery('');
-      setActiveNoteId(emptyNote.id);
-      setNoteView('editor');
-      focusTitleInput();
-      return;
-    }
-
-    const note = createNote();
-
     setShowArchived(false);
     setSearchQuery('');
-    setNotes((currentNotes) => [note, ...currentNotes]);
-    setActiveNoteId(note.id);
+    ensureEditableNote();
     setNoteView('editor');
     focusTitleInput();
   }
@@ -427,57 +254,6 @@ function NotePanel({ is_open, is_pinned, on_close, on_toggle_pin }) {
   function openNote(noteId) {
     setActiveNoteId(noteId);
     setNoteView('editor');
-  }
-
-  function updateActiveNote(field, value) {
-    if (!activeNote) return;
-
-    setNotes((currentNotes) =>
-      currentNotes.map((note) =>
-        note.id === activeNote.id
-          ? { ...note, [field]: value, updatedAt: new Date().toISOString() }
-          : note,
-      ),
-    );
-  }
-
-  function toggleNotePin(noteId) {
-    setNotes((currentNotes) =>
-      currentNotes.map((note) =>
-        note.id === noteId
-          ? { ...note, isPinned: !note.isPinned, updatedAt: new Date().toISOString() }
-          : note,
-      ),
-    );
-  }
-
-  function toggleNoteArchive(noteId) {
-    setNotes((currentNotes) =>
-      currentNotes.map((note) =>
-        note.id === noteId
-          ? { ...note, isArchived: !note.isArchived, updatedAt: new Date().toISOString() }
-          : note,
-      ),
-    );
-  }
-
-  function deleteNote(noteId) {
-    const noteIndex = notes.findIndex((note) => note.id === noteId);
-    if (noteIndex === -1) return;
-
-    const deletedNote = notes[noteIndex];
-
-    if (undoTimer.current) {
-      clearTimeout(undoTimer.current);
-    }
-
-    setNotes((currentNotes) => currentNotes.filter((note) => note.id !== noteId));
-    setUndoState({ note: deletedNote, index: noteIndex });
-
-    undoTimer.current = setTimeout(() => {
-      setUndoState(null);
-      undoTimer.current = null;
-    }, UNDO_TIMEOUT);
   }
 
   function requestDeleteNote(noteId) {
@@ -501,22 +277,9 @@ function NotePanel({ is_open, is_pinned, on_close, on_toggle_pin }) {
     }
   }
 
-  function restoreDeletedNote() {
-    if (!undoState) return;
-
-    if (undoTimer.current) {
-      clearTimeout(undoTimer.current);
-      undoTimer.current = null;
-    }
-
-    setNotes((currentNotes) => {
-      const nextNotes = [...currentNotes];
-      nextNotes.splice(Math.min(undoState.index, nextNotes.length), 0, undoState.note);
-      return nextNotes;
-    });
-    setShowArchived(undoState.note.isArchived);
-    setActiveNoteId(undoState.note.id);
-    setUndoState(null);
+  function handleRestoreDeletedNote() {
+    const restoredNote = restoreDeletedNote();
+    if (restoredNote) setShowArchived(restoredNote.isArchived);
   }
 
   if (!isLoaded) return null;
@@ -775,7 +538,7 @@ function NotePanel({ is_open, is_pinned, on_close, on_toggle_pin }) {
         {undoState && (
           <div className="note-panel-toast" role="status" aria-live="polite">
             <span>{t('note_deleted')}</span>
-            <button className="toast-action" type="button" onClick={restoreDeletedNote}>
+            <button className="toast-action" type="button" onClick={handleRestoreDeletedNote}>
               {t('toast_undo')}
             </button>
           </div>

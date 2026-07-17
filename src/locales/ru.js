@@ -185,6 +185,13 @@ const ru = {
   settings_bg_unsupported_type: 'Используйте PNG, JPEG, WebP или AVIF.',
   settings_bg_upload_error: 'Не удалось обработать фоновое изображение.',
   app_storage_error: 'Не удалось сохранить изменение. Повторите попытку.',
+  app_loading: 'Загрузка Tabibe...',
+  app_recovery_title: 'Не удалось безопасно открыть Tabibe',
+  app_recovery_description:
+    'Ваши данные не изменены. Повторите попытку или экспортируйте резервную копию перед сбросом локальных данных.',
+  app_recovery_reset_confirm:
+    'Сброс заменит текущие локальные данные содержимым по умолчанию. Продолжить?',
+  app_recovery_reset_error: 'Не удалось сбросить локальные данные.',
   note_save_saving: 'Сохранение...',
   note_save_saved: 'Сохранено',
   note_save_error: 'Не удалось сохранить',

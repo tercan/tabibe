@@ -183,6 +183,13 @@ const bn = {
   settings_bg_unsupported_type: 'PNG, JPEG, WebP বা AVIF ছবি ব্যবহার করুন।',
   settings_bg_upload_error: 'পটভূমির ছবি প্রক্রিয়া করা যায়নি।',
   app_storage_error: 'পরিবর্তনটি সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।',
+  app_loading: 'Tabibe লোড হচ্ছে...',
+  app_recovery_title: 'Tabibe নিরাপদভাবে খোলা যায়নি',
+  app_recovery_description:
+    'আপনার ডেটা পরিবর্তন করা হয়নি। আবার চেষ্টা করুন অথবা স্থানীয় ডেটা রিসেট করার আগে ব্যাকআপ রপ্তানি করুন।',
+  app_recovery_reset_confirm:
+    'রিসেট করলে বর্তমান স্থানীয় ডেটার বদলে ডিফল্ট কনটেন্ট আসবে। চালিয়ে যাবেন?',
+  app_recovery_reset_error: 'স্থানীয় ডেটা রিসেট করা যায়নি।',
   note_save_saving: 'সংরক্ষণ হচ্ছে...',
   note_save_saved: 'সংরক্ষিত',
   note_save_error: 'সংরক্ষণ করা যায়নি',

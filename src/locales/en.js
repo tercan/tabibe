@@ -186,6 +186,13 @@ const en = {
   settings_bg_unsupported_type: 'Use a PNG, JPEG, WebP, or AVIF image.',
   settings_bg_upload_error: 'The background image could not be processed.',
   app_storage_error: 'The change could not be saved. Please try again.',
+  app_loading: 'Loading Tabibe...',
+  app_recovery_title: 'Tabibe could not open safely',
+  app_recovery_description:
+    'Your data was not changed. Try again or export a backup before resetting local data.',
+  app_recovery_reset_confirm:
+    'Resetting will replace the current local data with the default content. Continue?',
+  app_recovery_reset_error: 'Local data could not be reset.',
   note_save_saving: 'Saving...',
   note_save_saved: 'Saved',
   note_save_error: 'Could not save',
