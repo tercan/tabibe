@@ -6,6 +6,24 @@ Bu dosya, projede yapılan tüm önemli değişiklikleri belgelemektedir.
 Format [Keep a Changelog](https://keepachangelog.com/tr/1.0.0/) standardına dayanmaktadır.
 Versiyon numaralandırması [Semantic Versioning](https://semver.org/lang/tr/) prensiplerine uymaktadır.
 
+## [1.4.0] - 2026-07-18 00:48
+
+### Added
+
+- Seçimi koruyan kalın, italik, madde işaretli liste, kontrol listesi ve bağlantı ekleme eylemlerine sahip simge tabanlı Markdown araç çubuğu eklendi
+- GFM görev listeleri, tablolar, kod, başlıklar ve harici bağlantılar sunan responsive Markdown önizlemesi eklendi
+- Not editörüne Unicode uyumlu kelime ve karakter sayaçları eklendi
+- Klavyeyle kullanılabilen erişilebilir şablon menüsüyle yerelleştirilmiş boş not, günlük plan, toplantı ve kontrol listesi şablonları eklendi
+
+### Changed
+
+- Not editörü odaklı bir bileşene ayrıldı; biçimlendirme, şablon üretimi, sayaçlar ve URL politikası test edilen domain modüllerine taşındı
+- Birincil not ekleme kontrolü, boş notu ilk seçenek olarak koruyan kompakt bir şablon seçiciye dönüştürüldü
+
+### Security
+
+- Önizlemelerde ham HTML ve uzak görseller çalıştırılmadı; öğeler açık bir izin listesiyle, bağlantılar `http`, `https` ve `mailto` protokolleriyle sınırlandırıldı
+
 ## [1.3.0] - 2026-07-18 00:31
 
 ### Added

@@ -6,6 +6,24 @@ This file documents all notable changes in the project.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Versioning follows [Semantic Versioning](https://semver.org/).
 
+## [1.4.0] - 2026-07-18 00:48
+
+### Added
+
+- Added an icon-based Markdown toolbar for bold, italic, bulleted list, checklist, and link insertion with selection-preserving editing
+- Added a responsive Markdown preview with GFM task lists, tables, code, headings, and external links
+- Added Unicode-aware word and character counts to the note editor
+- Added localized blank, daily plan, meeting, and checklist templates with an accessible keyboard-operated template menu
+
+### Changed
+
+- Extracted the note editor into a focused component and kept formatting, template generation, metrics, and URL policy in tested domain modules
+- Changed the primary add-note control into a compact template chooser while preserving blank notes as the first option
+
+### Security
+
+- Rendered previews without raw HTML or remote images, restricted elements to an explicit allowlist, and limited links to `http`, `https`, and `mailto`
+
 ## [1.3.0] - 2026-07-18 00:31
 
 ### Added

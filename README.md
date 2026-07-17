@@ -4,7 +4,7 @@ Language: English | [Türkçe](docs/tr/README.md)
 
 A modern, minimalist, and high-performance new tab extension for Chromium-based browsers.
 
-**Current version:** `1.3.0`
+**Current version:** `1.4.0`
 
 ## About
 
@@ -25,6 +25,8 @@ Tabibe turns the new tab experience into a personal control and productivity spa
 - Revision-aware cross-tab conflict decisions that preserve local, external, or duplicate note versions
 - Multi-select note management with bulk tag, archive, restore, and delete actions
 - Fast note capture with a browser-safe global shortcut and focused in-workspace keyboard commands
+- Safe Markdown formatting and preview with GFM checklists, word/character counts, and restricted links
+- Localized blank, daily plan, meeting, and checklist note templates
 - Empty-note prevention
 - Note deletion confirmation with undo support
 - Light and dark theme support

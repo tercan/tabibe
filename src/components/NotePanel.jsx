@@ -4,12 +4,14 @@ import useFocusTrap from '../hooks/useFocusTrap.jsx';
 import useBodyScrollLock from '../hooks/useBodyScrollLock.js';
 import useNotes from '../hooks/useNotes.js';
 import { isNoteEmpty } from '../domain/noteOperations.js';
+import { getNoteTemplate } from '../domain/noteTemplates.js';
 import CloseIcon from './icons/CloseIcon.jsx';
 import NoteBulkActions from './notes/NoteBulkActions.jsx';
 import NoteConflictDialog from './notes/NoteConflictDialog.jsx';
+import NoteEditor from './notes/NoteEditor.jsx';
 import NoteFilters from './notes/NoteFilters.jsx';
 import NoteTagManager from './notes/NoteTagManager.jsx';
-import NoteTagPicker from './notes/NoteTagPicker.jsx';
+import NoteTemplateMenu from './notes/NoteTemplateMenu.jsx';
 
 /**
  * 2. Icons
@@ -29,25 +31,6 @@ function PinIcon() {
       aria-hidden="true"
     >
       <path d="M12 2v8M9 4h6M12 10c-3.31 0-6 2.69-6 6h12c0-3.31-2.69-6-6-6zM12 16v6M10 22h4" />
-    </svg>
-  );
-}
-
-function PlusIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <line x1="12" y1="5" x2="12" y2="19" />
-      <line x1="5" y1="12" x2="19" y2="12" />
     </svg>
   );
 }
@@ -109,25 +92,6 @@ function DeleteIcon() {
       <path d="M19 6l-1 14H6L5 6" />
       <path d="M10 11v5" />
       <path d="M14 11v5" />
-    </svg>
-  );
-}
-
-function BackIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M19 12H5" />
-      <path d="M12 19l-7-7 7-7" />
     </svg>
   );
 }
@@ -305,15 +269,22 @@ function NotePanel({
     });
   }, []);
 
+  const openNewNote = useCallback(
+    (initialValues = {}) => {
+      setShowArchived(false);
+      setSearchQuery('');
+      setSelectionMode(false);
+      setSelectedNoteIds([]);
+      ensureEditableNote(initialValues);
+      setNoteView('editor');
+      focusTitleInput();
+    },
+    [ensureEditableNote, focusTitleInput],
+  );
+
   const createNewNote = useCallback(() => {
-    setShowArchived(false);
-    setSearchQuery('');
-    setSelectionMode(false);
-    setSelectedNoteIds([]);
-    ensureEditableNote();
-    setNoteView('editor');
-    focusTitleInput();
-  }, [ensureEditableNote, focusTitleInput]);
+    openNewNote();
+  }, [openNewNote]);
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -385,6 +356,10 @@ function NotePanel({
     } catch {
       return '';
     }
+  }
+
+  function createNoteFromTemplate(templateId) {
+    openNewNote(getNoteTemplate(templateId, t));
   }
 
   function getNoteTitle(note) {
@@ -541,16 +516,7 @@ function NotePanel({
         <header className="note-panel-header">
           <h2 className="note-panel-title">{t('note_aria_label')}</h2>
           <div className="note-panel-actions">
-            <button
-              className="note-panel-button"
-              type="button"
-              ref={createButtonRef}
-              onClick={createNewNote}
-              aria-label={t('note_add')}
-              title={t('note_add')}
-            >
-              <PlusIcon />
-            </button>
+            <NoteTemplateMenu buttonRef={createButtonRef} onSelect={createNoteFromTemplate} />
             <button
               className={`note-panel-button ${selectionMode ? 'note-panel-button--active' : ''}`}
               type="button"
@@ -794,66 +760,18 @@ function NotePanel({
             className={`note-workspace-editor-pane ${!isEditorView ? 'note-workspace-pane--compact-hidden' : ''}`}
           >
             {activeNote ? (
-              <div className="note-editor" role="region" aria-label={t('note_editor_label')}>
-                <div className="note-editor-header">
-                  <button
-                    className="note-panel-button"
-                    type="button"
-                    onClick={handleBackToList}
-                    aria-label={t('note_back_to_list')}
-                    title={t('note_back_to_list')}
-                  >
-                    <BackIcon />
-                  </button>
-                </div>
-                <label className="visually-hidden" htmlFor="note-title">
-                  {t('note_title_label')}
-                </label>
-                <input
-                  id="note-title"
-                  ref={titleInputRef}
-                  className="note-title-input"
-                  type="text"
-                  value={activeNote.title}
-                  onChange={(event) => updateActiveNote('title', event.target.value)}
-                  placeholder={t('note_title_placeholder')}
-                />
-                <NoteTagPicker
-                  activeNote={activeNote}
-                  noteTags={noteTags}
-                  onManageTags={() => setIsTagManagerOpen(true)}
-                  onToggleTag={toggleNoteTag}
-                />
-                <label className="visually-hidden" htmlFor="note-content">
-                  {t('note_content_label')}
-                </label>
-                <textarea
-                  id="note-content"
-                  className="note-panel-textarea"
-                  value={activeNote.content}
-                  onChange={(event) => updateActiveNote('content', event.target.value)}
-                  placeholder={t('note_placeholder')}
-                  aria-label={t('note_content_label')}
-                />
-                <p className="note-editor-meta">
-                  {t('note_updated_at', { date: formatNoteDate(activeNote.updatedAt) })}
-                </p>
-                <p
-                  className={`note-save-status note-save-status--${saveStatus}`}
-                  role="status"
-                  aria-live="polite"
-                >
-                  {saveStatus === 'saving' && t('note_save_saving')}
-                  {saveStatus === 'saved' && t('note_save_saved')}
-                  {saveStatus === 'error' && t('note_save_error')}
-                  {saveStatus === 'conflict' && t('note_save_conflict')}
-                </p>
-                {saveStatus === 'error' && (
-                  <button className="note-save-retry" type="button" onClick={retrySave}>
-                    {t('note_save_retry')}
-                  </button>
-                )}
-              </div>
+              <NoteEditor
+                activeNote={activeNote}
+                formatDate={formatNoteDate}
+                noteTags={noteTags}
+                onBack={handleBackToList}
+                onManageTags={() => setIsTagManagerOpen(true)}
+                onRetrySave={retrySave}
+                onToggleTag={toggleNoteTag}
+                onUpdate={updateActiveNote}
+                saveStatus={saveStatus}
+                titleInputRef={titleInputRef}
+              />
             ) : (
               <div className="note-panel-empty note-panel-empty--editor">
                 <p>{t('note_select_to_edit')}</p>

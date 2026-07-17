@@ -183,9 +183,39 @@ test('renders the unpacked new-tab experience without critical accessibility vio
     ).toBe(2);
     await expect(page.locator('.note-workspace-navigation')).toBeHidden();
 
-    await page.locator('.note-panel-actions .note-panel-button').first().click();
+    const noteTemplateButton = page.locator('.note-template-menu').getByRole('button', {
+      name: 'Add note',
+    });
+    await noteTemplateButton.click();
+    await expect(page.getByRole('menu', { name: 'Note templates' })).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('menu', { name: 'Note templates' })).toBeHidden();
+    await expect(notePanel).toBeVisible();
+    await noteTemplateButton.click();
+    await page.getByRole('menuitem', { name: 'Blank note' }).click();
     await page.locator('.note-title-input').fill('E2E note');
-    await page.locator('.note-panel-textarea').fill('Persistent note content');
+    const noteContent = page.locator('.note-panel-textarea');
+    await noteContent.fill('First task');
+    await noteContent.selectText();
+    await page.getByRole('button', { name: 'Checklist', exact: true }).click();
+    await expect(noteContent).toHaveValue('- [ ] First task');
+    await expect(page.locator('.note-editor-metrics')).toContainText('2 words');
+    await expect(page.locator('.note-editor-metrics')).toContainText('16 characters');
+    await noteContent.fill(
+      '**Persistent note content**\n- [ ] First task\n<script>unsafe</script>\n[Safe](https://example.com)\n[Unsafe](javascript:alert)',
+    );
+    await page.getByRole('button', { name: 'Show preview' }).click();
+    const notePreview = page.locator('.note-markdown-preview');
+    await expect(notePreview.getByText('Persistent note content')).toHaveCSS('font-weight', '700');
+    await expect(notePreview.getByRole('checkbox')).toBeDisabled();
+    await expect(notePreview.getByRole('link', { name: 'Safe' })).toHaveAttribute(
+      'href',
+      'https://example.com',
+    );
+    await expect(notePreview.getByRole('link')).toHaveCount(1);
+    await expect(notePreview).not.toContainText('unsafe');
+    await page.getByRole('button', { name: 'Return to editing' }).click();
+    await noteContent.fill('Persistent note content');
     await page.getByRole('button', { name: 'Manage tags' }).click();
     const tagManager = page.getByRole('dialog', { name: 'Manage tags' });
     await tagManager.getByRole('textbox', { name: 'Tag name' }).fill('Work');
@@ -299,6 +329,24 @@ test('renders the unpacked new-tab experience without critical accessibility vio
     await notesButton.click();
     await expect(page.getByRole('button', { name: 'E2E note', exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Quick capture', exact: true })).toBeVisible();
+    await noteTemplateButton.click();
+    await page.getByRole('menuitem', { name: 'Daily plan' }).click();
+    await expect(page.locator('.note-title-input')).toHaveValue(/^Daily plan - \d{4}-\d{2}-\d{2}$/);
+    await expect(page.locator('.note-panel-textarea')).toHaveValue(/## Priorities/);
+    await expect(page.locator('.note-panel-textarea')).toHaveValue(/- \[ \]/);
+    await page.getByRole('button', { name: 'Show preview' }).click();
+    await expect(
+      page.locator('.note-markdown-preview').getByRole('heading', { name: 'Priorities' }),
+    ).toBeVisible();
+    const noteAccessibility = await new AxeBuilder({ page })
+      .include('.note-panel')
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+      .analyze();
+    expect(
+      noteAccessibility.violations.filter((violation) =>
+        ['serious', 'critical'].includes(violation.impact),
+      ),
+    ).toEqual([]);
     await page.keyboard.press('Escape');
     await expect(page.locator('.note-panel')).toHaveCount(0);
     await expect(notesButton).toBeFocused();
