@@ -191,7 +191,7 @@ assert(
 const trackedText = (
   await Promise.all(
     trackedFiles
-      .filter((file) => !/\.(?:avif|gif|ico|jpe?g|png|webp)$/iu.test(file))
+      .filter((file) => !/\.(?:avif|gif|ico|jpe?g|png|webp|woff2?)$/iu.test(file))
       .map(async (file) => {
         try {
           return await readFile(resolve(file), 'utf8');

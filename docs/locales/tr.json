@@ -4,92 +4,71 @@
   "skip": "İçeriğe geç",
   "navigation": "Ana gezinme",
   "featuresLink": "Özellikler",
-  "previewLink": "Ekran görüntüleri",
   "installLink": "Kurulum",
   "privacyLink": "Gizlilik Politikası",
-  "languageLink": "English",
+  "languageLink": "EN",
   "languageLabel": "Bu sayfayı İngilizce okuyun",
-  "badge": "Sürüm {version} · Açık kaynak",
-  "heroTitle": "Her yeni sekmede\nkendinize bir alan.",
-  "heroDescription": "Sevdiğiniz siteler, günlük notlarınız ve sıradaki fikriniz; sakin, kişisel bir yeni sekme sayfasında bir arada.",
+  "badge": "Açık Kaynak · {version}",
+  "heroDescription": "Tabibe; kısayollar, klasörler, notlar ve seçtiğiniz arama motoruyla her yeni sekmeyi kişisel bir kontrol ve üretkenlik alanına dönüştürür.",
   "download": "{version} sürümünü indir",
   "releaseNotes": "Sürüm notları",
   "downloadNote": "GitHub üzerinden indirme · Chrome’a elle kurulur. Chrome Web Mağazası listelemesi henüz yoktur.",
-  "heroAlt": "Saat, tarayıcı varsayılanıyla arama, kısayollar ve klasör içeren Tabibe yeni sekme sayfası",
-  "heroCaption": "Gerçek Tabibe {version} arayüzü. Görüntülerde örnek içerik kullanılmıştır.",
-  "statLabels": ["arayüz dili", "yerel çalışma alanı", "hesap gereksinimi"],
-  "statValues": ["13", "Cihazınızda", "Yok"],
-  "newEyebrow": "{version} ile yeni",
-  "newTitle": "Şimdi bir fikir. Sonra işe yarayan bir not.",
-  "newDescription": "Aklınıza geleni bulunduğunuz yerden ayrılmadan kaydedin. Düzenlemeye hazır olduğunuzda not kütüphanenizi açın.",
-  "newItems": [
-    "Yeni sekmenin altından veya Alt + Shift + N ile hızlı not yakalama.",
-    "Defterler, etiketler, arama, sabitleme ve arşiv görünümleri sunan not kütüphanesi.",
-    "Markdown önizlemesi, görünür yerel kayıt durumu ve kayıt başarısız olduğunda kurtarma seçenekleri.",
-    "Tarayıcı varsayılanıyla arama ve 13 dilde çevrimdışı erişilebilen gizlilik politikası."
-  ],
-  "notesAlt": "Aranabilir notlar, defterler, etiketler ve Markdown kontrol listesi önizlemesi içeren Tabibe not kütüphanesi",
-  "notesCaption": "Notlarınızı tek çalışma alanında yazın, bulun ve düzenleyin.",
-  "featuresTitle": "Her gün aradıklarınız, elinizin altında.",
-  "featuresDescription": "Yeni sekmeniz etrafında bir araya gelen günlük araçlar.",
+  "heroCaption": "Tabibe {version} · Koyu ve açık görünüm",
+  "statLabels": ["Dil Desteği", "Arama Motoru", "Ücretsiz"],
+  "statValues": ["13", "4", "%100"],
+  "featuresTitle": "Zengin Özellikler",
+  "featuresDescription": "Günlük araçlarınız yeni sekmenizde bir arada.",
   "features": [
     {
-      "icon": "folder",
-      "title": "Siteleriniz, sizin düzeniniz",
-      "description": "Kısayolları kaydedin, klasörlerde gruplayın ve sürükle-bırak ya da klavye eylemleriyle sıralayın. Paketli simgeleri veya isteğe bağlı Chrome site simgelerini kullanın."
+      "icon": "clock",
+      "title": "Saat ve Tarih Bileşeni",
+      "description": "Saat ve tarihi bir bakışta görün veya Ayarlar’dan saat görünümünü kapatın."
+    },
+    {
+      "icon": "zap",
+      "title": "Speed Dial Izgarası",
+      "description": "Kayıtlı sitelere hızla erişin, klasörleri düzenleyin; yerel marka veya isteğe bağlı Chrome site simgelerini seçin."
     },
     {
       "icon": "search",
-      "title": "Tarayıcınızın araması",
-      "description": "Chrome’da seçili arama motoruyla başlayın. Dilerseniz Tabibe içinden açıkça başka bir sağlayıcı seçin."
+      "title": "Arama Motorları",
+      "description": "Chrome’un varsayılanını kullanın veya açıkça Google, Bing, DuckDuckGo ya da Yandex seçin."
     },
     {
-      "icon": "palette",
-      "title": "Size uyan bir görünüm",
-      "description": "Açık veya koyu tema, düz arka plan rengi ya da cihazınızdan bir görsel seçin. Saati ve arama kutusunu gösterin veya gizleyin."
+      "icon": "notes",
+      "title": "Notlar ve Hızlı Yakalama",
+      "description": "Fikrinizi kaydedin; defter, etiket, arama, sabitleme ve arşivle düzenleyin. Markdown önizlemesini ve yerel kayıt durumunu görün."
     },
     {
-      "icon": "download",
-      "title": "Elinizde tutacağınız bir yedek",
-      "description": "Çalışma alanınızı JSON dosyasına aktarın ve yedeği geri yüklemeden önce önizleyin. Önemli notlarınızın ayrı bir kopyasını saklayın."
+      "icon": "move",
+      "title": "Sürükle-Bırak Düzeni",
+      "description": "Siteleri sıralayın, klasörlere veya ana ekrana taşıyın. Aynı işlemler için klavye eylemleri de kullanılabilir."
     },
     {
-      "icon": "shield",
-      "title": "Yerel çalışan bir alan",
-      "description": "Hesap, analiz, reklam veya bulut eşitlemesi yok. Çalışma alanı verileri tarayıcı profilinizde saklanır ve geliştiriciye gönderilmez."
+      "icon": "moon",
+      "title": "Koyu ve Açık Tema",
+      "description": "Görünümü değiştirin ve çalışma alanınıza uyumlu arka plan renklerini kullanın."
+    },
+    {
+      "icon": "image",
+      "title": "Arka Plan Kişiselleştirme",
+      "description": "Düz bir renk veya cihazınızdan bir görsel seçerek sayfanızı kişiselleştirin."
+    },
+    {
+      "icon": "database",
+      "title": "Veri Yedekleme",
+      "description": "Yerel JSON yedeği dışa aktarın ve geri yüklemeden önce önizleyin. Önemli notlarınızın ayrı bir kopyasını saklayın."
     },
     {
       "icon": "language",
-      "title": "13 dil, tek çalışma alanı",
-      "description": "Ayarlar’dan dil değiştirin. Sağdan sola Arapça, klavye kontrolleri ve dar pencerelere uyumlu düzenler dahildir."
+      "title": "13 Dil Desteği",
+      "description": "Ayarlar’dan arayüz dilini seçin. Paket içi gizlilik politikası da 13 dilin tamamında çevrimdışı kullanılabilir."
     }
   ],
-  "screenshotsTitle": "Daha yakından bakın",
-  "screenshotsDescription": "Bir ekran görüntüsünü tam boyutta görmek için açabilirsiniz.",
-  "screenshots": [
-    {
-      "file": "02-folders",
-      "title": "İlgili siteleri bir arada tutun",
-      "description": "Klasörler kısayol ızgarasını kolay taranır hâlde tutar.",
-      "alt": "İçinde üç kayıtlı site bulunan açık bir Tabibe klasörü"
-    },
-    {
-      "file": "04-quick-note",
-      "title": "Fikri geldiği anda yakalayın",
-      "description": "Hızlı not alanı yeni sekmenizin hemen yanında kalır.",
-      "alt": "Örnek bir fikrin cihaza kaydedildiği Tabibe hızlı not paneli"
-    },
-    {
-      "file": "05-settings-dark",
-      "title": "Çalışma alanını kendinize uyarlayın",
-      "description": "Görünüm, arama ve isteğe bağlı kontroller Ayarlar’da bulunur.",
-      "alt": "Varsayılan arama, isteğe bağlı izinler ve arka plan renklerini gösteren koyu Tabibe Ayarlar paneli"
-    }
-  ],
-  "languagesTitle": "Dilinizi seçin",
-  "languagesDescription": "Arayüz ve paket içi gizlilik politikası 13 dilin tamamını destekler. Bu web sitesi İngilizce ve Türkçe sunulur.",
-  "installTitle": "Yeni bir sekmeye hazır mısınız?",
-  "installDescription": "GitHub sürümünü indirin ve birkaç adımda Chrome’a yükleyin. Tabibe’de hesap açmanız gerekmez.",
+  "languagesTitle": "Dil Desteği",
+  "languagesDescription": "Sağdan sola Arapça desteğiyle birlikte 13 arayüz dilinde kullanılabilir.",
+  "installTitle": "Hazır mısınız?",
+  "installDescription": "Tabibe {version}’ı GitHub’dan indirin ve yeni sekmenizi kendinize göre düzenleyin.",
   "installSteps": [
     {
       "title": "İndirin ve çıkartın",
@@ -131,5 +110,78 @@
   "footerText": "Geliştirici",
   "source": "Kaynak kodu",
   "support": "Sorun bildir",
-  "license": "GPL-3.0 lisansı"
+  "license": "GPL-3.0 lisansı",
+  "designLink": "Tasarım",
+  "technologyLink": "Teknoloji",
+  "languagesLink": "Diller",
+  "heroTitlePrefix": "Yeni Sekme Deneyiminizi",
+  "heroTitleAccent": "Dönüştürün",
+  "heroTitleBreak": false,
+  "heroSecondary": "Özellikleri Keşfet",
+  "designTitle": "Tasarım Felsefesi",
+  "designDescription": "Minimalizm ve işlevselliği bir araya getiren bir anlayışla tasarlandı.",
+  "designItems": [
+    {
+      "title": "Flat Tasarım",
+      "description": "Sade yüzeyler ve amacına uygun kontrollerle temiz bir arayüz."
+    },
+    {
+      "title": "Keskin Köşeler",
+      "description": "Net kenarlar ve tutarlı, düzenli bir görünüm."
+    },
+    {
+      "title": "Solid Renkler",
+      "description": "Gradyan ve görsel kalabalık olmadan uyumlu bir renk paleti."
+    },
+    {
+      "title": "Net Tipografi",
+      "description": "Günlük kullanım için okunabilir metinler ve açık bir hiyerarşi."
+    }
+  ],
+  "technologyTitle": "Teknoloji Yığını",
+  "technologyDescription": "Yeni sekme deneyiminin arkasındaki açık kaynak araçlar.",
+  "technologyItems": [
+    {
+      "icon": "box",
+      "title": "React",
+      "description": "UI kütüphanesi"
+    },
+    {
+      "icon": "zap",
+      "title": "Vite",
+      "description": "Build aracı"
+    },
+    {
+      "icon": "pen",
+      "title": "Vanilla CSS",
+      "description": "Stil mimarisi"
+    },
+    {
+      "icon": "package",
+      "title": "Manifest V3",
+      "description": "Eklenti standardı"
+    },
+    {
+      "icon": "database",
+      "title": "chrome.storage",
+      "description": "Yerel veri katmanı"
+    }
+  ],
+  "installDetails": "Chrome’a nasıl kurulur?",
+  "menuOpen": "Menüyü aç",
+  "menuClose": "Menüyü kapat",
+  "carouselLabel": "Tabibe görünümü",
+  "carouselRole": "slayt gösterisi",
+  "slideRole": "slayt",
+  "darkLabel": "Koyu görünüm",
+  "lightLabel": "Açık görünüm",
+  "darkAlt": "Saat, arama, kısayollar ve klasör içeren koyu temalı Tabibe yeni sekme sayfası",
+  "lightAlt": "Aynı saat, arama, kısayollar ve klasörün açık temalı Tabibe görünümü",
+  "previousSlide": "Önceki görünüm",
+  "nextSlide": "Sonraki görünüm",
+  "playSlides": "Otomatik geçişleri başlat",
+  "pauseSlides": "Otomatik geçişleri durdur",
+  "reducedSlides": "Hareket azaltma tercihiniz nedeniyle otomatik geçişler kapalı",
+  "slideError": "Bu önizleme yüklenemedi. Kontrolleri kullanarak diğer görünüme geçebilirsiniz.",
+  "slideLoading": "Önizleme yükleniyor…"
 }
