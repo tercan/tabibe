@@ -1,317 +1,666 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tabibe — Yeni Sekme Deneyiminizi Dönüştürün</title>
-  <meta name="description" content="Tabibe, Chromium tarayıcılar için modern, minimalist ve yüksek performanslı yeni sekme açılış sayfası eklentisi.">
-  <link rel="canonical" href="https://github.com/tercan/tabibe">
-  <meta property="og:title" content="Tabibe — Yeni Sekme Deneyiminizi Dönüştürün">
-  <meta property="og:description" content="Modern, minimalist ve yüksek performanslı yeni sekme açılış sayfası eklentisi">
-  <meta property="og:type" content="website">
-  <meta name="twitter:card" content="summary_large_image">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../styles.css">
-  <script src="https://unpkg.com/feather-icons"></script>
-</head>
-<body>
-  <header>
-    <div class="container">
-      <a href="#hero" class="logo">
-        <div class="logo-icon">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">
-            <rect x="3" y="3" width="18" height="18"></rect>
-            <line x1="3" y1="9" x2="21" y2="9"></line>
-            <line x1="9" y1="21" x2="9" y2="9"></line>
-          </svg>
-        </div>
-        <span>Tabibe</span>
-      </a>
-      <nav>
-        <a href="#features">Özellikler</a>
-        <a href="#philosophy">Tasarım</a>
-        <a href="#tech">Teknoloji</a>
-        <a href="#languages">Diller</a>
-      </nav><!-- /nav -->
-      <div class="header-right">
-        <a href="https://github.com/tercan/tabibe" target="_blank" class="btn btn-secondary">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-          </svg>
-          GitHub
-        </a>
-        <a href="../" class="btn btn-secondary lang-toggle">EN</a>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tabibe 1.5.0 — Kişisel yeni sekme çalışma alanınız</title>
+    <meta
+      name="description"
+      content="Yeni sekmenizde kısayollarınıza, klasörlerinize ve notlarınıza yer açın. Tabibe 1.5.0’ı keşfedin, eklentiyi indirin ve yerel veri kullanımını öğrenin."
+    />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <link rel="canonical" href="https://tercan.github.io/tabibe/tr/" />
+    <link rel="alternate" hreflang="en" href="https://tercan.github.io/tabibe/" />
+    <link rel="alternate" hreflang="tr" href="https://tercan.github.io/tabibe/tr/" />
+    <link rel="alternate" hreflang="x-default" href="https://tercan.github.io/tabibe/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Tabibe 1.5.0 — Kişisel yeni sekme çalışma alanınız" />
+    <meta
+      property="og:description"
+      content="Yeni sekmenizde kısayollarınıza, klasörlerinize ve notlarınıza yer açın. Tabibe 1.5.0’ı keşfedin, eklentiyi indirin ve yerel veri kullanımını öğrenin."
+    />
+    <meta property="og:url" content="https://tercan.github.io/tabibe/tr/" />
+    <meta property="og:image" content="https://tercan.github.io/tabibe/assets/social-cover.png" />
+    <meta property="og:image:width" content="1400" />
+    <meta property="og:image:height" content="560" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Tabibe 1.5.0 — Kişisel yeni sekme çalışma alanınız" />
+    <meta
+      name="twitter:description"
+      content="Yeni sekmenizde kısayollarınıza, klasörlerinize ve notlarınıza yer açın. Tabibe 1.5.0’ı keşfedin, eklentiyi indirin ve yerel veri kullanımını öğrenin."
+    />
+    <meta name="twitter:image" content="https://tercan.github.io/tabibe/assets/social-cover.png" />
+    <link rel="icon" href="../assets/icon-128.png" type="image/png" />
+    <link rel="stylesheet" href="../styles.css" />
+    <script src="../script.js" defer></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Tabibe",
+        "softwareVersion": "1.5.0",
+        "applicationCategory": "BrowserApplication",
+        "operatingSystem": "Windows, macOS, Linux",
+        "description": "Yeni sekmenizde kısayollarınıza, klasörlerinize ve notlarınıza yer açın. Tabibe 1.5.0’ı keşfedin, eklentiyi indirin ve yerel veri kullanımını öğrenin.",
+        "url": "https://tercan.github.io/tabibe/tr/",
+        "downloadUrl": "https://github.com/tercan/tabibe/releases/download/v1.5.0/tabibe-v1.5.0.zip",
+        "screenshot": "https://tercan.github.io/tabibe/assets/tr/03-notes.png",
+        "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+        "author": { "@type": "Person", "name": "Tercan Keskin", "url": "https://tercan.net/" }
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">İçeriğe geç</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="../"
+          ><img
+            src="../assets/icon-128.png"
+            width="128"
+            height="128"
+            alt=""
+            aria-hidden="true"
+          /><span>Tabibe</span></a
+        >
+        <nav aria-label="Ana gezinme">
+          <a href="#features">Özellikler</a><a href="#screenshots">Ekran görüntüleri</a
+          ><a href="#install">Kurulum</a>
+        </nav>
+        <a class="language-link" href="../" hreflang="en" aria-label="Bu sayfayı İngilizce okuyun"
+          >English</a
+        >
       </div>
-    </div><!-- /.container -->
-  </header><!-- /header -->
-
-  <main>
-  <section class="hero" id="hero">
-    <div class="container">
-      <div class="hero-content">
-        <div class="hero-badge">
-          <span class="dot"></span>
-          Açık Kaynak
-        </div>
-        <h1>Yeni Sekme Deneyiminizi <span>Dönüştürün</span></h1>
-        <p class="hero-description">
-          Tabibe, tarayıcınızın her yeni sekmesini kişisel bir kontrol ve üretkenlik merkezine dönüştüren modern, minimalist bir eklentidir.
-        </p>
-        <div class="hero-cta">
-          <a href="https://github.com/tercan/tabibe" target="_blank" class="btn btn-primary">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-            </svg>
-            Chrome'a Ekle
-          </a>
-          <a href="#features" class="btn btn-secondary">Özellikleri Keşfet</a>
-        </div>
-        <div class="hero-stats">
-          <div class="stat">
-            <div class="stat-value">10+</div>
-            <div class="stat-label">Dil Desteği</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value">4</div>
-            <div class="stat-label">Arama Motoru</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value">%100</div>
-            <div class="stat-label">Ücretsiz</div>
-          </div>
-        </div>
-      </div>
-      <div class="hero-preview">
-        <div class="preview-window">
-          <div class="preview-toolbar">
-            <span class="preview-dot red"></span>
-            <span class="preview-dot yellow"></span>
-            <span class="preview-dot green"></span>
-          </div>
-            <div class="preview-content">
-              <div class="preview-time">14:32:45</div>
-              <div class="preview-date">25 Şubat 2026, Çarşamba</div>
-            <div class="preview-search"><i data-feather="search"></i> Google ile ara...</div>
-            <div class="preview-grid">
-              <div class="preview-item"><i data-feather="mail"></i></div>
-              <div class="preview-item"><i data-feather="tv"></i></div>
-              <div class="preview-item"><i data-feather="briefcase"></i></div>
-              <div class="preview-item"><i data-feather="music"></i></div>
-              <div class="preview-item"><i data-feather="shopping-cart"></i></div>
-              <div class="preview-item"><i data-feather="book-open"></i></div>
-              <div class="preview-item"><i data-feather="grid"></i></div>
-              <div class="preview-item"><i data-feather="plus"></i></div>
+      <!-- /.header-inner -->
+    </header>
+    <!-- /.site-header -->
+    <main id="main">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="container">
+          <div class="hero-layout">
+            <div class="hero-content">
+              <p class="eyebrow">Sürüm 1.5.0 · Açık kaynak</p>
+              <h1 id="hero-title">Her yeni sekmede<br />kendinize bir alan.</h1>
+              <p class="lead">
+                Sevdiğiniz siteler, günlük notlarınız ve sıradaki fikriniz; sakin, kişisel bir yeni
+                sekme sayfasında bir arada.
+              </p>
+              <div class="actions">
+                <a
+                  class="button button--primary"
+                  href="https://github.com/tercan/tabibe/releases/download/v1.5.0/tabibe-v1.5.0.zip"
+                  ><svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5" /></svg
+                  >1.5.0 sürümünü indir</a
+                ><a
+                  class="button button--secondary"
+                  href="https://github.com/tercan/tabibe/releases/tag/v1.5.0"
+                  >Sürüm notları<svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M4 12h16m-6-6 6 6-6 6" /></svg
+                ></a>
+              </div>
+              <!-- /.actions -->
+              <p class="download-note">
+                GitHub üzerinden indirme · Chrome’a elle kurulur. Chrome Web Mağazası listelemesi
+                henüz yoktur.
+              </p>
             </div>
+            <!-- /.hero-content -->
+            <figure class="hero-preview">
+              <a href="../assets/tr/01-new-tab.png"
+                ><picture
+                  ><source
+                    srcset="
+                      ../assets/tr/01-new-tab-640.webp  640w,
+                      ../assets/tr/01-new-tab.webp     1280w
+                    "
+                    sizes="(max-width: 62rem) calc(100vw - 3rem), 38rem"
+                    type="image/webp" />
+                  <img
+                    src="../assets/tr/01-new-tab.png"
+                    width="1280"
+                    height="800"
+                    alt="Saat, tarayıcı varsayılanıyla arama, kısayollar ve klasör içeren Tabibe yeni sekme sayfası"
+                    fetchpriority="high"
+                    decoding="async" /></picture
+              ></a>
+              <figcaption>
+                Gerçek Tabibe 1.5.0 arayüzü. Görüntülerde örnek içerik kullanılmıştır.
+              </figcaption>
+            </figure>
+            <!-- /.hero-preview -->
           </div>
+          <!-- /.hero-layout -->
+          <dl class="facts">
+            <div>
+              <dt>arayüz dili</dt>
+              <dd>13</dd>
+            </div>
+            <div>
+              <dt>yerel çalışma alanı</dt>
+              <dd>Cihazınızda</dd>
+            </div>
+            <div>
+              <dt>hesap gereksinimi</dt>
+              <dd>Yok</dd>
+            </div>
+          </dl>
+          <!-- /.facts -->
         </div>
+        <!-- /.container -->
+      </section>
+      <!-- /.hero -->
+      <section class="section section--surface" id="notes" aria-labelledby="notes-title">
+        <div class="container">
+          <div class="section-intro">
+            <p class="eyebrow">1.5.0 ile yeni</p>
+            <h2 id="notes-title">Şimdi bir fikir. Sonra işe yarayan bir not.</h2>
+            <p>
+              Aklınıza geleni bulunduğunuz yerden ayrılmadan kaydedin. Düzenlemeye hazır olduğunuzda
+              not kütüphanenizi açın.
+            </p>
+          </div>
+          <!-- /.section-intro -->
+          <figure class="notes-preview">
+            <a href="../assets/tr/03-notes.png"
+              ><picture
+                ><source
+                  srcset="../assets/tr/03-notes-640.webp 640w, ../assets/tr/03-notes.webp 1280w"
+                  sizes="(max-width: 50rem) calc(100vw - 3rem), 50rem"
+                  type="image/webp" />
+                <img
+                  src="../assets/tr/03-notes.png"
+                  width="1280"
+                  height="800"
+                  alt="Aranabilir notlar, defterler, etiketler ve Markdown kontrol listesi önizlemesi içeren Tabibe not kütüphanesi"
+                  loading="lazy"
+                  decoding="async" /></picture
+            ></a>
+            <figcaption>Notlarınızı tek çalışma alanında yazın, bulun ve düzenleyin.</figcaption>
+          </figure>
+          <!-- /.notes-preview -->
+          <ul class="release-highlights">
+            <li>Yeni sekmenin altından veya Alt + Shift + N ile hızlı not yakalama.</li>
+            <li>
+              Defterler, etiketler, arama, sabitleme ve arşiv görünümleri sunan not kütüphanesi.
+            </li>
+            <li>
+              Markdown önizlemesi, görünür yerel kayıt durumu ve kayıt başarısız olduğunda kurtarma
+              seçenekleri.
+            </li>
+            <li>
+              Tarayıcı varsayılanıyla arama ve 13 dilde çevrimdışı erişilebilen gizlilik politikası.
+            </li>
+          </ul>
+        </div>
+        <!-- /.container -->
+      </section>
+      <!-- /#notes -->
+      <section class="section" id="features" aria-labelledby="features-title">
+        <div class="container">
+          <div class="section-intro">
+            <h2 id="features-title">Her gün aradıklarınız, elinizin altında.</h2>
+            <p>Yeni sekmeniz etrafında bir araya gelen günlük araçlar.</p>
+          </div>
+          <!-- /.section-intro -->
+          <div class="card-grid">
+            <article class="card">
+              <span class="card-icon"
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M3 7V4h6l3 3h9v13H3Z" />
+                  <path d="M3 11h18" /></svg
+              ></span>
+              <div class="card-body">
+                <h3>Siteleriniz, sizin düzeniniz</h3>
+                <p>
+                  Kısayolları kaydedin, klasörlerde gruplayın ve sürükle-bırak ya da klavye
+                  eylemleriyle sıralayın. Paketli simgeleri veya isteğe bağlı Chrome site
+                  simgelerini kullanın.
+                </p>
+              </div>
+              <!-- /.card-body -->
+            </article>
+            <!-- /.card -->
+            <article class="card">
+              <span class="card-icon"
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="10" cy="10" r="6" />
+                  <path d="m15 15 6 6" /></svg
+              ></span>
+              <div class="card-body">
+                <h3>Tarayıcınızın araması</h3>
+                <p>
+                  Chrome’da seçili arama motoruyla başlayın. Dilerseniz Tabibe içinden açıkça başka
+                  bir sağlayıcı seçin.
+                </p>
+              </div>
+              <!-- /.card-body -->
+            </article>
+            <!-- /.card -->
+            <article class="card">
+              <span class="card-icon"
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M12 3a9 9 0 1 0 0 18h2a2 2 0 0 0 0-4h-1a2 2 0 0 1 0-4h5a3 3 0 0 0 3-3c0-4-4-7-9-7Z"
+                  />
+                  <path d="M7 8h.01M12 6h.01M6 13h.01M17 8h.01" /></svg
+              ></span>
+              <div class="card-body">
+                <h3>Size uyan bir görünüm</h3>
+                <p>
+                  Açık veya koyu tema, düz arka plan rengi ya da cihazınızdan bir görsel seçin.
+                  Saati ve arama kutusunu gösterin veya gizleyin.
+                </p>
+              </div>
+              <!-- /.card-body -->
+            </article>
+            <!-- /.card -->
+            <article class="card">
+              <span class="card-icon"
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5" /></svg
+              ></span>
+              <div class="card-body">
+                <h3>Elinizde tutacağınız bir yedek</h3>
+                <p>
+                  Çalışma alanınızı JSON dosyasına aktarın ve yedeği geri yüklemeden önce önizleyin.
+                  Önemli notlarınızın ayrı bir kopyasını saklayın.
+                </p>
+              </div>
+              <!-- /.card-body -->
+            </article>
+            <!-- /.card -->
+            <article class="card">
+              <span class="card-icon"
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="m12 3 8 4v6c0 4-8 8-8 8s-8-4-8-8V7Z" />
+                  <path d="m8 12 3 3 5-6" /></svg
+              ></span>
+              <div class="card-body">
+                <h3>Yerel çalışan bir alan</h3>
+                <p>
+                  Hesap, analiz, reklam veya bulut eşitlemesi yok. Çalışma alanı verileri tarayıcı
+                  profilinizde saklanır ve geliştiriciye gönderilmez.
+                </p>
+              </div>
+              <!-- /.card-body -->
+            </article>
+            <!-- /.card -->
+            <article class="card">
+              <span class="card-icon"
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M3 5h12M9 2v3M5 5c0 5 3 9 8 11M13 5c0 5-4 10-10 12m12 4 4-11 4 11m-6-4h5"
+                  /></svg
+              ></span>
+              <div class="card-body">
+                <h3>13 dil, tek çalışma alanı</h3>
+                <p>
+                  Ayarlar’dan dil değiştirin. Sağdan sola Arapça, klavye kontrolleri ve dar
+                  pencerelere uyumlu düzenler dahildir.
+                </p>
+              </div>
+              <!-- /.card-body -->
+            </article>
+            <!-- /.card -->
+          </div>
+          <!-- /.card-grid -->
+        </div>
+        <!-- /.container -->
+      </section>
+      <!-- /#features -->
+      <section
+        class="section section--surface"
+        id="screenshots"
+        aria-labelledby="screenshots-title"
+      >
+        <div class="container">
+          <div class="section-intro">
+            <h2 id="screenshots-title">Daha yakından bakın</h2>
+            <p>Bir ekran görüntüsünü tam boyutta görmek için açabilirsiniz.</p>
+          </div>
+          <!-- /.section-intro -->
+          <div class="card-grid card-grid--screens">
+            <article class="card card--screen">
+              <a class="card-image-link" href="../assets/tr/02-folders.png"
+                ><picture
+                  ><source
+                    srcset="
+                      ../assets/tr/02-folders-640.webp  640w,
+                      ../assets/tr/02-folders.webp     1280w
+                    "
+                    sizes="(max-width: 36rem) calc(100vw - 2rem), (max-width: 62rem) 45vw, 24rem"
+                    type="image/webp" />
+                  <img
+                    src="../assets/tr/02-folders.png"
+                    width="1280"
+                    height="800"
+                    alt="İçinde üç kayıtlı site bulunan açık bir Tabibe klasörü"
+                    loading="lazy"
+                    decoding="async" /></picture
+              ></a>
+              <div class="card-body">
+                <h3>İlgili siteleri bir arada tutun</h3>
+                <p>Klasörler kısayol ızgarasını kolay taranır hâlde tutar.</p>
+              </div>
+              <!-- /.card-body -->
+            </article>
+            <!-- /.card -->
+            <article class="card card--screen">
+              <a class="card-image-link" href="../assets/tr/04-quick-note.png"
+                ><picture
+                  ><source
+                    srcset="
+                      ../assets/tr/04-quick-note-640.webp  640w,
+                      ../assets/tr/04-quick-note.webp     1280w
+                    "
+                    sizes="(max-width: 36rem) calc(100vw - 2rem), (max-width: 62rem) 45vw, 24rem"
+                    type="image/webp" />
+                  <img
+                    src="../assets/tr/04-quick-note.png"
+                    width="1280"
+                    height="800"
+                    alt="Örnek bir fikrin cihaza kaydedildiği Tabibe hızlı not paneli"
+                    loading="lazy"
+                    decoding="async" /></picture
+              ></a>
+              <div class="card-body">
+                <h3>Fikri geldiği anda yakalayın</h3>
+                <p>Hızlı not alanı yeni sekmenizin hemen yanında kalır.</p>
+              </div>
+              <!-- /.card-body -->
+            </article>
+            <!-- /.card -->
+            <article class="card card--screen">
+              <a class="card-image-link" href="../assets/tr/05-settings-dark.png"
+                ><picture
+                  ><source
+                    srcset="
+                      ../assets/tr/05-settings-dark-640.webp  640w,
+                      ../assets/tr/05-settings-dark.webp     1280w
+                    "
+                    sizes="(max-width: 36rem) calc(100vw - 2rem), (max-width: 62rem) 45vw, 24rem"
+                    type="image/webp" />
+                  <img
+                    src="../assets/tr/05-settings-dark.png"
+                    width="1280"
+                    height="800"
+                    alt="Varsayılan arama, isteğe bağlı izinler ve arka plan renklerini gösteren koyu Tabibe Ayarlar paneli"
+                    loading="lazy"
+                    decoding="async" /></picture
+              ></a>
+              <div class="card-body">
+                <h3>Çalışma alanını kendinize uyarlayın</h3>
+                <p>Görünüm, arama ve isteğe bağlı kontroller Ayarlar’da bulunur.</p>
+              </div>
+              <!-- /.card-body -->
+            </article>
+            <!-- /.card -->
+          </div>
+          <!-- /.card-grid -->
+        </div>
+        <!-- /.container -->
+      </section>
+      <!-- /#screenshots -->
+      <section class="section" aria-labelledby="languages-title">
+        <div class="container">
+          <div class="section-intro">
+            <h2 id="languages-title">Dilinizi seçin</h2>
+            <p>
+              Arayüz ve paket içi gizlilik politikası 13 dilin tamamını destekler. Bu web sitesi
+              İngilizce ve Türkçe sunulur.
+            </p>
+          </div>
+          <!-- /.section-intro -->
+          <ul class="languages">
+            <li>English</li>
+            <li>Türkçe</li>
+            <li>Français</li>
+            <li>Deutsch</li>
+            <li>Italiano</li>
+            <li>Español</li>
+            <li>Português</li>
+            <li>Русский</li>
+            <li>العربية</li>
+            <li>हिन्दी</li>
+            <li>বাংলা</li>
+            <li>中文</li>
+            <li>日本語</li>
+          </ul>
+        </div>
+        <!-- /.container -->
+      </section>
+      <!-- /.section -->
+      <section class="section section--surface" id="install" aria-labelledby="install-title">
+        <div class="container">
+          <div class="section-intro">
+            <h2 id="install-title">Yeni bir sekmeye hazır mısınız?</h2>
+            <p>
+              GitHub sürümünü indirin ve birkaç adımda Chrome’a yükleyin. Tabibe’de hesap açmanız
+              gerekmez.
+            </p>
+          </div>
+          <!-- /.section-intro -->
+          <ol class="install-steps">
+            <li>
+              <h3>İndirin ve çıkartın</h3>
+              <p>
+                Bu sürümdeki tabibe-v1.5.0.zip dosyasını indirin ve saklayabileceğiniz bir klasöre
+                çıkartın.
+              </p>
+            </li>
+            <li>
+              <h3>Chrome uzantılarını açın</h3>
+              <p>
+                Aşağıdaki adresi Chrome’un adres çubuğuna yapıştırın ve Geliştirici modu seçeneğini
+                açın.
+              </p>
+              <div class="copy-control">
+                <code id="extension-address">chrome://extensions</code
+                ><button
+                  class="button button--secondary"
+                  type="button"
+                  data-copy-target="extension-address"
+                  data-success="Adres kopyalandı. Chrome’un adres çubuğuna yapıştırabilirsiniz."
+                  data-error="Kopyalama kullanılamadı. Adresi seçip elle kopyalayabilirsiniz."
+                >
+                  Adresi kopyala
+                </button>
+              </div>
+              <!-- /.copy-control -->
+              <p class="copy-status" id="copy-status" role="status" aria-live="polite"></p>
+            </li>
+            <li>
+              <h3>Klasörünüzü yükleyin</h3>
+              <p>
+                Paketlenmemiş öğe yükle seçeneğiyle içinde manifest.json bulunan klasörü seçin.
+                Tabibe’yi kullanmak için yeni sekme açın.
+              </p>
+            </li>
+          </ol>
+          <p class="update-note">
+            Paketlenmemiş kurulumu güncelliyorsanız önce yedek alın, aynı eklenti klasöründeki
+            dosyaları değiştirin ve chrome://extensions üzerinden Yeniden yükle düğmesine basın.
+            Klasörün konumunu koruyun.
+          </p>
+          <div class="actions">
+            <a
+              class="button button--primary"
+              href="https://github.com/tercan/tabibe/releases/download/v1.5.0/tabibe-v1.5.0.zip"
+              ><svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5" /></svg
+              >1.5.0 sürümünü indir</a
+            ><a
+              class="text-link"
+              href="https://github.com/tercan/tabibe/releases/download/v1.5.0/SHA256SUMS.txt"
+              >SHA-256 doğrulama dosyasını indir</a
+            >
+          </div>
+          <!-- /.actions -->
+        </div>
+        <!-- /.container -->
+      </section>
+      <!-- /#install -->
+      <section class="section" aria-labelledby="faq-title">
+        <div class="container container--reading">
+          <div class="section-intro"><h2 id="faq-title">Bilmeniz gereken birkaç şey</h2></div>
+          <!-- /.section-intro -->
+          <div class="faq-list">
+            <details class="faq-item">
+              <summary>Tabibe arama motorumu değiştirir mi?</summary>
+              <p>
+                Hayır. İlk arama seçeneği Chrome Search API ile tarayıcınızın mevcut varsayılanını
+                izler. Tabibe içinde açıkça başka sağlayıcı seçebilirsiniz. Sürümsüz eski Tabibe
+                arama tercihleri bir kez tarayıcı varsayılanına taşınır.
+              </p>
+            </details>
+            <details class="faq-item">
+              <summary>Notlarım nerede saklanır?</summary>
+              <p>
+                Notlar, kısayollar, ayarlar ve arka plan görselleri yerel tarayıcı profilinde kalır.
+                Tabibe bu depolamayı veya dışa aktarılan JSON dosyalarını şifrelemez. Hassas
+                bilgiler saklamaktan kaçının; cihazınızı ve yedeklerinizi koruyun. Geliştirici yerel
+                verilerinizi uzaktan kurtaramaz.
+              </p>
+            </details>
+            <details class="faq-item">
+              <summary>Eklentiyi kaldırırsam ne olur?</summary>
+              <p>
+                Tabibe’yi kaldırmak, yerel kurtarma kopyaları dahil eklenti verilerini kaldırır.
+                Çalışma alanınızı korumak istiyorsanız önce yedek alın. Önceden dışa aktarılan
+                dosyaları ve cihaz yedeklerini ayrıca yönetmeniz gerekir.
+              </p>
+            </details>
+            <details class="faq-item">
+              <summary>Tabibe çevrimdışı çalışır mı?</summary>
+              <p>
+                Yeni sekme sayfası, notlar, paketli simgeler ve gizlilik politikası çevrimdışı
+                çalışır. Aramalar ve açtığınız siteler bağlantı gerektirir; hedef hizmetlerin
+                politikaları geçerlidir.
+              </p>
+            </details>
+          </div>
+          <!-- /.faq-list -->
+          <p class="privacy-link">
+            <a class="text-link" href="../privacy/?lang=tr"
+              >Gizlilik Politikası<svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M4 12h16m-6-6 6 6-6 6" /></svg
+            ></a>
+          </p>
+        </div>
+        <!-- /.container -->
+      </section>
+      <!-- /.section -->
+    </main>
+    <!-- /#main -->
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="m4 5 6 7-6 7m9 0h7" /></svg
+          >Geliştirici <a href="https://tercan.net/">Tercan Keskin</a>
+        </p>
+        <nav aria-label="Kaynak kodu">
+          <a href="https://github.com/tercan/tabibe">Kaynak kodu</a
+          ><a href="https://github.com/tercan/tabibe/issues">Sorun bildir</a
+          ><a href="../privacy/?lang=tr">Gizlilik Politikası</a
+          ><a href="https://github.com/tercan/tabibe/blob/v1.5.0/LICENSE">GPL-3.0 lisansı</a>
+        </nav>
       </div>
-    </div><!-- /.container -->
-  </section><!-- /#hero -->
-
-  <section class="features" id="features">
-    <div class="container">
-      <div class="section-header">
-        <h2>Zengin Özellikler</h2>
-        <p>Üretkenliğinizi artıracak tüm araçlar tek bir yerde. Hiçbir detayı atlamadık.</p>
-      </div>
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon"><i data-feather="clock"></i></div>
-          <h3>Saat ve Tarih Bileşeni</h3>
-          <p>Her zaman görünür saat ve tarih bilgisi. Zamandan bağımsız olarak üretken kalın.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-feather="zap"></i></div>
-          <h3>Speed Dial Izgarası</h3>
-          <p>Sık kullandığınız sitelere tek tıkla erişin. Kişiselleştirilebilir hızlı erişim ızgarası.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-feather="search"></i></div>
-          <h3>Çoklu Arama Motoru</h3>
-          <p>Google, Bing, DuckDuckGo veya Yandex. tercih edin ve doğrudan arama yapın.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-feather="edit-3"></i></div>
-          <h3>Not Paneli</h3>
-          <p>Hızlı notlar alın ve bunları ekranınızda sabitleyin. Fikirlerinizi asla kaybetmeyin.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-feather="move"></i></div>
-          <h3>Sürükle-Bırak Düzeni</h3>
-          <p>Sitelerinizi sürükleyip bırakarak kolayca sıralayın ve klasörleyin.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-feather="moon"></i></div>
-          <h3>Koyu ve Açık Tema</h3>
-          <p>Işık modu veya karanlık mod. Tercihinize göre tema seçin.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-feather="image"></i></div>
-          <h3>Arka Plan Kişiselleştirme</h3>
-          <p>Tek renk veya kendi görsellerinizle arka planınızı özelleştirin.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-feather="database"></i></div>
-          <h3>Veri Yedekleme</h3>
-          <p>Tüm verilerinizi JSON formatında yedekleyin ve istediğinizde geri yükleyin.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-feather="globe"></i></div>
-          <h3>10 Dil Desteği</h3>
-          <p>Türkçe, İngilizce, İspanyolca, Portekizce, Rusça, Arapça, Hintçe, Bengalce, Çince, Japonca.</p>
-        </div>
-      </div>
-    </div><!-- /.container -->
-  </section><!-- /#features -->
-
-  <section class="philosophy" id="philosophy">
-    <div class="container">
-      <div class="section-header">
-        <h2>Tasarım Felsefesi</h2>
-        <p>Minimalizm ve işlevselliği bir araya getiren bir anlayışla tasarlandı.</p>
-      </div>
-      <div class="philosophy-grid">
-        <div class="philosophy-item">
-          <div class="number">01</div>
-          <h3>Flat Tasarım</h3>
-          <p>Gereksiz gölgelendirme ve efektlerden arınmış, modern ve temiz bir görünüm.</p>
-        </div>
-        <div class="philosophy-item">
-          <div class="number">02</div>
-          <h3>Keskin Köşeler</h3>
-          <p>Keskin köşeler ile profesyonel ve net bir estetik sunuyoruz.</p>
-        </div>
-        <div class="philosophy-item">
-          <div class="number">03</div>
-          <h3>Solid Renkler</h3>
-          <p>Canlı ve tutarlı renk paleti. Gradient kullanılmaz, sadelik esas.</p>
-        </div>
-        <div class="philosophy-item">
-          <div class="number">04</div>
-          <h3>Net Tipografi</h2>
-          <p>Mükemmel okunabilirlik için optimize edilmiş font ailesi.</p>
-        </div>
-      </div>
-    </div><!-- /.container -->
-  </section><!-- /#philosophy -->
-
-  <section class="tech" id="tech">
-    <div class="container">
-      <div class="section-header">
-        <h2>Teknoloji Yığını</h2>
-        <p>Modern ve performanslı bir mimari ile inşa edildi.</p>
-      </div>
-      <div class="tech-grid">
-        <div class="tech-item">
-          <div class="tech-icon"><i data-feather="box"></i></div>
-          <h4>React</h4>
-          <p>UI Kütüphanesi</p>
-        </div>
-        <div class="tech-item">
-          <div class="tech-icon"><i data-feather="zap"></i></div>
-          <h4>Vite</h4>
-          <p>Build Aracı</p>
-        </div>
-        <div class="tech-item">
-          <div class="tech-icon"><i data-feather="pen-tool"></i></div>
-          <h4>Vanilla CSS</h4>
-          <p>Stil Mimarisi</p>
-        </div>
-        <div class="tech-item">
-          <div class="tech-icon"><i data-feather="package"></i></div>
-          <h4>Manifest V3</h4>
-          <p>Eklenti Standardı</p>
-        </div>
-        <div class="tech-item">
-          <div class="tech-icon"><i data-feather="hard-drive"></i></div>
-          <h4>chrome.storage</h4>
-          <p>Veri Katmanı</p>
-        </div>
-      </div>
-    </div><!-- /.container -->
-  </section><!-- /#tech -->
-
-  <section class="languages" id="languages">
-    <div class="container">
-      <div class="section-header">
-        <h2>Dil Desteği</h2>
-        <p>Dünyanın en çok konuşulan 10 dilinde kullanılabilir.</p>
-      </div>
-      <div class="languages-grid">
-        <div class="lang-item">
-          <span class="lang-flag"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#e30a17"/><path d="M12 2v20M2 12h20" stroke="#fff" stroke-width="2"/></svg></span>
-          <span>Türkçe</span>
-        </div>
-        <div class="lang-item">
-          <span class="lang-flag"><svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#012169"/><path d="M0 0h24v24H0z" fill="none"/><path d="M10 18v-6l5 3-5 3z" fill="#fff"/><path d="M14 2v6h-6l6-6z" fill="#c8102e"/></svg></span>
-          <span>English</span>
-        </div>
-        <div class="lang-item">
-          <span class="lang-flag"><svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#aa151b"/><path d="M0 9h24v6H0z" fill="#f1bf00"/><path d="M0 0h24v3H0zM0 21h24v3H0z" fill="#aa151b"/></svg></span>
-          <span>Español</span>
-        </div>
-        <div class="lang-item">
-          <span class="lang-flag"><svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#006600"/><path d="M0 8h24v8H0z" fill="#ff0"/><path d="M11 2h2v4h-2zM11 18h2v4h-2zM2 11h4v2H2zM18 11h4v2h-4z" fill="#d00"/></svg></span>
-          <span>Português</span>
-        </div>
-        <div class="lang-item">
-          <span class="lang-flag"><svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#fff"/><path d="M0 0h24v24H0z" fill="none"/><path d="M8 4h8v16H8z" fill="#0039a6"/><path d="M11 8h2v8h-2z" fill="#d52b1e"/></svg></span>
-          <span>Русский</span>
-        </div>
-        <div class="lang-item">
-          <span class="lang-flag"><svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#007a3d"/><path d="M0 0h24v8H0zM0 16h24v8H0z" fill="#fff"/><path d="M0 8h24v8H0z" fill="#ce1126"/></svg></span>
-          <span>العربية</span>
-        </div>
-        <div class="lang-item">
-          <span class="lang-flag"><svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#fff"/><path d="M0 0h24v24H0z" fill="none"/><circle cx="12" cy="12" r="10" fill="#ff9933"/><path d="M11 6l1.5 4.5h4.5l-3.5 2.5 1.5 4.5-4-3-4 3 1.5-4.5-3.5-2.5h4.5z" fill="#138808"/></svg></span>
-          <span>हिन्दी</span>
-        </div>
-        <div class="lang-item">
-          <span class="lang-flag"><svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#006a4e"/><circle cx="12" cy="12" r="10" fill="#e02f27"/><path d="M12 7v10M7 12h10" stroke="#fff" stroke-width="2"/></svg></span>
-          <span>বাংলা</span>
-        </div>
-        <div class="lang-item">
-          <span class="lang-flag"><svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#de2910"/><path d="M0 9h24v6H0z" fill="#ffde00"/><path d="M10.5 8l.9 2.7 2.6-.7-1.9 2 1.4 2.1-2.3-1-2.3 1 1.4-2.1-1.9-2 .9.7 2.6.7z" fill="#ffde00"/></svg></span>
-          <span>中文</span>
-        </div>
-        <div class="lang-item">
-          <span class="lang-flag"><svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#fff"/><circle cx="12" cy="12" r="10" fill="#bc002d"/><path d="M8.5 8.5l7 7M15.5 8.5l-7 7" stroke="#fff" stroke-width="2"/></svg></span>
-          <span>日本語</span>
-        </div>
-      </div>
-    </div><!-- /.container -->
-  </section><!-- /#languages -->
-
-  <section class="cta">
-    <div class="container">
-      <h2>Hazır mısınız?</h2>
-      <p>Tarayıcınızı daha üretken hale getirmek için hemen indirin ve deneyin.</p>
-      <a href="https://github.com/tercan/tabibe" target="_blank" class="btn btn-primary">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-        </svg>
-        GitHub'da İncele
-      </a>
-    </div><!-- /.container -->
-  </section><!-- /.cta -->
-  </main><!-- /main -->
-
-  <footer>
-    <div class="container">
-      <div class="footer-copy">
-        <i data-feather="terminal"></i>
-        <a href="https://tercan.net/" class="footer-author-link" target="_blank" rel="noopener noreferrer">Tercan Keskin</a>
-      </div>
-      <div class="footer-links">
-        <a href="https://github.com/tercan/tabibe" target="_blank">GitHub</a>
-        <a href="https://github.com/tercan/tabibe/issues" target="_blank">Sorun Bildir</a>
-        <a href="https://github.com/tercan/tabibe/blob/main/LICENSE" target="_blank">Lisans</a>
-      </div>
-    </div><!-- /.container -->
-  </footer><!-- /footer -->
-
-  <script src="../script.js" defer></script>
-</body>
+      <!-- /.footer-inner -->
+    </footer>
+    <!-- /.site-footer -->
+  </body>
 </html>

@@ -1,0 +1,135 @@
+{
+  "title": "Tabibe {version} — Kişisel yeni sekme çalışma alanınız",
+  "description": "Yeni sekmenizde kısayollarınıza, klasörlerinize ve notlarınıza yer açın. Tabibe {version}’ı keşfedin, eklentiyi indirin ve yerel veri kullanımını öğrenin.",
+  "skip": "İçeriğe geç",
+  "navigation": "Ana gezinme",
+  "featuresLink": "Özellikler",
+  "previewLink": "Ekran görüntüleri",
+  "installLink": "Kurulum",
+  "privacyLink": "Gizlilik Politikası",
+  "languageLink": "English",
+  "languageLabel": "Bu sayfayı İngilizce okuyun",
+  "badge": "Sürüm {version} · Açık kaynak",
+  "heroTitle": "Her yeni sekmede\nkendinize bir alan.",
+  "heroDescription": "Sevdiğiniz siteler, günlük notlarınız ve sıradaki fikriniz; sakin, kişisel bir yeni sekme sayfasında bir arada.",
+  "download": "{version} sürümünü indir",
+  "releaseNotes": "Sürüm notları",
+  "downloadNote": "GitHub üzerinden indirme · Chrome’a elle kurulur. Chrome Web Mağazası listelemesi henüz yoktur.",
+  "heroAlt": "Saat, tarayıcı varsayılanıyla arama, kısayollar ve klasör içeren Tabibe yeni sekme sayfası",
+  "heroCaption": "Gerçek Tabibe {version} arayüzü. Görüntülerde örnek içerik kullanılmıştır.",
+  "statLabels": ["arayüz dili", "yerel çalışma alanı", "hesap gereksinimi"],
+  "statValues": ["13", "Cihazınızda", "Yok"],
+  "newEyebrow": "{version} ile yeni",
+  "newTitle": "Şimdi bir fikir. Sonra işe yarayan bir not.",
+  "newDescription": "Aklınıza geleni bulunduğunuz yerden ayrılmadan kaydedin. Düzenlemeye hazır olduğunuzda not kütüphanenizi açın.",
+  "newItems": [
+    "Yeni sekmenin altından veya Alt + Shift + N ile hızlı not yakalama.",
+    "Defterler, etiketler, arama, sabitleme ve arşiv görünümleri sunan not kütüphanesi.",
+    "Markdown önizlemesi, görünür yerel kayıt durumu ve kayıt başarısız olduğunda kurtarma seçenekleri.",
+    "Tarayıcı varsayılanıyla arama ve 13 dilde çevrimdışı erişilebilen gizlilik politikası."
+  ],
+  "notesAlt": "Aranabilir notlar, defterler, etiketler ve Markdown kontrol listesi önizlemesi içeren Tabibe not kütüphanesi",
+  "notesCaption": "Notlarınızı tek çalışma alanında yazın, bulun ve düzenleyin.",
+  "featuresTitle": "Her gün aradıklarınız, elinizin altında.",
+  "featuresDescription": "Yeni sekmeniz etrafında bir araya gelen günlük araçlar.",
+  "features": [
+    {
+      "icon": "folder",
+      "title": "Siteleriniz, sizin düzeniniz",
+      "description": "Kısayolları kaydedin, klasörlerde gruplayın ve sürükle-bırak ya da klavye eylemleriyle sıralayın. Paketli simgeleri veya isteğe bağlı Chrome site simgelerini kullanın."
+    },
+    {
+      "icon": "search",
+      "title": "Tarayıcınızın araması",
+      "description": "Chrome’da seçili arama motoruyla başlayın. Dilerseniz Tabibe içinden açıkça başka bir sağlayıcı seçin."
+    },
+    {
+      "icon": "palette",
+      "title": "Size uyan bir görünüm",
+      "description": "Açık veya koyu tema, düz arka plan rengi ya da cihazınızdan bir görsel seçin. Saati ve arama kutusunu gösterin veya gizleyin."
+    },
+    {
+      "icon": "download",
+      "title": "Elinizde tutacağınız bir yedek",
+      "description": "Çalışma alanınızı JSON dosyasına aktarın ve yedeği geri yüklemeden önce önizleyin. Önemli notlarınızın ayrı bir kopyasını saklayın."
+    },
+    {
+      "icon": "shield",
+      "title": "Yerel çalışan bir alan",
+      "description": "Hesap, analiz, reklam veya bulut eşitlemesi yok. Çalışma alanı verileri tarayıcı profilinizde saklanır ve geliştiriciye gönderilmez."
+    },
+    {
+      "icon": "language",
+      "title": "13 dil, tek çalışma alanı",
+      "description": "Ayarlar’dan dil değiştirin. Sağdan sola Arapça, klavye kontrolleri ve dar pencerelere uyumlu düzenler dahildir."
+    }
+  ],
+  "screenshotsTitle": "Daha yakından bakın",
+  "screenshotsDescription": "Bir ekran görüntüsünü tam boyutta görmek için açabilirsiniz.",
+  "screenshots": [
+    {
+      "file": "02-folders",
+      "title": "İlgili siteleri bir arada tutun",
+      "description": "Klasörler kısayol ızgarasını kolay taranır hâlde tutar.",
+      "alt": "İçinde üç kayıtlı site bulunan açık bir Tabibe klasörü"
+    },
+    {
+      "file": "04-quick-note",
+      "title": "Fikri geldiği anda yakalayın",
+      "description": "Hızlı not alanı yeni sekmenizin hemen yanında kalır.",
+      "alt": "Örnek bir fikrin cihaza kaydedildiği Tabibe hızlı not paneli"
+    },
+    {
+      "file": "05-settings-dark",
+      "title": "Çalışma alanını kendinize uyarlayın",
+      "description": "Görünüm, arama ve isteğe bağlı kontroller Ayarlar’da bulunur.",
+      "alt": "Varsayılan arama, isteğe bağlı izinler ve arka plan renklerini gösteren koyu Tabibe Ayarlar paneli"
+    }
+  ],
+  "languagesTitle": "Dilinizi seçin",
+  "languagesDescription": "Arayüz ve paket içi gizlilik politikası 13 dilin tamamını destekler. Bu web sitesi İngilizce ve Türkçe sunulur.",
+  "installTitle": "Yeni bir sekmeye hazır mısınız?",
+  "installDescription": "GitHub sürümünü indirin ve birkaç adımda Chrome’a yükleyin. Tabibe’de hesap açmanız gerekmez.",
+  "installSteps": [
+    {
+      "title": "İndirin ve çıkartın",
+      "description": "Bu sürümdeki tabibe-v{version}.zip dosyasını indirin ve saklayabileceğiniz bir klasöre çıkartın."
+    },
+    {
+      "title": "Chrome uzantılarını açın",
+      "description": "Aşağıdaki adresi Chrome’un adres çubuğuna yapıştırın ve Geliştirici modu seçeneğini açın."
+    },
+    {
+      "title": "Klasörünüzü yükleyin",
+      "description": "Paketlenmemiş öğe yükle seçeneğiyle içinde manifest.json bulunan klasörü seçin. Tabibe’yi kullanmak için yeni sekme açın."
+    }
+  ],
+  "copyAddress": "Adresi kopyala",
+  "copied": "Adres kopyalandı. Chrome’un adres çubuğuna yapıştırabilirsiniz.",
+  "copyError": "Kopyalama kullanılamadı. Adresi seçip elle kopyalayabilirsiniz.",
+  "updateNote": "Paketlenmemiş kurulumu güncelliyorsanız önce yedek alın, aynı eklenti klasöründeki dosyaları değiştirin ve chrome://extensions üzerinden Yeniden yükle düğmesine basın. Klasörün konumunu koruyun.",
+  "checksums": "SHA-256 doğrulama dosyasını indir",
+  "faqTitle": "Bilmeniz gereken birkaç şey",
+  "faq": [
+    {
+      "question": "Tabibe arama motorumu değiştirir mi?",
+      "answer": "Hayır. İlk arama seçeneği Chrome Search API ile tarayıcınızın mevcut varsayılanını izler. Tabibe içinde açıkça başka sağlayıcı seçebilirsiniz. Sürümsüz eski Tabibe arama tercihleri bir kez tarayıcı varsayılanına taşınır."
+    },
+    {
+      "question": "Notlarım nerede saklanır?",
+      "answer": "Notlar, kısayollar, ayarlar ve arka plan görselleri yerel tarayıcı profilinde kalır. Tabibe bu depolamayı veya dışa aktarılan JSON dosyalarını şifrelemez. Hassas bilgiler saklamaktan kaçının; cihazınızı ve yedeklerinizi koruyun. Geliştirici yerel verilerinizi uzaktan kurtaramaz."
+    },
+    {
+      "question": "Eklentiyi kaldırırsam ne olur?",
+      "answer": "Tabibe’yi kaldırmak, yerel kurtarma kopyaları dahil eklenti verilerini kaldırır. Çalışma alanınızı korumak istiyorsanız önce yedek alın. Önceden dışa aktarılan dosyaları ve cihaz yedeklerini ayrıca yönetmeniz gerekir."
+    },
+    {
+      "question": "Tabibe çevrimdışı çalışır mı?",
+      "answer": "Yeni sekme sayfası, notlar, paketli simgeler ve gizlilik politikası çevrimdışı çalışır. Aramalar ve açtığınız siteler bağlantı gerektirir; hedef hizmetlerin politikaları geçerlidir."
+    }
+  ],
+  "footerText": "Geliştirici",
+  "source": "Kaynak kodu",
+  "support": "Sorun bildir",
+  "license": "GPL-3.0 lisansı"
+}

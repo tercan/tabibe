@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { useTranslation } from '../hooks/useTranslation.jsx';
-import { SEARCH_ENGINES } from './SettingsPanel.jsx';
+import { useTranslation } from '../hooks/useTranslation.js';
+import { SEARCH_ENGINES } from '../config/searchEngines.js';
+import { submitSearch } from '../lib/search.js';
 
 /**
  * 1. Search icon SVG component
@@ -30,26 +31,36 @@ function SearchIcon() {
 
 function SearchBar({ search_engine }) {
   const [query, set_query] = useState('');
+  const [hasError, setHasError] = useState(false);
   const { t } = useTranslation();
 
   const engine = SEARCH_ENGINES.find((e) => e.id === search_engine) || SEARCH_ENGINES[0];
-  const placeholder = t('search_placeholder_dynamic', { engine: engine.name });
+  const placeholder =
+    engine.id === 'browser'
+      ? t('search_browser_placeholder')
+      : t('search_placeholder_dynamic', { engine: engine.name });
 
-  function handle_submit(event) {
+  async function handle_submit(event) {
     event.preventDefault();
 
     const trimmed = query.trim();
     if (!trimmed) return;
 
-    const search_url = `${engine.url}${encodeURIComponent(trimmed)}`;
-    window.location.href = search_url;
+    setHasError(false);
+    try {
+      await submitSearch(trimmed, engine.id);
+    } catch {
+      setHasError(true);
+    }
   }
 
   return (
     <section className="search-bar" aria-label={t('search_aria_label')}>
       <form className="search-bar-form" onSubmit={handle_submit} role="search">
         <SearchIcon />
-        <label htmlFor="search-input" className="visually-hidden">{t('search_label')}</label>
+        <label htmlFor="search-input" className="visually-hidden">
+          {t('search_label')}
+        </label>
         <input
           id="search-input"
           className="search-bar-input"
@@ -58,9 +69,15 @@ function SearchBar({ search_engine }) {
           value={query}
           onChange={(e) => set_query(e.target.value)}
           autoComplete="off"
+          aria-describedby={hasError ? 'search-error' : undefined}
         />
       </form>
       {/* /.search-bar-form */}
+      {hasError && (
+        <p id="search-error" role="alert">
+          {t('search_browser_error')}
+        </p>
+      )}
       {/* /.search-bar */}
     </section>
   );

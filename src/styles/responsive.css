@@ -1,0 +1,164 @@
+/**
+ * 7. Media queries (responsive overrides)
+ */
+
+@media (max-width: 48rem) {
+  :root {
+    --font-size-clock: 3.5rem;
+  }
+
+  .speed-dial-grid {
+    grid-template-columns: repeat(auto-fill, minmax(5rem, 1fr));
+    gap: var(--space-md);
+  }
+
+  .footer-quote-text {
+    max-width: 20rem;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 36rem) {
+  :root {
+    --font-size-clock: 2.5rem;
+  }
+
+  .new-tab {
+    padding: var(--space-lg);
+    gap: var(--space-xl);
+  }
+
+  .settings-panel {
+    width: 100vw;
+    max-width: 100vw;
+  }
+
+  .settings-header {
+    padding: var(--space-lg) var(--space-md);
+  }
+
+  .settings-body {
+    padding: var(--space-md);
+  }
+
+  .settings-options--search-engines {
+    gap: var(--space-xs);
+  }
+
+  .settings-language-options {
+    gap: var(--space-2xs);
+    width: 14.5rem;
+  }
+
+  .settings-language-option {
+    min-height: 2rem;
+    padding: 0;
+  }
+
+  .settings-bg-groups {
+    gap: var(--space-sm);
+  }
+
+  .settings-bg-group + .settings-bg-group {
+    padding-inline-start: var(--space-sm);
+  }
+
+  .settings-bg-presets {
+    gap: var(--space-2xs);
+  }
+
+  .settings-options--search-engines .settings-radio-modern {
+    padding-inline: var(--space-sm);
+  }
+
+  .app-loading-grid {
+    grid-template-columns: repeat(3, minmax(4rem, 1fr));
+  }
+
+  .app-recovery-content {
+    padding: var(--space-lg);
+  }
+
+  .app-recovery-actions .modal-button {
+    flex: 1 1 100%;
+  }
+
+  .speed-dial-grid {
+    grid-template-columns: repeat(auto-fill, minmax(4.5rem, 1fr));
+    gap: var(--space-sm);
+  }
+
+  .speed-dial-toolbar {
+    top: var(--space-md);
+    inset-inline-end: var(--space-md);
+  }
+
+  .speed-dial-toolbar-button {
+    width: 2.25rem;
+    height: 2.25rem;
+    min-height: 2.25rem;
+  }
+
+  .footer {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-xs);
+  }
+
+  .footer-left {
+    display: none;
+  }
+
+  .footer-right {
+    order: 2;
+    max-width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .footer-stats-menu {
+    display: block;
+  }
+
+  .footer-center {
+    order: 1;
+    width: 100%;
+  }
+}
+
+@media (max-width: 22rem) {
+  .settings-bg-groups {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .settings-bg-group + .settings-bg-group {
+    padding-top: var(--space-md);
+    padding-inline-start: 0;
+    border-top: var(--border-width) solid var(--color-border);
+    border-inline-start: 0;
+  }
+}
+
+@media (max-width: 48rem), (hover: none), (pointer: coarse) {
+  .speed-dial-action-button {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .settings-bg-swatch:hover {
+    transform: none;
+  }
+}

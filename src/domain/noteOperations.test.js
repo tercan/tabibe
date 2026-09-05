@@ -1,0 +1,152 @@
+import { describe, expect, it } from 'vitest';
+import {
+  createNote,
+  filterNotes,
+  isNoteEmpty,
+  restoreNote,
+  restoreNotes,
+  updateNote,
+  updateNotes,
+} from './noteOperations.js';
+
+function makeNote(overrides = {}) {
+  return createNote(overrides, () => overrides.id || 'note', overrides.updatedAt || '2026-01-01');
+}
+
+describe('note operations', () => {
+  it('creates complete note records and detects empty content', () => {
+    const note = makeNote({ id: 'one' });
+    expect(note).toMatchObject({
+      id: 'one',
+      title: '',
+      content: '',
+      tagIds: [],
+      notebookId: null,
+      captureSessionId: null,
+      isArchived: false,
+      revision: 1,
+    });
+    expect(isNoteEmpty(note)).toBe(true);
+    expect(isNoteEmpty({ ...note, content: '  text  ' })).toBe(false);
+  });
+
+  it('filters, searches, and sorts notes without mutating the source', () => {
+    const notes = [
+      makeNote({ id: 'older', title: 'Alpha', updatedAt: '2026-01-01' }),
+      makeNote({ id: 'newer', content: 'Beta', updatedAt: '2026-02-01' }),
+      makeNote({ id: 'pinned', title: 'Alpha pinned', isPinned: true, updatedAt: '2025-01-01' }),
+      makeNote({ id: 'archived', title: 'Alpha archived', isArchived: true }),
+    ];
+
+    expect(
+      filterNotes(notes, { searchQuery: 'alpha', showArchived: false }).map((note) => note.id),
+    ).toEqual(['pinned', 'older']);
+    expect(filterNotes(notes, { showArchived: true }).map((note) => note.id)).toEqual(['archived']);
+    expect(notes[0].id).toBe('older');
+  });
+
+  it('ranks title matches before body and organization matches', () => {
+    const notes = [
+      makeNote({ id: 'body', title: 'Meeting', content: 'Project roadmap details' }),
+      makeNote({ id: 'contains', title: 'The Roadmap' }),
+      makeNote({ id: 'prefix', title: 'Roadmap review' }),
+      makeNote({ id: 'exact', title: 'Roadmap' }),
+      makeNote({ id: 'derived', content: '# Roadmap\nDetails' }),
+      makeNote({ id: 'tag', title: 'Reference', tagIds: ['roadmap-tag'] }),
+    ];
+
+    expect(
+      filterNotes(notes, {
+        noteTags: [{ id: 'roadmap-tag', name: 'Roadmap' }],
+        searchQuery: 'roadmap',
+      }).map((note) => note.id),
+    ).toEqual(['exact', 'derived', 'prefix', 'contains', 'body', 'tag']);
+  });
+
+  it('filters by tags, pin state, date, and sort selection', () => {
+    const notes = [
+      makeNote({
+        id: 'project',
+        title: 'Project plan',
+        tagIds: ['work'],
+        updatedAt: '2026-07-16T12:00:00.000Z',
+        createdAt: '2026-01-01T12:00:00.000Z',
+      }),
+      makeNote({
+        id: 'personal',
+        title: 'Alpha personal',
+        tagIds: ['personal'],
+        isPinned: true,
+        updatedAt: '2026-06-01T12:00:00.000Z',
+        createdAt: '2026-06-01T12:00:00.000Z',
+      }),
+    ];
+    const noteTags = [
+      { id: 'work', name: 'Work' },
+      { id: 'personal', name: 'Personal' },
+    ];
+
+    expect(
+      filterNotes(notes, { noteTags, searchQuery: 'work', selectedTagIds: ['work'] }).map(
+        (note) => note.id,
+      ),
+    ).toEqual(['project']);
+    expect(filterNotes(notes, { pinnedOnly: true }).map((note) => note.id)).toEqual(['personal']);
+    expect(
+      filterNotes(notes, {
+        dateRange: '7-days',
+        now: new Date('2026-07-17T12:00:00.000Z'),
+      }).map((note) => note.id),
+    ).toEqual(['project']);
+    expect(filterNotes(notes, { sortBy: 'title-asc' }).map((note) => note.id)).toEqual([
+      'personal',
+      'project',
+    ]);
+  });
+
+  it('filters and searches by notebook assignment', () => {
+    const notes = [
+      makeNote({ id: 'project', title: 'Roadmap', notebookId: 'projects' }),
+      makeNote({ id: 'personal', title: 'Shopping', notebookId: 'personal' }),
+    ];
+    const noteNotebooks = [
+      { id: 'projects', name: 'Projects' },
+      { id: 'personal', name: 'Personal' },
+    ];
+
+    expect(
+      filterNotes(notes, { noteNotebooks, selectedNotebookId: 'projects' }).map((note) => note.id),
+    ).toEqual(['project']);
+    expect(filterNotes(notes, { noteNotebooks, searchQuery: 'personal' })[0].id).toBe('personal');
+  });
+
+  it('updates and restores notes immutably', () => {
+    const notes = [makeNote({ id: 'one', title: 'One' }), makeNote({ id: 'two', title: 'Two' })];
+    const updated = updateNote(notes, 'one', { title: 'Updated' }, '2026-03-01');
+    const restored = restoreNote([updated[1]], updated[0], 0);
+
+    expect(updated[0]).toMatchObject({ title: 'Updated', updatedAt: '2026-03-01', revision: 2 });
+    expect(restored.map((note) => note.id)).toEqual(['one', 'two']);
+    expect(notes[0].title).toBe('One');
+  });
+
+  it('updates and restores multiple selected notes in one operation', () => {
+    const notes = [
+      makeNote({ id: 'one', title: 'One' }),
+      makeNote({ id: 'two', title: 'Two' }),
+      makeNote({ id: 'three', title: 'Three' }),
+    ];
+    const updated = updateNotes(notes, ['one', 'three'], { isArchived: true }, '2026-04-01');
+    const restored = restoreNotes(
+      [updated[1]],
+      [
+        { note: updated[0], index: 0 },
+        { note: updated[2], index: 2 },
+      ],
+    );
+
+    expect(updated.map((note) => note.isArchived)).toEqual([true, false, true]);
+    expect(updated.map((note) => note.revision)).toEqual([2, 1, 2]);
+    expect(restored.map((note) => note.id)).toEqual(['one', 'two', 'three']);
+  });
+});

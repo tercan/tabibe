@@ -1,14 +1,25 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { useTranslation } from '../hooks/useTranslation.jsx';
+import { useTranslation } from '../hooks/useTranslation.js';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 import speedDialMoveAnimation from '../lib/speedDialMotion.js';
 import useFocusTrap from '../hooks/useFocusTrap.jsx';
+import useBodyScrollLock from '../hooks/useBodyScrollLock.js';
 import CloseIcon from './icons/CloseIcon.jsx';
 
 function MoreIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       <circle cx="12" cy="12" r="1" />
       <circle cx="19" cy="12" r="1" />
       <circle cx="5" cy="12" r="1" />
@@ -18,7 +29,17 @@ function MoreIcon() {
 
 function PlusIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       <line x1="12" y1="5" x2="12" y2="19" />
       <line x1="5" y1="12" x2="19" y2="12" />
     </svg>
@@ -27,7 +48,17 @@ function PlusIcon() {
 
 function EditIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       <path d="M12 20h9" />
       <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
     </svg>
@@ -36,7 +67,17 @@ function EditIcon() {
 
 function TrashIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       <path d="M3 6h18" />
       <path d="M8 6V4h8v2" />
       <path d="M19 6l-1 14H6L5 6" />
@@ -59,7 +100,6 @@ function Folder({
   on_add_site,
   on_edit_folder,
   on_delete_folder,
-  is_manage_mode,
   is_modal_blocked,
   is_drag_over,
   is_folder_drop_target,
@@ -92,25 +132,10 @@ function Folder({
     initialFocusRef: close_button_ref,
     onEscape: () => set_is_open(false),
   });
-
-  useEffect(() => {
-    if (is_open) {
-      document.body.classList.add('no-scroll');
-    } else {
-      document.body.classList.remove('no-scroll');
-    }
-
-    return () => {
-      document.body.classList.remove('no-scroll');
-    };
-  }, [is_open]);
+  useBodyScrollLock(is_open);
 
   function toggle_folder(event) {
     event.stopPropagation();
-    if (is_manage_mode) {
-      on_edit_folder();
-      return;
-    }
     set_is_open((prev) => !prev);
   }
 
@@ -133,7 +158,7 @@ function Folder({
   }
 
   function is_dragging_child_from_folder() {
-    return folder_child_drag_state?.folder_id === folder.id;
+    return folder_child_drag_state?.folderId === folder.id;
   }
 
   function is_event_outside_modal(event) {
@@ -220,15 +245,17 @@ function Folder({
             </header>
 
             <ul
-              className={`folder-grid${folder_child_drag_state?.folder_id === folder.id ? ' folder-grid--dragging' : ''}`}
+              className={`folder-grid${folder_child_drag_state?.folderId === folder.id ? ' folder-grid--dragging' : ''}`}
               ref={folder_animation_parent}
             >
               {folder.children && folder.children.length > 0 ? (
                 folder.children.map((site, child_index) => {
-                  const is_child_dragging = folder_child_drag_state?.folder_id === folder.id
-                    && folder_child_drag_state.index === child_index;
-                  const is_child_drag_over = folder_child_drag_state?.folder_id === folder.id
-                    && folder_child_drag_over_index === child_index;
+                  const is_child_dragging =
+                    folder_child_drag_state?.folderId === folder.id &&
+                    folder_child_drag_state.index === child_index;
+                  const is_child_drag_over =
+                    folder_child_drag_state?.folderId === folder.id &&
+                    folder_child_drag_over_index === child_index;
 
                   return (
                     <li
@@ -261,9 +288,7 @@ function Folder({
                           onContextMenu={(e) => on_context_menu(e, site, folder.id)}
                           aria-label={`${site.name} - ${site.url}`}
                         >
-                          <div className="speed-dial-icon-wrapper">
-                            {render_icon(site)}
-                          </div>
+                          <div className="speed-dial-icon-wrapper">{render_icon(site)}</div>
                           <span className="speed-dial-label">{site.name}</span>
                         </div>
                         <button
@@ -282,7 +307,11 @@ function Folder({
               ) : (
                 <li className="folder-empty">
                   <p>{t('folder_empty')}</p>
-                  <button className="modal-button modal-button--save" type="button" onClick={handle_add_site_click}>
+                  <button
+                    className="modal-button modal-button--save"
+                    type="button"
+                    onClick={handle_add_site_click}
+                  >
                     {t('folder_add_site')}
                   </button>
                 </li>
@@ -290,7 +319,7 @@ function Folder({
             </ul>
           </div>
         </div>,
-        document.body
+        document.body,
       )
     : null;
 
@@ -322,8 +351,22 @@ function Folder({
           aria-label={folder.name}
         >
           <div className="speed-dial-icon-wrapper speed-dial-icon--folder">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path
+                d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
+                fill="currentColor"
+                fillOpacity="0.14"
+              />
               {folder.children && folder.children.length > 0 && (
                 <>
                   <line x1="7" y1="11" x2="17" y2="11" opacity="0.3" />
@@ -331,6 +374,9 @@ function Folder({
                 </>
               )}
             </svg>
+            <span className="speed-dial-folder-count" aria-hidden="true">
+              {folder.children?.length || 0}
+            </span>
           </div>
           <span className="speed-dial-label">{folder.name}</span>
         </div>

@@ -1,20 +1,73 @@
 {
   "name": "tabibe",
   "private": true,
-  "version": "0.3.0",
+  "version": "1.5.0",
   "type": "module",
+  "engines": {
+    "node": "^22.19.0 || >=24"
+  },
   "scripts": {
+    "prepare:icons": "node scripts/build-brand-icons.mjs",
+    "predev": "npm run prepare:icons && npm run sync:privacy",
     "dev": "vite",
+    "lint": "eslint .",
+    "lint:css": "stylelint \"src/**/*.css\"",
+    "lint:css:standards": "node scripts/check-css-standards.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "prebuild": "npm run prepare:icons && npm run sync:privacy && npm run build:site",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "audit": "npm audit --audit-level=high",
+    "budget:bundle": "node scripts/check-bundle.mjs",
+    "lighthouse": "lhci autorun --config=./lighthouserc.cjs",
+    "package:extension": "node scripts/package-extension.mjs",
+    "check:release": "node scripts/check-release-readiness.mjs",
+    "quality": "npm run lint && npm run lint:css && npm run lint:css:standards && npm run format:check && npm run test && npm run build && npm run budget:bundle && npm run check:site",
+    "sync:privacy": "node scripts/sync-privacy-policy.mjs",
+    "build:site": "node scripts/build-site.mjs",
+    "preview:site": "node scripts/serve-site.mjs",
+    "check:site": "node scripts/check-site.mjs",
+    "lighthouse:site": "lhci autorun --config=./lighthouserc-site.cjs"
   },
   "dependencies": {
     "@formkit/auto-animate": "^0.9.0",
+    "lucide-react": "^1.25.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
+  },
+  "overrides": {
+    "tmp": "0.2.7",
+    "uuid": "11.1.1",
+    "lighthouse": "13.4.1",
+    "qs": "6.16.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
+    "@eslint/js": "^10.0.1",
+    "@lhci/cli": "^0.15.1",
+    "@playwright/test": "^1.61.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@vitejs/plugin-react": "^4.3.0",
-    "vite": "^6.0.0"
+    "@vitest/coverage-v8": "^4.1.10",
+    "eslint": "^10.7.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.3",
+    "globals": "^17.7.0",
+    "jsdom": "^29.1.1",
+    "prettier": "^3.9.5",
+    "proxy-agent": "8.0.2",
+    "simple-icons": "16.26.0",
+    "stylelint": "^17.14.0",
+    "stylelint-config-standard": "^40.0.0",
+    "vite": "^6.0.0",
+    "vitest": "^4.1.10"
   }
 }

@@ -1,267 +1,364 @@
-import { useState, useEffect } from 'react';
-import { useTranslation } from './hooks/useTranslation.jsx';
+import { lazy, Suspense, useEffect, useState } from 'react';
+import { useTranslation } from './hooks/useTranslation.js';
 import Clock from './components/Clock.jsx';
 import SearchBar from './components/SearchBar.jsx';
 import SpeedDial from './components/SpeedDial.jsx';
-import NotePanel from './components/NotePanel.jsx';
-import SettingsPanel from './components/SettingsPanel.jsx';
 import Footer from './components/Footer.jsx';
+import { AppLoading, AppRecovery } from './components/AppRecovery.jsx';
 import {
   getBackgroundPresetTheme,
   getEquivalentBackgroundPresetColor,
 } from './lib/backgroundPresets.js';
+import {
+  createDefaultSettings,
+  loadSettings,
+  mergeDevelopmentDemoNotes,
+  saveSettings,
+} from './lib/storage.js';
+import { detectLocale } from './i18n/translationContext.js';
+import useFaviconPermission from './hooks/useFaviconPermission.js';
+import useBackgroundImageUrl from './hooks/useBackgroundImageUrl.js';
+import { getBackgroundAppearance } from './lib/backgroundAppearance.js';
 
-/**
- * 1. Theme detection and management
- */
+const NotePanel = lazy(() => import('./components/NotePanel.jsx'));
+const SettingsPanel = lazy(() => import('./components/SettingsPanel.jsx'));
 
-function get_initial_theme() {
-  const savedBgColor = localStorage.getItem('tabibe-bg-color');
-  const savedBgImage = localStorage.getItem('tabibe-bg-image');
-  const presetTheme = savedBgImage ? null : getBackgroundPresetTheme(savedBgColor);
-
-  if (presetTheme) return presetTheme;
-
-  const saved = localStorage.getItem('tabibe-theme');
-  if (saved === 'dark' || saved === 'light') return saved;
+function getSystemTheme() {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
-/**
- * 2. Icon style management
- */
+async function loadPreparedSettings() {
+  let demoError = null;
 
-function get_initial_icon_style() {
-  const saved = localStorage.getItem('tabibe-icon-style');
-  if (saved === 'favicon' || saved === 'simple') return saved;
-  return 'favicon';
+  if (import.meta.env.DEV) {
+    try {
+      const demoResult = await mergeDevelopmentDemoNotes();
+      if (demoResult.status !== 'not-requested') {
+        const cleanUrl = new URL(window.location.href);
+        cleanUrl.searchParams.delete('demo-notes');
+        window.history.replaceState(window.history.state, '', cleanUrl);
+      }
+    } catch (error) {
+      demoError = error;
+    }
+  }
+
+  return { settings: await loadSettings(), demoError };
 }
-
-/**
- * 3. Settings persistence helpers
- */
-
-function get_setting(key, fallback) {
-  const saved = localStorage.getItem(`tabibe-${key}`);
-  if (saved === null) return fallback;
-  if (saved === 'true') return true;
-  if (saved === 'false') return false;
-  return saved;
-}
-
-function set_setting(key, value) {
-  localStorage.setItem(`tabibe-${key}`, String(value));
-}
-
-/**
- * 4. Main application component
- */
 
 function App() {
-  const { locale } = useTranslation();
-  const [theme, set_theme] = useState(get_initial_theme);
-  const [icon_style, set_icon_style] = useState(get_initial_icon_style);
-  const [settings_open, set_settings_open] = useState(false);
-  const [search_engine, set_search_engine] = useState(() => get_setting('search-engine', 'google'));
-  const [show_clock, set_show_clock] = useState(() => get_setting('show-clock', true));
-  const [show_search, set_show_search] = useState(() => get_setting('show-search', true));
+  const { locale, setLocale, t } = useTranslation();
+  const faviconPermission = useFaviconPermission();
+  const [settings, setSettings] = useState(() => createDefaultSettings(getSystemTheme()));
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [notesRequest, setNotesRequest] = useState(null);
+  const [storageError, setStorageError] = useState(false);
+  const [settingsLoadState, setSettingsLoadState] = useState('loading');
 
-  const [note_panel_open, set_note_panel_open] = useState(false);
-  const [note_pinned, set_note_pinned] = useState(() => get_setting('note-pinned', false));
-  const [bg_color, set_bg_color] = useState(() => get_setting('bg-color', ''));
-  const [bg_image, set_bg_image] = useState(() => get_setting('bg-image', ''));
-  const [show_memory, set_show_memory] = useState(() => get_setting('show-memory', false));
+  const {
+    theme,
+    iconStyle,
+    searchEngine,
+    showClock,
+    showSearch,
+    noteSort,
+    backgroundColor,
+    backgroundImage,
+    showMemory,
+    locale: selectedLocale,
+  } = settings;
+  const renderedBackgroundImage = useBackgroundImageUrl(backgroundImage);
+  const backgroundAppearance = getBackgroundAppearance({
+    backgroundColor,
+    hasBackgroundImage: Boolean(backgroundImage),
+  });
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('tabibe-theme', theme);
+    let active = true;
+
+    loadPreparedSettings()
+      .then(({ settings: savedSettings, demoError }) => {
+        if (active) {
+          setSettings(savedSettings);
+          setStorageError(Boolean(demoError));
+          setSettingsLoadState('ready');
+        }
+      })
+      .catch(() => {
+        if (active) setSettingsLoadState('error');
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
   }, [theme]);
 
   useEffect(() => {
-    localStorage.setItem('tabibe-icon-style', icon_style);
-  }, [icon_style]);
+    setLocale(selectedLocale || detectLocale());
+  }, [selectedLocale, setLocale]);
 
   useEffect(() => {
-    if (bg_image) return;
-
-    const presetTheme = getBackgroundPresetTheme(bg_color);
-    if (presetTheme && presetTheme !== theme) {
-      applyTheme(presetTheme);
-    }
-  }, [bg_color, bg_image]);
-
-  function applyTheme(nextTheme) {
-    document.documentElement.setAttribute('data-theme', nextTheme);
-    localStorage.setItem('tabibe-theme', nextTheme);
-    set_theme(nextTheme);
-  }
-
-  function reset_background() {
-    set_bg_color('');
-    set_bg_image('');
-    set_setting('bg-color', '');
-    set_setting('bg-image', '');
-  }
-
-  function toggle_theme() {
-    const nextTheme = theme === 'dark' ? 'light' : 'dark';
-
-    if (!bg_image) {
-      const nextBgColor = getEquivalentBackgroundPresetColor(bg_color, nextTheme);
-      if (nextBgColor && nextBgColor !== bg_color) {
-        set_bg_color(nextBgColor);
-        set_setting('bg-color', nextBgColor);
-      }
+    function handleQuickCaptureShortcut(event) {
+      if (!event.altKey || !event.shiftKey || event.metaKey || event.ctrlKey) return;
+      if (event.key.toLocaleLowerCase() !== 'n') return;
+      event.preventDefault();
+      const requestId = crypto.randomUUID();
+      setNotesRequest({ type: 'capture', requestId, captureSessionId: requestId });
     }
 
-    applyTheme(nextTheme);
-  }
+    document.addEventListener('keydown', handleQuickCaptureShortcut);
+    return () => document.removeEventListener('keydown', handleQuickCaptureShortcut);
+  }, []);
 
-  function toggle_icon_style() {
-    set_icon_style((prev) => (prev === 'favicon' ? 'simple' : 'favicon'));
-  }
+  useEffect(() => {
+    if (backgroundImage) return;
+    const presetTheme = getBackgroundPresetTheme(backgroundColor);
+    if (presetTheme && presetTheme !== theme) updateSettings({ theme: presetTheme });
+  }, [backgroundColor, backgroundImage, theme]);
 
-  function handle_change_search_engine(engine_id) {
-    set_search_engine(engine_id);
-    set_setting('search-engine', engine_id);
-  }
+  async function updateSettings(patch) {
+    setStorageError(false);
+    setSettings((currentSettings) => ({ ...currentSettings, ...patch }));
 
-  function handle_toggle_clock() {
-    set_show_clock((prev) => {
-      set_setting('show-clock', !prev);
-      return !prev;
-    });
-  }
-
-  function handle_toggle_search() {
-    set_show_search((prev) => {
-      set_setting('show-search', !prev);
-      return !prev;
-    });
-  }
-
-
-  function handle_toggle_memory() {
-    if (!show_memory && typeof chrome !== 'undefined' && chrome.permissions) {
-      chrome.permissions.request({ permissions: ['system.memory'] }, (granted) => {
-        if (granted) {
-          set_show_memory(true);
-          set_setting('show-memory', true);
-        }
-      });
-    } else {
-      set_show_memory((prev) => {
-        set_setting('show-memory', !prev);
-        return !prev;
-      });
-    }
-  }
-
-  function handle_toggle_note_panel() {
-    set_note_panel_open((prev) => !prev);
-  }
-
-  function handle_toggle_note_pin() {
-    set_note_pinned((prev) => {
-      set_setting('note-pinned', !prev);
-      return !prev;
-    });
-  }
-
-  function handle_change_bg_color(color, nextTheme) {
-    set_bg_color(color);
-    set_bg_image('');
-    set_setting('bg-color', color);
-    set_setting('bg-image', '');
-
-    const presetTheme = nextTheme || getBackgroundPresetTheme(color);
-    if (presetTheme) applyTheme(presetTheme);
-  }
-
-  function handle_change_bg_image(data_url) {
-    // Convert dataURL to blob URL for safer usage
     try {
-      const arr = data_url.split(',');
-      const mime = arr[0].match(/:(.*?);/)[1];
-      const bstr = atob(arr[1]);
-      const u8 = new Uint8Array(bstr.length);
-      for (let i = 0; i < bstr.length; i++) {
-        u8[i] = bstr.charCodeAt(i);
-      }
-      const blob = new Blob([u8], { type: mime });
-      const blob_url = URL.createObjectURL(blob);
-      set_bg_image(blob_url);
+      const savedSettings = await saveSettings(patch);
+      setSettings(savedSettings);
+      return true;
     } catch {
-      set_bg_image(data_url);
+      setStorageError(true);
+      loadSettings()
+        .then(setSettings)
+        .catch(() => setSettingsLoadState('error'));
+      return false;
     }
-    // Always persist the dataURL version (blob URLs don't survive reload)
-    set_setting('bg-image', data_url);
   }
 
-  function handle_reset_bg() {
-    reset_background();
-    
-    // Reset theme to system preference on explicit BG reset from settings
-    const system_dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    set_theme(system_dark ? 'dark' : 'light');
-  }
+  function toggleTheme() {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    const patch = { theme: nextTheme };
 
-  function get_bg_style() {
-    const style = {};
-    if (bg_image) {
-      style.backgroundImage = `url(${bg_image})`;
-      style.backgroundSize = 'cover';
-      style.backgroundPosition = 'center';
-      style.backgroundRepeat = 'no-repeat';
-    } else if (bg_color) {
-      style.backgroundColor = bg_color;
+    if (!backgroundImage) {
+      const nextBackgroundColor = getEquivalentBackgroundPresetColor(backgroundColor, nextTheme);
+      if (nextBackgroundColor) patch.backgroundColor = nextBackgroundColor;
     }
-    return style;
+
+    updateSettings(patch);
   }
 
-  const new_tab_class_name = [
-    'new-tab',
-    note_pinned ? 'new-tab--pinned' : '',
-    bg_image ? 'new-tab--custom-background' : '',
-  ].filter(Boolean).join(' ');
+  function toggleIconStyle() {
+    updateSettings({ iconStyle: iconStyle === 'favicon' ? 'simple' : 'favicon' });
+  }
+
+  function handleChangeSearchEngine(engineId) {
+    updateSettings({ searchEngine: engineId });
+  }
+
+  function handleToggleClock() {
+    updateSettings({ showClock: !showClock });
+  }
+
+  function handleToggleSearch() {
+    updateSettings({ showSearch: !showSearch });
+  }
+
+  function handleToggleMemory() {
+    if (!showMemory && globalThis.chrome?.permissions) {
+      chrome.permissions.request({ permissions: ['system.memory'] }, (granted) => {
+        if (chrome.runtime.lastError) {
+          setStorageError(true);
+          return;
+        }
+        if (granted) updateSettings({ showMemory: true });
+      });
+      return;
+    }
+
+    if (showMemory && globalThis.chrome?.permissions?.remove) {
+      chrome.permissions.remove({ permissions: ['system.memory'] }, () => {
+        if (chrome.runtime.lastError) {
+          setStorageError(true);
+          return;
+        }
+        updateSettings({ showMemory: false });
+      });
+      return;
+    }
+
+    updateSettings({ showMemory: !showMemory });
+  }
+
+  function handleChangeNoteSort(nextSort) {
+    updateSettings({ noteSort: nextSort });
+  }
+
+  function handleOpenNoteCapture() {
+    const requestId = crypto.randomUUID();
+    setNotesRequest({ type: 'capture', requestId, captureSessionId: requestId });
+  }
+
+  function handleOpenNoteLibrary() {
+    const requestId = crypto.randomUUID();
+    setNotesRequest({ type: 'library', requestId, captureSessionId: null });
+  }
+
+  function handleExpandNoteCapture() {
+    setNotesRequest((currentRequest) =>
+      currentRequest ? { ...currentRequest, type: 'library' } : currentRequest,
+    );
+  }
+
+  function handleChangeLocale(nextLocale) {
+    updateSettings({ locale: nextLocale });
+  }
+
+  async function handleRequestFaviconPermission() {
+    const granted = await faviconPermission.requestPermission();
+    if (granted) await updateSettings({ faviconFallback: true });
+    return granted;
+  }
+
+  async function handleRevokeFaviconPermission() {
+    const revoked = await faviconPermission.revokePermission();
+    if (revoked) await updateSettings({ faviconFallback: false });
+    return revoked;
+  }
+
+  function handleChangeBackgroundColor(color, nextTheme) {
+    const presetTheme = nextTheme || getBackgroundPresetTheme(color) || theme;
+    updateSettings({
+      backgroundColor: color,
+      backgroundImage: '',
+      theme: presetTheme,
+    });
+  }
+
+  function handleChangeBackgroundImage(dataUrl) {
+    return updateSettings({ backgroundImage: dataUrl });
+  }
+
+  function handleResetBackground() {
+    updateSettings({
+      backgroundColor: '',
+      backgroundImage: '',
+      theme: getSystemTheme(),
+    });
+  }
+
+  function getBackgroundStyle() {
+    if (renderedBackgroundImage) {
+      return {
+        backgroundImage: `url(${renderedBackgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      };
+    }
+    return backgroundColor ? { backgroundColor } : {};
+  }
+
+  function handleRetrySettingsLoad() {
+    setSettingsLoadState('loading');
+    loadPreparedSettings()
+      .then(({ settings: savedSettings, demoError }) => {
+        setSettings(savedSettings);
+        setStorageError(Boolean(demoError));
+        setSettingsLoadState('ready');
+      })
+      .catch(() => setSettingsLoadState('error'));
+  }
+
+  if (settingsLoadState === 'loading') return <AppLoading />;
+  if (settingsLoadState === 'error') return <AppRecovery onRetry={handleRetrySettingsLoad} />;
+
+  const className = ['new-tab', backgroundImage ? 'new-tab--custom-background' : '']
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    <main className={new_tab_class_name} lang={locale} style={get_bg_style()}>
-      {show_clock && <Clock />}
-      {show_search && <SearchBar search_engine={search_engine} />}
-      <SpeedDial icon_style={icon_style} theme={theme} />
-      <NotePanel 
-        is_open={note_panel_open} 
-        is_pinned={note_pinned} 
-        on_close={() => set_note_panel_open(false)} 
-        on_toggle_pin={handle_toggle_note_pin}
+    <main
+      className={className}
+      data-background-kind={backgroundAppearance.kind}
+      lang={locale}
+      style={{ ...getBackgroundStyle(), ...backgroundAppearance.cssVariables }}
+    >
+      {showClock && <Clock />}
+      {showSearch && <SearchBar search_engine={searchEngine} />}
+      <SpeedDial
+        icon_style={iconStyle}
+        has_favicon_permission={faviconPermission.hasPermission}
+        on_request_favicon_permission={handleRequestFaviconPermission}
       />
+      <Suspense
+        fallback={
+          <span className="visually-hidden" role="status">
+            {t('app_loading')}
+          </span>
+        }
+      >
+        {notesRequest && (
+          <NotePanel
+            request={notesRequest}
+            note_sort={noteSort}
+            on_close={() => setNotesRequest(null)}
+            on_open_library={handleExpandNoteCapture}
+            on_change_sort={handleChangeNoteSort}
+          />
+        )}
+      </Suspense>
       <Footer
-        theme={theme}
-        on_toggle_theme={toggle_theme}
-        icon_style={icon_style}
-        on_toggle_icon_style={toggle_icon_style}
-        on_open_settings={() => set_settings_open(true)}
-        on_open_notes={() => set_note_panel_open(true)}
-        show_memory={show_memory}
+        on_open_settings={() => setSettingsOpen(true)}
+        on_open_note_capture={handleOpenNoteCapture}
+        on_open_note_library={handleOpenNoteLibrary}
+        show_memory={showMemory}
       />
-      <SettingsPanel
-        is_open={settings_open}
-        on_close={() => set_settings_open(false)}
-        search_engine={search_engine}
-        on_change_search_engine={handle_change_search_engine}
-        show_clock={show_clock}
-        on_toggle_clock={handle_toggle_clock}
-        show_search={show_search}
-        on_toggle_search={handle_toggle_search}
-        show_memory={show_memory}
-        on_toggle_memory={handle_toggle_memory}
-        bg_color={bg_color}
-        bg_image={bg_image}
-        on_change_bg_color={handle_change_bg_color}
-        on_change_bg_image={handle_change_bg_image}
-        on_reset_bg={handle_reset_bg}
-      />
+      <Suspense
+        fallback={
+          <span className="visually-hidden" role="status">
+            {t('app_loading')}
+          </span>
+        }
+      >
+        {settingsOpen && (
+          <SettingsPanel
+            is_open={settingsOpen}
+            on_close={() => setSettingsOpen(false)}
+            iconStyle={iconStyle}
+            onToggleIconStyle={toggleIconStyle}
+            theme={theme}
+            onToggleTheme={toggleTheme}
+            search_engine={searchEngine}
+            on_change_search_engine={handleChangeSearchEngine}
+            show_clock={showClock}
+            on_toggle_clock={handleToggleClock}
+            show_search={showSearch}
+            on_toggle_search={handleToggleSearch}
+            show_memory={showMemory}
+            on_toggle_memory={handleToggleMemory}
+            locale={locale}
+            on_change_locale={handleChangeLocale}
+            favicon_permission={faviconPermission}
+            on_request_favicon_permission={handleRequestFaviconPermission}
+            on_revoke_favicon_permission={handleRevokeFaviconPermission}
+            bg_color={backgroundColor}
+            bg_image={backgroundImage}
+            on_change_bg_color={handleChangeBackgroundColor}
+            on_change_bg_image={handleChangeBackgroundImage}
+            on_reset_bg={handleResetBackground}
+          />
+        )}
+      </Suspense>
+      {storageError && (
+        <div className="toast toast--error" role="alert">
+          <span>{t('app_storage_error')}</span>
+          <button type="button" className="toast-action" onClick={() => setStorageError(false)}>
+            {t('modal_cancel')}
+          </button>
+        </div>
+      )}
       {/* /.new-tab */}
     </main>
   );

@@ -10,12 +10,12 @@ const FOCUSABLE_SELECTOR = [
 ].join(',');
 
 function getFocusableElements(container) {
-  return Array.from(container.querySelectorAll(FOCUSABLE_SELECTOR))
-    .filter((element) => (
-      !element.hasAttribute('disabled')
-      && element.getClientRects().length > 0
-      && window.getComputedStyle(element).visibility !== 'hidden'
-    ));
+  return Array.from(container.querySelectorAll(FOCUSABLE_SELECTOR)).filter(
+    (element) =>
+      !element.hasAttribute('disabled') &&
+      element.getClientRects().length > 0 &&
+      window.getComputedStyle(element).visibility !== 'hidden',
+  );
 }
 
 function focusElement(element) {
@@ -35,10 +35,12 @@ function useFocusTrap({ containerRef, isActive, initialFocusRef, onEscape }) {
     if (!isActive || !containerRef.current) return undefined;
 
     const container = containerRef.current;
-    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const previousFocus =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
     const frameId = requestAnimationFrame(() => {
-      const focusTarget = initialFocusRef?.current || getFocusableElements(container)[0] || container;
+      const focusTarget =
+        initialFocusRef?.current || getFocusableElements(container)[0] || container;
       focusElement(focusTarget);
     });
 

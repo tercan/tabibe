@@ -1,26 +1,21 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { useTranslation } from '../hooks/useTranslation.jsx';
+import { useTranslation } from '../hooks/useTranslation.js';
 import useFocusTrap from '../hooks/useFocusTrap.jsx';
+import useBodyScrollLock from '../hooks/useBodyScrollLock.js';
 
 /**
  * 1. Folder delete decision modal
  */
 
-function FolderDeleteModal({
-  folder,
-  onMoveContents,
-  onDeleteContents,
-  onClose,
-}) {
+function FolderDeleteModal({ folder, onMoveContents, onDeleteContents, onClose }) {
   const { t } = useTranslation();
   const dialogRef = useRef(null);
   const primaryActionRef = useRef(null);
   const children = Array.isArray(folder?.children) ? folder.children : [];
   const childCount = children.length;
-  const descriptionKey = childCount > 0
-    ? 'folder_delete_modal_description'
-    : 'folder_delete_modal_empty_description';
+  const descriptionKey =
+    childCount > 0 ? 'folder_delete_modal_description' : 'folder_delete_modal_empty_description';
 
   useFocusTrap({
     containerRef: dialogRef,
@@ -28,17 +23,7 @@ function FolderDeleteModal({
     initialFocusRef: primaryActionRef,
     onEscape: onClose,
   });
-
-  useEffect(() => {
-    const hadNoScroll = document.body.classList.contains('no-scroll');
-    document.body.classList.add('no-scroll');
-
-    return () => {
-      if (!hadNoScroll) {
-        document.body.classList.remove('no-scroll');
-      }
-    };
-  }, []);
+  useBodyScrollLock(true);
 
   function handleOverlayClick(event) {
     if (event.target === event.currentTarget) {
@@ -76,7 +61,9 @@ function FolderDeleteModal({
               onClick={onMoveContents}
             >
               <span className="modal-decision-title">{t('folder_delete_modal_move_title')}</span>
-              <span className="modal-decision-description">{t('folder_delete_modal_move_description')}</span>
+              <span className="modal-decision-description">
+                {t('folder_delete_modal_move_description')}
+              </span>
             </button>
             <button
               className="modal-decision-option modal-decision-option--danger"
@@ -84,7 +71,9 @@ function FolderDeleteModal({
               onClick={onDeleteContents}
             >
               <span className="modal-decision-title">{t('folder_delete_modal_delete_title')}</span>
-              <span className="modal-decision-description">{t('folder_delete_modal_delete_description')}</span>
+              <span className="modal-decision-description">
+                {t('folder_delete_modal_delete_description')}
+              </span>
             </button>
           </div>
         ) : (
@@ -109,7 +98,7 @@ function FolderDeleteModal({
       </div>
       {/* /.modal-dialog--decision */}
     </div>,
-    document.body
+    document.body,
   );
 }
 

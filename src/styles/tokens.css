@@ -1,0 +1,227 @@
+/**
+ * 2. Design tokens (custom properties) — Light theme (default)
+ */
+
+:root {
+  /* Colors */
+  --color-primary: #0b57d0;
+  --color-primary-hover: #0842a0;
+  --color-primary-surface: #0b57d0;
+  --color-primary-surface-hover: #0842a0;
+  --color-primary-rgb: 11, 87, 208;
+  --color-focus: #0b57d0;
+  --color-secondary: #e9ecef;
+  --color-text: #212529;
+  --color-text-muted: #5f6368;
+  --color-text-inverse: #ffffff;
+  --color-border: #dee2e6;
+  --color-background: #f8f9fa;
+  --color-surface: #ffffff;
+  --color-surface-hover: #f1f3f5;
+  --color-folder-surface: #f6f0dc;
+  --color-folder-surface-hover: #eee4c7;
+  --color-folder-border: #aa9257;
+  --color-folder-icon: #75613a;
+  --color-folder-badge-text: #ffffff;
+  --color-clock-surface: rgba(255, 255, 255, 0.88);
+  --color-clock-border: rgba(222, 226, 230, 0.9);
+  --color-note-confirm-overlay: rgba(0, 0, 0, 0.35);
+  --color-overlay: rgba(0, 0, 0, 0.5);
+  --color-overlay-soft: rgba(0, 0, 0, 0.35);
+  --color-panel-overlay: rgba(0, 0, 0, 0.4);
+  --color-toggle-thumb: #ffffff;
+  --color-error: #b3261e;
+  --color-error-surface: #b3261e;
+  --color-success: #1b6e36;
+  --color-warning: #f9a825;
+  --color-tag-blue: #315f9f;
+  --color-tag-blue-surface: #e5eefb;
+  --color-tag-green: #34724d;
+  --color-tag-green-surface: #e4f3e9;
+  --color-tag-yellow: #80651e;
+  --color-tag-yellow-surface: #f8f0cf;
+  --color-tag-red: #9b3d38;
+  --color-tag-red-surface: #f8e7e5;
+  --color-tag-gray: #59636d;
+  --color-tag-gray-surface: #e9ecef;
+  --color-footer-bg: #f1f3f5;
+  --color-home-control-surface: var(--color-surface);
+  --color-home-control-surface-hover: var(--color-surface-hover);
+  --color-home-control-border: var(--color-border);
+  --color-home-footer-surface: var(--color-footer-bg);
+  --color-home-folder-surface: var(--color-folder-surface);
+  --color-home-folder-surface-hover: var(--color-folder-surface-hover);
+  --color-home-folder-border: var(--color-folder-border);
+
+  /* Adaptive home surfaces */
+  --home-control-background-weight: 45%;
+  --home-control-hover-background-weight: 58%;
+  --home-control-border-text-weight: 70%;
+  --home-footer-background-weight: 55%;
+  --home-folder-background-weight: 30%;
+  --home-folder-hover-background-weight: 40%;
+  --home-folder-border-background-weight: 20%;
+
+  /* Typography */
+  --font-family-base: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-family-heading: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-family-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  --font-size-xxs: 0.625rem;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-md: 1.125rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+  --font-size-2xl: 2rem;
+  --font-size-3xl: 2.5rem;
+  --font-size-clock: 4.5rem;
+  --line-height-tight: 1.25;
+  --line-height-base: 1.5;
+  --line-height-relaxed: 1.75;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Spacing */
+  --space-2xs: 0.125rem;
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+
+  /* Borders */
+  --border-radius: 0.125rem;
+  --border-width: 0.0625rem;
+  --border-color: var(--color-border);
+
+  /* Shadows */
+  --shadow-sm: 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 0.25rem 0.375rem rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 0.625rem 0.9375rem rgba(0, 0, 0, 0.1);
+  --shadow-focus-border: inset 0 0 0 var(--border-width) var(--color-focus);
+  --shadow-selected-ring: 0 0 0 1px var(--color-primary);
+  --shadow-swatch-active:
+    0 0 0 var(--space-2xs) var(--color-background), 0 0 0 var(--space-xs) var(--color-focus);
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+  --filter-favicon-simple: grayscale(1) contrast(1.35);
+
+  /* Z-index scale */
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+  --z-context-menu: 600;
+
+  /* Layout */
+  --container-max-width: 75rem;
+  --container-padding: var(--space-md);
+  --speed-dial-icon-wrapper-size: 4.25rem;
+  --speed-dial-icon-wrapper-padding: 0.75rem;
+  --speed-dial-site-icon-size: 2.125rem;
+  --note-panel-width: 30rem;
+  --note-navigation-width: 13rem;
+  --note-list-width: 22rem;
+}
+
+/**
+ * 2b. Dark theme overrides
+ */
+
+[data-theme='dark'] {
+  --color-primary: #a970ff;
+  --color-primary-hover: #c7a7ff;
+  --color-primary-surface: #6d28d9;
+  --color-primary-surface-hover: #5b21b6;
+  --color-primary-rgb: 169, 112, 255;
+  --color-focus: #c7a7ff;
+  --color-secondary: #212133;
+  --color-text: #e8eaed;
+  --color-text-muted: #c7c7d6;
+  --color-text-inverse: #ffffff;
+  --color-border: #2d2d3d;
+  --color-background: #181828;
+  --color-surface: #212133;
+  --color-surface-hover: #2a2a44;
+  --color-folder-surface: #302e27;
+  --color-folder-surface-hover: #3a362b;
+  --color-folder-border: #8a7851;
+  --color-folder-icon: #d1bd84;
+  --color-folder-badge-text: #181828;
+  --color-clock-surface: rgba(33, 33, 51, 0.88);
+  --color-clock-border: rgba(45, 45, 61, 0.9);
+  --color-note-confirm-overlay: rgba(0, 0, 0, 0.5);
+  --color-error: #ff5252;
+  --color-error-surface: #b3261e;
+  --color-success: #69f0ae;
+  --color-warning: #ffd740;
+  --color-tag-blue: #a9c7f5;
+  --color-tag-blue-surface: #263b5c;
+  --color-tag-green: #9bd4ac;
+  --color-tag-green-surface: #263f31;
+  --color-tag-yellow: #ead68e;
+  --color-tag-yellow-surface: #443d25;
+  --color-tag-red: #f0aaa5;
+  --color-tag-red-surface: #4a2d31;
+  --color-tag-gray: #c7cbd1;
+  --color-tag-gray-surface: #34343f;
+
+  --shadow-sm: 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 0.25rem 0.375rem rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 0.625rem 0.9375rem rgba(0, 0, 0, 0.6);
+  --color-footer-bg: #13131f;
+  --filter-favicon-simple: grayscale(1) contrast(1.2) brightness(1.15);
+  --home-control-background-weight: 40%;
+  --home-control-hover-background-weight: 48%;
+}
+
+/**
+ * 2c. Validated custom-color home surfaces
+ */
+
+.new-tab[data-background-kind='color'] {
+  --color-home-control-surface: color-mix(
+    in srgb,
+    var(--new-tab-background-color) var(--home-control-background-weight),
+    var(--color-surface)
+  );
+  --color-home-control-surface-hover: color-mix(
+    in srgb,
+    var(--new-tab-background-color) var(--home-control-hover-background-weight),
+    var(--color-surface-hover)
+  );
+  --color-home-control-border: color-mix(
+    in srgb,
+    var(--color-text-muted) var(--home-control-border-text-weight),
+    var(--new-tab-background-color)
+  );
+  --color-home-footer-surface: color-mix(
+    in srgb,
+    var(--new-tab-background-color) var(--home-footer-background-weight),
+    var(--color-footer-bg)
+  );
+  --color-home-folder-surface: color-mix(
+    in srgb,
+    var(--new-tab-background-color) var(--home-folder-background-weight),
+    var(--color-folder-surface)
+  );
+  --color-home-folder-surface-hover: color-mix(
+    in srgb,
+    var(--new-tab-background-color) var(--home-folder-hover-background-weight),
+    var(--color-folder-surface-hover)
+  );
+  --color-home-folder-border: color-mix(
+    in srgb,
+    var(--new-tab-background-color) var(--home-folder-border-background-weight),
+    var(--color-folder-border)
+  );
+}

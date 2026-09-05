@@ -1,317 +1,646 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tabibe — Transform Your New Tab Experience</title>
-  <meta name="description" content="Tabibe is a modern, minimalist, and high-performance new tab extension for Chromium browsers.">
-  <link rel="canonical" href="https://github.com/tercan/tabibe">
-  <meta property="og:title" content="Tabibe — Transform Your New Tab Experience">
-  <meta property="og:description" content="Modern, minimalist, and high-performance new tab extension for Chromium browsers">
-  <meta property="og:type" content="website">
-  <meta name="twitter:card" content="summary_large_image">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-  <script src="https://unpkg.com/feather-icons"></script>
-</head>
-<body>
-  <header>
-    <div class="container">
-      <a href="#hero" class="logo">
-        <div class="logo-icon">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">
-            <rect x="3" y="3" width="18" height="18"></rect>
-            <line x1="3" y1="9" x2="21" y2="9"></line>
-            <line x1="9" y1="21" x2="9" y2="9"></line>
-          </svg>
-        </div>
-        <span>Tabibe</span>
-      </a>
-      <nav>
-        <a href="#features">Features</a>
-        <a href="#philosophy">Design</a>
-        <a href="#tech">Technology</a>
-        <a href="#languages">Languages</a>
-      </nav><!-- /nav -->
-      <div class="header-right">
-        <a href="https://github.com/tercan/tabibe" target="_blank" class="btn btn-secondary">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-          </svg>
-          GitHub
-      </a>
-      <a href="tr/" class="btn btn-secondary lang-toggle">TR</a>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tabibe 1.5.0 — Your personal new-tab workspace</title>
+    <meta
+      name="description"
+      content="Make your new tab a home for shortcuts, folders and notes. Explore Tabibe 1.5.0, download the extension and learn how your data stays local."
+    />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <link rel="canonical" href="https://tercan.github.io/tabibe/" />
+    <link rel="alternate" hreflang="en" href="https://tercan.github.io/tabibe/" />
+    <link rel="alternate" hreflang="tr" href="https://tercan.github.io/tabibe/tr/" />
+    <link rel="alternate" hreflang="x-default" href="https://tercan.github.io/tabibe/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Tabibe 1.5.0 — Your personal new-tab workspace" />
+    <meta
+      property="og:description"
+      content="Make your new tab a home for shortcuts, folders and notes. Explore Tabibe 1.5.0, download the extension and learn how your data stays local."
+    />
+    <meta property="og:url" content="https://tercan.github.io/tabibe/" />
+    <meta property="og:image" content="https://tercan.github.io/tabibe/assets/social-cover.png" />
+    <meta property="og:image:width" content="1400" />
+    <meta property="og:image:height" content="560" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Tabibe 1.5.0 — Your personal new-tab workspace" />
+    <meta
+      name="twitter:description"
+      content="Make your new tab a home for shortcuts, folders and notes. Explore Tabibe 1.5.0, download the extension and learn how your data stays local."
+    />
+    <meta name="twitter:image" content="https://tercan.github.io/tabibe/assets/social-cover.png" />
+    <link rel="icon" href="assets/icon-128.png" type="image/png" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Tabibe",
+        "softwareVersion": "1.5.0",
+        "applicationCategory": "BrowserApplication",
+        "operatingSystem": "Windows, macOS, Linux",
+        "description": "Make your new tab a home for shortcuts, folders and notes. Explore Tabibe 1.5.0, download the extension and learn how your data stays local.",
+        "url": "https://tercan.github.io/tabibe/",
+        "downloadUrl": "https://github.com/tercan/tabibe/releases/download/v1.5.0/tabibe-v1.5.0.zip",
+        "screenshot": "https://tercan.github.io/tabibe/assets/en/03-notes.png",
+        "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+        "author": { "@type": "Person", "name": "Tercan Keskin", "url": "https://tercan.net/" }
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="./"
+          ><img src="assets/icon-128.png" width="128" height="128" alt="" aria-hidden="true" /><span
+            >Tabibe</span
+          ></a
+        >
+        <nav aria-label="Main navigation">
+          <a href="#features">Features</a><a href="#screenshots">Screenshots</a
+          ><a href="#install">Installation</a>
+        </nav>
+        <a class="language-link" href="tr/" hreflang="tr" aria-label="Read this page in Turkish"
+          >Türkçe</a
+        >
       </div>
-    </div><!-- /.container -->
-  </header><!-- /header -->
-
-  <main>
-  <section class="hero" id="hero">
-    <div class="container">
-      <div class="hero-content">
-        <div class="hero-badge">
-          <span class="dot"></span>
-          Open Source
-        </div>
-        <h1>Transform Your <br><span>New Tab</span></h1>
-        <p class="hero-description">
-          Tabibe is a modern, minimalist extension that transforms every new tab into a personal productivity hub.
-        </p>
-        <div class="hero-cta">
-          <a href="https://github.com/tercan/tabibe" target="_blank" class="btn btn-primary">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-            </svg>
-            Add to Chrome
-          </a>
-          <a href="#features" class="btn btn-secondary">Explore Features</a>
-        </div>
-        <div class="hero-stats">
-          <div class="stat">
-            <div class="stat-value">10+</div>
-            <div class="stat-label">Languages</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value">4</div>
-            <div class="stat-label">Search Engines</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value">100%</div>
-            <div class="stat-label">Free</div>
-          </div>
-        </div>
-      </div>
-      <div class="hero-preview">
-        <div class="preview-window">
-          <div class="preview-toolbar">
-            <span class="preview-dot red"></span>
-            <span class="preview-dot yellow"></span>
-            <span class="preview-dot green"></span>
-          </div>
-            <div class="preview-content">
-              <div class="preview-time">14:32:45</div>
-              <div class="preview-date">February 25, 2026</div>
-            <div class="preview-search"><i data-feather="search"></i> Search with Google...</div>
-            <div class="preview-grid">
-              <div class="preview-item"><i data-feather="mail"></i></div>
-              <div class="preview-item"><i data-feather="tv"></i></div>
-              <div class="preview-item"><i data-feather="briefcase"></i></div>
-              <div class="preview-item"><i data-feather="music"></i></div>
-              <div class="preview-item"><i data-feather="shopping-cart"></i></div>
-              <div class="preview-item"><i data-feather="book-open"></i></div>
-              <div class="preview-item"><i data-feather="grid"></i></div>
-              <div class="preview-item"><i data-feather="plus"></i></div>
+      <!-- /.header-inner -->
+    </header>
+    <!-- /.site-header -->
+    <main id="main">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="container">
+          <div class="hero-layout">
+            <div class="hero-content">
+              <p class="eyebrow">Version 1.5.0 · Open source</p>
+              <h1 id="hero-title">Your next tab.<br />Your own space.</h1>
+              <p class="lead">
+                Your favorite sites, everyday notes and next idea — together in a quiet, personal
+                new-tab page.
+              </p>
+              <div class="actions">
+                <a
+                  class="button button--primary"
+                  href="https://github.com/tercan/tabibe/releases/download/v1.5.0/tabibe-v1.5.0.zip"
+                  ><svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5" /></svg
+                  >Download 1.5.0</a
+                ><a
+                  class="button button--secondary"
+                  href="https://github.com/tercan/tabibe/releases/tag/v1.5.0"
+                  >Release notes<svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M4 12h16m-6-6 6 6-6 6" /></svg
+                ></a>
+              </div>
+              <!-- /.actions -->
+              <p class="download-note">
+                GitHub download · Install manually in Chrome. A Chrome Web Store listing is not
+                available yet.
+              </p>
             </div>
+            <!-- /.hero-content -->
+            <figure class="hero-preview">
+              <a href="assets/en/01-new-tab.png"
+                ><picture
+                  ><source
+                    srcset="assets/en/01-new-tab-640.webp 640w, assets/en/01-new-tab.webp 1280w"
+                    sizes="(max-width: 62rem) calc(100vw - 3rem), 38rem"
+                    type="image/webp" />
+                  <img
+                    src="assets/en/01-new-tab.png"
+                    width="1280"
+                    height="800"
+                    alt="Tabibe new-tab page with clock, browser-default search, shortcuts and a folder"
+                    fetchpriority="high"
+                    decoding="async" /></picture
+              ></a>
+              <figcaption>
+                The real Tabibe 1.5.0 interface. Screenshots use sample content.
+              </figcaption>
+            </figure>
+            <!-- /.hero-preview -->
           </div>
+          <!-- /.hero-layout -->
+          <dl class="facts">
+            <div>
+              <dt>interface languages</dt>
+              <dd>13</dd>
+            </div>
+            <div>
+              <dt>local workspace</dt>
+              <dd>On your device</dd>
+            </div>
+            <div>
+              <dt>account required</dt>
+              <dd>None</dd>
+            </div>
+          </dl>
+          <!-- /.facts -->
         </div>
+        <!-- /.container -->
+      </section>
+      <!-- /.hero -->
+      <section class="section section--surface" id="notes" aria-labelledby="notes-title">
+        <div class="container">
+          <div class="section-intro">
+            <p class="eyebrow">New in 1.5.0</p>
+            <h2 id="notes-title">An idea now. A useful note later.</h2>
+            <p>
+              Capture a thought without losing your place. Open your notes library when you are
+              ready to organize it.
+            </p>
+          </div>
+          <!-- /.section-intro -->
+          <figure class="notes-preview">
+            <a href="assets/en/03-notes.png"
+              ><picture
+                ><source
+                  srcset="assets/en/03-notes-640.webp 640w, assets/en/03-notes.webp 1280w"
+                  sizes="(max-width: 50rem) calc(100vw - 3rem), 50rem"
+                  type="image/webp" />
+                <img
+                  src="assets/en/03-notes.png"
+                  width="1280"
+                  height="800"
+                  alt="Tabibe notes library with searchable notes, notebooks, tags and a Markdown checklist preview"
+                  loading="lazy"
+                  decoding="async" /></picture
+            ></a>
+            <figcaption>Write, find and organize your notes in one workspace.</figcaption>
+          </figure>
+          <!-- /.notes-preview -->
+          <ul class="release-highlights">
+            <li>Quick capture from the new-tab footer, or Alt + Shift + N.</li>
+            <li>A notes library with notebooks, tags, search, pinning and archive views.</li>
+            <li>
+              Markdown previews and a visible local save status, with recovery options when saving
+              fails.
+            </li>
+            <li>Browser-default search and a privacy policy available offline in 13 languages.</li>
+          </ul>
+        </div>
+        <!-- /.container -->
+      </section>
+      <!-- /#notes -->
+      <section class="section" id="features" aria-labelledby="features-title">
+        <div class="container">
+          <div class="section-intro">
+            <h2 id="features-title">The things you reach for, close at hand.</h2>
+            <p>A few everyday tools, built around your new tab.</p>
+          </div>
+          <!-- /.section-intro -->
+          <div class="card-grid">
+            <article class="card">
+              <span class="card-icon"
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M3 7V4h6l3 3h9v13H3Z" />
+                  <path d="M3 11h18" /></svg
+              ></span>
+              <div class="card-body">
+                <h3>Sites, sorted your way</h3>
+                <p>
+                  Save shortcuts, group them in folders and reorder them with drag and drop or
+                  keyboard actions. Choose bundled icons or optional Chrome site icons.
+                </p>
+              </div>
+              <!-- /.card-body -->
+            </article>
+            <!-- /.card -->
+            <article class="card">
+              <span class="card-icon"
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="10" cy="10" r="6" />
+                  <path d="m15 15 6 6" /></svg
+              ></span>
+              <div class="card-body">
+                <h3>Your browser’s search</h3>
+                <p>
+                  Start with the search engine already selected in Chrome. Explicitly choose an
+                  alternative in Tabibe whenever you prefer.
+                </p>
+              </div>
+              <!-- /.card-body -->
+            </article>
+            <!-- /.card -->
+            <article class="card">
+              <span class="card-icon"
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M12 3a9 9 0 1 0 0 18h2a2 2 0 0 0 0-4h-1a2 2 0 0 1 0-4h5a3 3 0 0 0 3-3c0-4-4-7-9-7Z"
+                  />
+                  <path d="M7 8h.01M12 6h.01M6 13h.01M17 8h.01" /></svg
+              ></span>
+              <div class="card-body">
+                <h3>A familiar-looking space</h3>
+                <p>
+                  Choose a light or dark theme, a solid background color or a picture from your
+                  device. Show or hide the clock and search box.
+                </p>
+              </div>
+              <!-- /.card-body -->
+            </article>
+            <!-- /.card -->
+            <article class="card">
+              <span class="card-icon"
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5" /></svg
+              ></span>
+              <div class="card-body">
+                <h3>A backup you can keep</h3>
+                <p>
+                  Export your workspace as a JSON file and preview a backup before restoring it.
+                  Keep a separate copy of important notes.
+                </p>
+              </div>
+              <!-- /.card-body -->
+            </article>
+            <!-- /.card -->
+            <article class="card">
+              <span class="card-icon"
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="m12 3 8 4v6c0 4-8 8-8 8s-8-4-8-8V7Z" />
+                  <path d="m8 12 3 3 5-6" /></svg
+              ></span>
+              <div class="card-body">
+                <h3>Local by design</h3>
+                <p>
+                  No account, analytics, ads or cloud sync. Workspace data is stored in your browser
+                  profile and is not sent to the developer.
+                </p>
+              </div>
+              <!-- /.card-body -->
+            </article>
+            <!-- /.card -->
+            <article class="card">
+              <span class="card-icon"
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M3 5h12M9 2v3M5 5c0 5 3 9 8 11M13 5c0 5-4 10-10 12m12 4 4-11 4 11m-6-4h5"
+                  /></svg
+              ></span>
+              <div class="card-body">
+                <h3>13 languages, one workspace</h3>
+                <p>
+                  Switch languages in Settings. Includes right-to-left Arabic, keyboard controls and
+                  layouts for narrower windows.
+                </p>
+              </div>
+              <!-- /.card-body -->
+            </article>
+            <!-- /.card -->
+          </div>
+          <!-- /.card-grid -->
+        </div>
+        <!-- /.container -->
+      </section>
+      <!-- /#features -->
+      <section
+        class="section section--surface"
+        id="screenshots"
+        aria-labelledby="screenshots-title"
+      >
+        <div class="container">
+          <div class="section-intro">
+            <h2 id="screenshots-title">A closer look</h2>
+            <p>Open any screenshot to view it at full size.</p>
+          </div>
+          <!-- /.section-intro -->
+          <div class="card-grid card-grid--screens">
+            <article class="card card--screen">
+              <a class="card-image-link" href="assets/en/02-folders.png"
+                ><picture
+                  ><source
+                    srcset="assets/en/02-folders-640.webp 640w, assets/en/02-folders.webp 1280w"
+                    sizes="(max-width: 36rem) calc(100vw - 2rem), (max-width: 62rem) 45vw, 24rem"
+                    type="image/webp" />
+                  <img
+                    src="assets/en/02-folders.png"
+                    width="1280"
+                    height="800"
+                    alt="An open Tabibe folder showing three saved websites"
+                    loading="lazy"
+                    decoding="async" /></picture
+              ></a>
+              <div class="card-body">
+                <h3>Keep related sites together</h3>
+                <p>Folders keep your shortcut grid easy to scan.</p>
+              </div>
+              <!-- /.card-body -->
+            </article>
+            <!-- /.card -->
+            <article class="card card--screen">
+              <a class="card-image-link" href="assets/en/04-quick-note.png"
+                ><picture
+                  ><source
+                    srcset="
+                      assets/en/04-quick-note-640.webp  640w,
+                      assets/en/04-quick-note.webp     1280w
+                    "
+                    sizes="(max-width: 36rem) calc(100vw - 2rem), (max-width: 62rem) 45vw, 24rem"
+                    type="image/webp" />
+                  <img
+                    src="assets/en/04-quick-note.png"
+                    width="1280"
+                    height="800"
+                    alt="Tabibe quick-note panel with a sample idea saved on the device"
+                    loading="lazy"
+                    decoding="async" /></picture
+              ></a>
+              <div class="card-body">
+                <h3>Catch an idea as it arrives</h3>
+                <p>Quick capture stays close to the new-tab page.</p>
+              </div>
+              <!-- /.card-body -->
+            </article>
+            <!-- /.card -->
+            <article class="card card--screen">
+              <a class="card-image-link" href="assets/en/05-settings-dark.png"
+                ><picture
+                  ><source
+                    srcset="
+                      assets/en/05-settings-dark-640.webp  640w,
+                      assets/en/05-settings-dark.webp     1280w
+                    "
+                    sizes="(max-width: 36rem) calc(100vw - 2rem), (max-width: 62rem) 45vw, 24rem"
+                    type="image/webp" />
+                  <img
+                    src="assets/en/05-settings-dark.png"
+                    width="1280"
+                    height="800"
+                    alt="Tabibe dark Settings panel with browser-default search, optional permissions and background colors"
+                    loading="lazy"
+                    decoding="async" /></picture
+              ></a>
+              <div class="card-body">
+                <h3>Make the space your own</h3>
+                <p>Appearance, search and optional controls live in Settings.</p>
+              </div>
+              <!-- /.card-body -->
+            </article>
+            <!-- /.card -->
+          </div>
+          <!-- /.card-grid -->
+        </div>
+        <!-- /.container -->
+      </section>
+      <!-- /#screenshots -->
+      <section class="section" aria-labelledby="languages-title">
+        <div class="container">
+          <div class="section-intro">
+            <h2 id="languages-title">Choose your language</h2>
+            <p>
+              The interface and bundled privacy policy support all 13 languages. This website is
+              available in English and Turkish.
+            </p>
+          </div>
+          <!-- /.section-intro -->
+          <ul class="languages">
+            <li>English</li>
+            <li>Türkçe</li>
+            <li>Français</li>
+            <li>Deutsch</li>
+            <li>Italiano</li>
+            <li>Español</li>
+            <li>Português</li>
+            <li>Русский</li>
+            <li>العربية</li>
+            <li>हिन्दी</li>
+            <li>বাংলা</li>
+            <li>中文</li>
+            <li>日本語</li>
+          </ul>
+        </div>
+        <!-- /.container -->
+      </section>
+      <!-- /.section -->
+      <section class="section section--surface" id="install" aria-labelledby="install-title">
+        <div class="container">
+          <div class="section-intro">
+            <h2 id="install-title">Ready for a new tab?</h2>
+            <p>
+              Download the GitHub release and load the extension into Chrome in a few steps. No
+              account is needed in Tabibe.
+            </p>
+          </div>
+          <!-- /.section-intro -->
+          <ol class="install-steps">
+            <li>
+              <h3>Download and extract</h3>
+              <p>
+                Get tabibe-v1.5.0.zip from this release and extract it to a folder you can keep.
+              </p>
+            </li>
+            <li>
+              <h3>Open Chrome extensions</h3>
+              <p>Paste the address below into Chrome’s address bar, then enable Developer mode.</p>
+              <div class="copy-control">
+                <code id="extension-address">chrome://extensions</code
+                ><button
+                  class="button button--secondary"
+                  type="button"
+                  data-copy-target="extension-address"
+                  data-success="Address copied. Paste it into Chrome’s address bar."
+                  data-error="Copy was unavailable. Select and copy the address manually."
+                >
+                  Copy address
+                </button>
+              </div>
+              <!-- /.copy-control -->
+              <p class="copy-status" id="copy-status" role="status" aria-live="polite"></p>
+            </li>
+            <li>
+              <h3>Load your folder</h3>
+              <p>
+                Choose Load unpacked and select the extracted folder containing manifest.json. Open
+                a new tab to use Tabibe.
+              </p>
+            </li>
+          </ol>
+          <p class="update-note">
+            Updating an unpacked installation? Export a backup first, replace files in the same
+            extension folder and click Reload in chrome://extensions. Keep that folder in place.
+          </p>
+          <div class="actions">
+            <a
+              class="button button--primary"
+              href="https://github.com/tercan/tabibe/releases/download/v1.5.0/tabibe-v1.5.0.zip"
+              ><svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5" /></svg
+              >Download 1.5.0</a
+            ><a
+              class="text-link"
+              href="https://github.com/tercan/tabibe/releases/download/v1.5.0/SHA256SUMS.txt"
+              >Download SHA-256 checksums</a
+            >
+          </div>
+          <!-- /.actions -->
+        </div>
+        <!-- /.container -->
+      </section>
+      <!-- /#install -->
+      <section class="section" aria-labelledby="faq-title">
+        <div class="container container--reading">
+          <div class="section-intro"><h2 id="faq-title">A few things to know</h2></div>
+          <!-- /.section-intro -->
+          <div class="faq-list">
+            <details class="faq-item">
+              <summary>Does Tabibe change my search engine?</summary>
+              <p>
+                No. The first search option follows Chrome’s existing default through Chrome Search
+                API. You can explicitly select another provider in Tabibe. Older unversioned Tabibe
+                search preferences move once to the browser default.
+              </p>
+            </details>
+            <details class="faq-item">
+              <summary>Where are my notes stored?</summary>
+              <p>
+                Notes, shortcuts, settings and background images stay in the local browser profile.
+                Tabibe does not encrypt that storage or exported JSON files. Avoid sensitive
+                information and protect your device and backups. The developer cannot recover your
+                local data remotely.
+              </p>
+            </details>
+            <details class="faq-item">
+              <summary>What happens when I remove the extension?</summary>
+              <p>
+                Removing Tabibe removes its local extension data, including local recovery copies.
+                Export a backup first if you want to keep your workspace. Previously exported files
+                and device backups need to be managed separately.
+              </p>
+            </details>
+            <details class="faq-item">
+              <summary>Can I use Tabibe offline?</summary>
+              <p>
+                The new-tab page, notes, bundled icons and privacy policy work offline. Web searches
+                and the websites you open need a connection and follow the destination service’s
+                policies.
+              </p>
+            </details>
+          </div>
+          <!-- /.faq-list -->
+          <p class="privacy-link">
+            <a class="text-link" href="privacy/"
+              >Privacy Policy<svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M4 12h16m-6-6 6 6-6 6" /></svg
+            ></a>
+          </p>
+        </div>
+        <!-- /.container -->
+      </section>
+      <!-- /.section -->
+    </main>
+    <!-- /#main -->
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="m4 5 6 7-6 7m9 0h7" /></svg
+          >Built by <a href="https://tercan.net/">Tercan Keskin</a>
+        </p>
+        <nav aria-label="Source code">
+          <a href="https://github.com/tercan/tabibe">Source code</a
+          ><a href="https://github.com/tercan/tabibe/issues">Report an issue</a
+          ><a href="privacy/">Privacy Policy</a
+          ><a href="https://github.com/tercan/tabibe/blob/v1.5.0/LICENSE">GPL-3.0 license</a>
+        </nav>
       </div>
-    </div><!-- /.container -->
-  </section><!-- /#hero -->
-
-  <section class="features" id="features">
-    <div class="container">
-      <div class="section-header">
-        <h2>Powerful Features</h2>
-        <p>All the tools you need to boost your productivity in one place. Every detail has been carefully crafted.</p>
-      </div>
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon"><i data-feather="clock"></i></div>
-          <h3>Time & Date Widget</h3>
-          <p>Always-visible time and date information. Stay productive regardless of time.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-feather="zap"></i></div>
-          <h3>Speed Dial Grid</h3>
-          <p>Access your favorite sites with a single click. Customizable quick access grid.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-feather="search"></i></div>
-          <h3>Multiple Search Engines</h3>
-          <p>Choose between Google, Bing, DuckDuckGo, or Yandex and search directly.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-feather="edit-3"></i></div>
-          <h3>Notes Panel</h3>
-          <p>Take quick notes and pin them to your screen. Never lose your ideas.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-feather="move"></i></div>
-          <h3>Drag & Drop Layout</h3>
-          <p>Easily reorder and organize your sites by dragging and dropping.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-feather="moon"></i></div>
-          <h3>Light & Dark Theme</h3>
-          <p>Choose between light mode or dark mode. Your theme, your choice.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-feather="image"></i></div>
-          <h3>Background Customization</h3>
-          <p>Customize your background with solid colors or your own images.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-feather="database"></i></div>
-          <h3>Data Backup</h3>
-          <p>Backup all your data in JSON format and restore whenever needed.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i data-feather="globe"></i></div>
-          <h3>10 Languages</h3>
-          <p>Turkish, English, Spanish, Portuguese, Russian, Arabic, Hindi, Bengali, Chinese, Japanese.</p>
-        </div>
-      </div>
-    </div><!-- /.container -->
-  </section><!-- /#features -->
-
-  <section class="philosophy" id="philosophy">
-    <div class="container">
-      <div class="section-header">
-        <h2>Design Philosophy</h2>
-        <p>Built with a minimalist approach that brings together form and function.</p>
-      </div>
-      <div class="philosophy-grid">
-        <div class="philosophy-item">
-          <div class="number">01</div>
-          <h3>Flat Design</h3>
-          <p>Modern and clean appearance free from unnecessary shadows and effects.</p>
-        </div>
-        <div class="philosophy-item">
-          <div class="number">02</div>
-          <h3>Sharp Corners</h3>
-          <p>Professional and crisp aesthetic with sharp edges.</p>
-        </div>
-        <div class="philosophy-item">
-          <div class="number">03</div>
-          <h3>Solid Colors</h3>
-          <p>Vibrant and consistent color palette. No gradients — simplicity is key.</p>
-        </div>
-        <div class="philosophy-item">
-          <div class="number">04</div>
-          <h3>Clear Typography</h3>
-          <p>Font family optimized for perfect readability.</p>
-        </div>
-      </div>
-    </div><!-- /.container -->
-  </section><!-- /#philosophy -->
-
-  <section class="tech" id="tech">
-    <div class="container">
-      <div class="section-header">
-        <h2>Technology Stack</h2>
-        <p>Built with a modern and performance-oriented architecture.</p>
-      </div>
-      <div class="tech-grid">
-        <div class="tech-item">
-          <div class="tech-icon"><i data-feather="box"></i></div>
-          <h4>React</h4>
-          <p>UI Library</p>
-        </div>
-        <div class="tech-item">
-          <div class="tech-icon"><i data-feather="zap"></i></div>
-          <h4>Vite</h4>
-          <p>Build Tool</p>
-        </div>
-        <div class="tech-item">
-          <div class="tech-icon"><i data-feather="pen-tool"></i></div>
-          <h4>Vanilla CSS</h4>
-          <p>Style Architecture</p>
-        </div>
-        <div class="tech-item">
-          <div class="tech-icon"><i data-feather="package"></i></div>
-          <h4>Manifest V3</h4>
-          <p>Extension Standard</p>
-        </div>
-        <div class="tech-item">
-          <div class="tech-icon"><i data-feather="hard-drive"></i></div>
-          <h4>chrome.storage</h4>
-          <p>Data Layer</p>
-        </div>
-      </div>
-    </div><!-- /.container -->
-  </section><!-- /#tech -->
-
-  <section class="languages" id="languages">
-    <div class="container">
-      <div class="section-header">
-        <h2>Language Support</h2>
-        <p>Available in 10 of the world's most spoken languages.</p>
-      </div>
-      <div class="languages-grid">
-        <div class="lang-item">
-          <span class="lang-flag"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#e30a17"/><path d="M12 2v20M2 12h20" stroke="#fff" stroke-width="2"/></svg></span>
-          <span>Turkish</span>
-        </div>
-        <div class="lang-item">
-          <span class="lang-flag"><svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#012169"/><path d="M0 0h24v24H0z" fill="none"/><path d="M10 18v-6l5 3-5 3z" fill="#fff"/><path d="M14 2v6h-6l6-6z" fill="#c8102e"/></svg></span>
-          <span>English</span>
-        </div>
-        <div class="lang-item">
-          <span class="lang-flag"><svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#aa151b"/><path d="M0 9h24v6H0z" fill="#f1bf00"/><path d="M0 0h24v3H0zM0 21h24v3H0z" fill="#aa151b"/></svg></span>
-          <span>Español</span>
-        </div>
-        <div class="lang-item">
-          <span class="lang-flag"><svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#006600"/><path d="M0 8h24v8H0z" fill="#ff0"/><path d="M11 2h2v4h-2zM11 18h2v4h-2zM2 11h4v2H2zM18 11h4v2h-4z" fill="#d00"/></svg></span>
-          <span>Português</span>
-        </div>
-        <div class="lang-item">
-          <span class="lang-flag"><svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#fff"/><path d="M0 0h24v24H0z" fill="none"/><path d="M8 4h8v16H8z" fill="#0039a6"/><path d="M11 8h2v8h-2z" fill="#d52b1e"/></svg></span>
-          <span>Русский</span>
-        </div>
-        <div class="lang-item">
-          <span class="lang-flag"><svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#007a3d"/><path d="M0 0h24v8H0zM0 16h24v8H0z" fill="#fff"/><path d="M0 8h24v8H0z" fill="#ce1126"/></svg></span>
-          <span>العربية</span>
-        </div>
-        <div class="lang-item">
-          <span class="lang-flag"><svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#fff"/><path d="M0 0h24v24H0z" fill="none"/><circle cx="12" cy="12" r="10" fill="#ff9933"/><path d="M11 6l1.5 4.5h4.5l-3.5 2.5 1.5 4.5-4-3-4 3 1.5-4.5-3.5-2.5h4.5z" fill="#138808"/></svg></span>
-          <span>हिन्दी</span>
-        </div>
-        <div class="lang-item">
-          <span class="lang-flag"><svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#006a4e"/><circle cx="12" cy="12" r="10" fill="#e02f27"/><path d="M12 7v10M7 12h10" stroke="#fff" stroke-width="2"/></svg></span>
-          <span>বাংলা</span>
-        </div>
-        <div class="lang-item">
-          <span class="lang-flag"><svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#de2910"/><path d="M0 9h24v6H0z" fill="#ffde00"/><path d="M10.5 8l.9 2.7 2.6-.7-1.9 2 1.4 2.1-2.3-1-2.3 1 1.4-2.1-1.9-2 .9.7 2.6.7z" fill="#ffde00"/></svg></span>
-          <span>中文</span>
-        </div>
-        <div class="lang-item">
-          <span class="lang-flag"><svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#fff"/><circle cx="12" cy="12" r="10" fill="#bc002d"/><path d="M8.5 8.5l7 7M15.5 8.5l-7 7" stroke="#fff" stroke-width="2"/></svg></span>
-          <span>日本語</span>
-        </div>
-      </div>
-    </div><!-- /.container -->
-  </section><!-- /#languages -->
-
-  <section class="cta">
-    <div class="container">
-      <h2>Ready to Get Started?</h2>
-      <p>Download now and experience a more productive browsing.</p>
-      <a href="https://github.com/tercan/tabibe" target="_blank" class="btn btn-primary">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-        </svg>
-        View on GitHub
-      </a>
-    </div><!-- /.container -->
-  </section><!-- /.cta -->
-  </main><!-- /main -->
-
-  <footer>
-    <div class="container">
-      <div class="footer-copy">
-        <i data-feather="terminal"></i>
-        <a href="https://tercan.net/" class="footer-author-link" target="_blank" rel="noopener noreferrer">Tercan Keskin</a>
-      </div>
-      <div class="footer-links">
-        <a href="https://github.com/tercan/tabibe" target="_blank">GitHub</a>
-        <a href="https://github.com/tercan/tabibe/issues" target="_blank">Report Issue</a>
-        <a href="https://github.com/tercan/tabibe/blob/main/LICENSE" target="_blank">License</a>
-      </div>
-    </div><!-- /.container -->
-  </footer><!-- /footer -->
-
-  <script src="script.js" defer></script>
-</body>
+      <!-- /.footer-inner -->
+    </footer>
+    <!-- /.site-footer -->
+  </body>
 </html>

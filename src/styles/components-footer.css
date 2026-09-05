@@ -1,0 +1,124 @@
+/* Footer */
+.footer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-xs) var(--space-lg);
+  margin-top: auto;
+  gap: var(--space-md);
+  background-color: var(--color-home-footer-surface);
+  position: fixed;
+  bottom: 0;
+  inset-inline: 0;
+  z-index: var(--z-sticky);
+}
+
+.footer-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  flex-shrink: 0;
+}
+
+.footer-version {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-family: var(--font-family-mono);
+}
+
+.footer-tabs {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.footer-center {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+}
+
+.footer-quote {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-xs);
+  margin: 0 auto;
+}
+
+.footer-quote-text {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.footer-quote-author {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-style: italic;
+}
+
+.footer-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.footer-stats-menu {
+  position: relative;
+  display: none;
+}
+
+.footer-stats-menu > summary {
+  list-style: none;
+}
+
+.footer-stats-menu > summary::-webkit-details-marker {
+  display: none;
+}
+
+.footer-stats-menu-content {
+  position: absolute;
+  inset-inline-end: 0;
+  bottom: calc(100% + var(--space-sm));
+  display: flex;
+  min-width: 10rem;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius);
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-md);
+}
+
+.footer-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: var(--border-width) solid transparent;
+  border-radius: var(--border-radius);
+  color: var(--color-text-muted);
+  transition:
+    border-color var(--transition-base),
+    color var(--transition-base),
+    background-color var(--transition-base);
+}
+
+.footer-button:hover {
+  color: var(--color-text);
+  background-color: var(--color-home-control-surface-hover);
+}
+
+.footer-button:focus-visible {
+  border-color: var(--color-primary);
+}

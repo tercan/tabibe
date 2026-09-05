@@ -1,0 +1,493 @@
+/* Speed Dial */
+.speed-dial {
+  width: 100%;
+  max-width: 48rem;
+}
+
+.speed-dial--loading {
+  min-height: 8rem;
+}
+
+.speed-dial--error {
+  display: flex;
+  min-height: 8rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  border: var(--border-width) solid var(--color-error);
+  background-color: var(--color-home-control-surface);
+  color: var(--color-error);
+  text-align: center;
+}
+
+.speed-dial-toolbar {
+  position: fixed;
+  top: var(--space-md);
+  inset-inline-end: var(--space-md);
+  z-index: var(--z-sticky);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+}
+
+.speed-dial-toolbar-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  min-height: 2.5rem;
+  padding: 0;
+  border: var(--border-width) solid var(--color-home-control-border);
+  border-radius: var(--border-radius);
+  background-color: var(--color-home-control-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-sm);
+  transition:
+    background-color var(--transition-base),
+    border-color var(--transition-base),
+    color var(--transition-base);
+}
+
+.speed-dial-toolbar-button svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.speed-dial-toolbar-button:hover,
+.speed-dial-toolbar-button:focus-visible {
+  border-color: var(--color-primary);
+  background-color: var(--color-home-control-surface-hover);
+  color: var(--color-primary);
+}
+
+.speed-dial-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+  gap: var(--space-2xl) var(--space-md);
+  justify-items: center;
+  padding-bottom: var(--space-3xl);
+  position: relative;
+}
+
+.speed-dial-grid > li {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.speed-dial-card {
+  position: relative;
+  width: 100%;
+  max-width: 7rem;
+  transition:
+    transform var(--transition-slow),
+    opacity var(--transition-base);
+}
+
+.speed-dial-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  border-radius: var(--border-radius);
+  text-align: center;
+  cursor: pointer;
+  transition: background-color var(--transition-base);
+  width: 100%;
+  max-width: 7rem;
+}
+
+.speed-dial-action-button {
+  position: absolute;
+  top: calc(var(--space-xs) * -1);
+  inset-inline-end: var(--space-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: var(--border-width) solid var(--color-home-control-border);
+  border-radius: var(--border-radius);
+  background-color: var(--color-home-control-surface);
+  color: var(--color-text-muted);
+  box-shadow: var(--shadow-sm);
+  opacity: 0;
+  transform: translateY(-0.25rem);
+  pointer-events: none;
+  transition:
+    opacity var(--transition-fast),
+    transform var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.speed-dial-card:hover .speed-dial-action-button,
+.speed-dial-card:focus-within .speed-dial-action-button {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.speed-dial-action-button:hover,
+.speed-dial-action-button:focus-visible {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.speed-dial-item--dragging {
+  opacity: 0.35;
+  transition: opacity var(--transition-base);
+}
+
+.speed-dial-item--dragging .speed-dial-card {
+  transform: scale(0.94);
+}
+
+.speed-dial-drop-target {
+  transition: opacity var(--transition-base);
+}
+
+.speed-dial-drop-target .speed-dial-card {
+  transform: translateY(-0.25rem) scale(1.04);
+}
+
+.speed-dial-drop-target .speed-dial-icon-wrapper {
+  border-color: var(--color-primary);
+  border-style: dashed;
+  background-color: var(--color-home-control-surface-hover);
+}
+
+.speed-dial-root-drop-preview {
+  pointer-events: none;
+}
+
+.speed-dial-root-drop-preview .speed-dial-card {
+  opacity: 0.82;
+  transform: scale(0.96);
+}
+
+.speed-dial-root-drop-preview .speed-dial-icon-wrapper {
+  border-color: var(--color-primary);
+  border-style: dashed;
+  background-color: var(--color-home-control-surface-hover);
+  box-shadow: var(--shadow-md);
+}
+
+.speed-dial--dragging .speed-dial-card,
+.folder-grid--dragging .speed-dial-card {
+  transition:
+    transform var(--transition-slow),
+    opacity var(--transition-base);
+}
+
+.speed-dial-grid li[draggable='true'] {
+  cursor: grab;
+}
+
+.speed-dial-grid li[draggable='true']:active,
+.speed-dial--dragging .speed-dial-grid li[draggable='true'] {
+  cursor: grabbing;
+}
+
+.speed-dial-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--speed-dial-icon-wrapper-size);
+  height: var(--speed-dial-icon-wrapper-size);
+  padding: var(--speed-dial-icon-wrapper-padding);
+  border-radius: var(--border-radius);
+  background-color: var(--color-home-control-surface);
+  border: var(--border-width) solid var(--color-home-control-border);
+  transition:
+    background-color var(--transition-base),
+    border-color var(--transition-base),
+    box-shadow var(--transition-base);
+  overflow: hidden;
+}
+
+.site-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--speed-dial-site-icon-size);
+  height: var(--speed-dial-site-icon-size);
+  flex: 0 0 var(--speed-dial-site-icon-size);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.site-icon--compact {
+  width: 2rem;
+  height: 2rem;
+  flex-basis: 2rem;
+}
+
+.site-icon-monogram,
+.site-icon-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.site-icon-monogram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius);
+  color: var(--color-text-inverse);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+}
+
+.site-icon--compact .site-icon-monogram {
+  font-size: var(--font-size-sm);
+}
+
+.site-icon-monogram--neutral {
+  border: var(--border-width) solid var(--color-home-control-border);
+  background-color: var(--color-home-control-surface-hover);
+  color: var(--color-text);
+}
+
+.site-icon-brand-mask,
+.modal-brand-result-icon {
+  background-color: currentcolor;
+  -webkit-mask: var(--site-icon-mask) center / contain no-repeat;
+  mask: var(--site-icon-mask) center / contain no-repeat;
+}
+
+.site-icon-brand-mask {
+  color: var(--color-text);
+}
+
+.site-icon-image {
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.site-icon-image--monochrome {
+  filter: var(--filter-favicon-simple);
+}
+
+.site-icon-image--loaded {
+  opacity: 1;
+}
+
+.speed-dial-item:hover .speed-dial-icon-wrapper,
+.speed-dial-item:focus-visible .speed-dial-icon-wrapper {
+  background-color: var(--color-home-control-surface-hover);
+  border-color: var(--color-primary);
+}
+
+.speed-dial-icon--folder {
+  position: relative;
+  border-color: var(--color-home-folder-border);
+  background-color: var(--color-home-folder-surface);
+  color: var(--color-folder-icon);
+}
+
+.speed-dial-icon--folder svg {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.speed-dial-folder-count {
+  position: absolute;
+  inset-inline-end: var(--space-xs);
+  bottom: var(--space-xs);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 var(--space-xs);
+  border: var(--border-width) solid var(--color-home-folder-surface);
+  border-radius: var(--border-radius);
+  background-color: var(--color-folder-icon);
+  color: var(--color-folder-badge-text);
+  font-size: var(--font-size-xxs);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+}
+
+.speed-dial-item:hover .speed-dial-icon--folder {
+  border-color: var(--color-folder-icon);
+  background-color: var(--color-home-folder-surface-hover);
+}
+
+.speed-dial-item--folder[aria-expanded='true'] .speed-dial-icon--folder,
+.speed-dial-drop-target .speed-dial-icon--folder {
+  border-color: var(--color-folder-icon);
+  background-color: var(--color-home-folder-surface-hover);
+  color: var(--color-folder-icon);
+}
+
+.speed-dial-folder--drop-target .speed-dial-icon--folder {
+  border-color: var(--color-primary);
+  border-style: solid;
+  background-color: var(--color-home-folder-surface-hover);
+  color: var(--color-primary);
+}
+
+.speed-dial-label {
+  max-width: 100%;
+  padding: var(--space-2xs) var(--space-sm);
+  overflow: hidden;
+  border-radius: var(--border-radius);
+  background-color: var(--color-home-control-surface);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.speed-dial-folder {
+  list-style: none;
+}
+
+.folder-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: var(--color-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal);
+  padding: var(--space-md);
+  animation: fade_in var(--transition-fast);
+}
+
+.folder-overlay--root-drop-target {
+  border: 0.125rem dashed var(--color-primary);
+  background-color: var(--color-overlay-soft);
+}
+
+.folder-root-drop-hint {
+  position: fixed;
+  inset-inline-start: 50%;
+  bottom: var(--space-xl);
+  transform: translateX(-50%);
+  padding: var(--space-sm) var(--space-md);
+  border: var(--border-width) solid var(--color-primary);
+  border-radius: var(--border-radius);
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  pointer-events: none;
+}
+
+[dir='rtl'] .folder-root-drop-hint {
+  transform: translateX(50%);
+}
+
+.folder-modal {
+  background-color: var(--color-surface);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 40rem;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  animation: slide_up var(--transition-fast);
+  border: var(--border-width) solid var(--color-border);
+  overflow: hidden;
+}
+
+.folder-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md);
+  border-bottom: var(--border-width) solid var(--color-border);
+  gap: var(--space-md);
+}
+
+.folder-title {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin: 0;
+  color: var(--color-text);
+}
+
+.folder-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.folder-header-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius);
+  color: var(--color-text-muted);
+  background-color: var(--color-surface);
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.folder-header-button:hover,
+.folder-header-button:focus-visible {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background-color: var(--color-surface-hover);
+}
+
+.folder-header-button--danger:hover,
+.folder-header-button--danger:focus-visible {
+  border-color: var(--color-error);
+  color: var(--color-error);
+}
+
+.folder-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(5rem, 1fr));
+  gap: var(--space-md);
+  padding: var(--space-md);
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+}
+
+.folder-grid li[draggable='true'] {
+  cursor: grab;
+}
+
+.folder-grid li[draggable='true']:active,
+.folder-grid--dragging li[draggable='true'] {
+  cursor: grabbing;
+}
+
+.folder-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: var(--space-md);
+  text-align: center;
+  padding: var(--space-3xl) var(--space-md);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}

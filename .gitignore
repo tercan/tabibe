@@ -3,6 +3,13 @@ node_modules/
 
 # Build output
 dist/
+release/
+coverage/
+test-results/
+playwright-report/
+lighthouse-results/
+.lighthouseci/
+public/brand-icons/
 
 # Environment variables
 .env

@@ -1,0 +1,21 @@
+export default {
+  extends: ['stylelint-config-standard'],
+  ignoreFiles: ['dist/**', 'docs/**', 'public/brand-icons/**'],
+  rules: {
+    'alpha-value-notation': null,
+    'color-function-alias-notation': null,
+    'color-function-notation': null,
+    'color-hex-length': null,
+    'comment-empty-line-before': null,
+    'custom-property-empty-line-before': null,
+    'declaration-empty-line-before': null,
+    'no-descending-specificity': null,
+    'no-duplicate-selectors': null,
+    'property-no-deprecated': null,
+    'property-no-vendor-prefix': null,
+    'keyframes-name-pattern': null,
+    'media-feature-range-notation': null,
+    'rule-empty-line-before': null,
+    'selector-class-pattern': '^[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:--[a-z0-9]+(?:-[a-z0-9]+)*)?$',
+  },
+};

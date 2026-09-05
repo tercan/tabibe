@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://tercan.github.io/tabibe/sitemap.xml

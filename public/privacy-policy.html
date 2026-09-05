@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tabibe Privacy Policy</title>
+    <meta
+      name="description"
+      content="Learn how Tabibe stores extension data locally, uses optional browser permissions, and protects user privacy."
+    />
+    <link rel="canonical" href="https://tercan.github.io/tabibe/privacy/" />
+    <link rel="stylesheet" href="privacy-policy.css" />
+    <script src="privacy-policy.js" defer=""></script>
+  </head>
+  <body>
+    <header class="privacy-header">
+      <div class="privacy-container privacy-header-inner">
+        <a class="privacy-brand" href="index.html" aria-label="Tabibe">Tabibe</a>
+        <label class="privacy-language-field" for="privacy-language">
+          <span id="privacy-language-label">Language</span>
+          <select id="privacy-language" aria-labelledby="privacy-language-label">
+            <option value="en">English</option>
+            <option value="tr">Türkçe</option>
+            <option value="fr">Français</option>
+            <option value="de">Deutsch</option>
+            <option value="it">Italiano</option>
+            <option value="es">Español</option>
+            <option value="pt">Português</option>
+            <option value="ru">Русский</option>
+            <option value="ar">العربية</option>
+            <option value="hi">हिन्दी</option>
+            <option value="bn">বাংলা</option>
+            <option value="zh">中文</option>
+            <option value="ja">日本語</option>
+          </select>
+        </label>
+      </div>
+      <!-- /.privacy-header-inner -->
+    </header>
+    <!-- /.privacy-header -->
+
+    <main class="privacy-main">
+      <article class="privacy-container privacy-document" aria-labelledby="privacy-title">
+        <header class="privacy-document-header">
+          <p class="privacy-eyebrow">Tabibe</p>
+          <h1 id="privacy-title">Privacy Policy</h1>
+          <p class="privacy-effective-date">
+            <span id="privacy-effective-label">Effective date</span>:
+            <time id="privacy-effective-date" datetime="2026-09-05">September 5, 2026</time>
+          </p>
+          <p class="privacy-intro" id="privacy-intro">
+            Tabibe is a Chromium new-tab extension designed to work locally in your browser. It does
+            not include analytics, advertising, telemetry, user accounts, or a remote application
+            backend.
+          </p>
+        </header>
+        <!-- /.privacy-document-header -->
+
+        <section class="privacy-section" aria-labelledby="privacy-data-title">
+          <h2 id="privacy-data-title">Data stored on your device</h2>
+          <div id="privacy-data-content">
+            <p>
+              Tabibe stores quick-access sites and folders, notes and notebooks, appearance
+              settings, uploaded background images, and feature preferences in chrome.storage.local.
+              This information remains in your local browser profile and is not transmitted to the
+              developer.
+            </p>
+            <p>
+              Backup export creates a JSON file on your device. Backup import reads only the file
+              you select, validates it locally, and writes accepted data to local extension storage.
+            </p>
+            <p>
+              Saved URLs and names, note text, tags, timestamps, local record IDs and recovery
+              drafts are used only for your new-tab workspace. Tabibe does not provide cloud sync.
+              In the browser demo, localStorage is used instead of extension storage.
+            </p>
+          </div>
+        </section>
+        <!-- /.privacy-section -->
+
+        <section class="privacy-section" aria-labelledby="privacy-permissions-title">
+          <h2 id="privacy-permissions-title">Browser permissions</h2>
+          <p id="privacy-permissions-intro">Tabibe follows the principle of least privilege:</p>
+          <ul id="privacy-permissions-list">
+            <li>storage is required to save extension data in your local browser profile.</li>
+            <li>
+              search is required to send a search you submit to Chrome’s default search provider
+              through the Chrome Search API. It does not change your browser’s search settings.
+            </li>
+            <li>
+              favicon is optional. When you enable site icons, Tabibe may use Chrome’s built-in
+              favicon provider for addresses already known by the browser. You can revoke this
+              permission from Settings.
+            </li>
+            <li>
+              system.memory is optional. It is requested only when you enable the memory indicator
+              and can be revoked by disabling that indicator.
+            </li>
+          </ul>
+          <p id="privacy-permissions-closing">
+            Tabibe reads tab/window counts for the local indicator, without the tabs permission or
+            access to tab URLs, titles or browsing history. Optional memory values are displayed
+            temporarily and are not stored or sent to the developer. It does not read other pages,
+            cookies, passwords or device sensors.
+          </p>
+        </section>
+        <!-- /.privacy-section -->
+
+        <section class="privacy-section" aria-labelledby="privacy-network-title">
+          <h2 id="privacy-network-title">Network activity</h2>
+          <div id="privacy-network-content">
+            <p>
+              Brand icons are bundled locally from Simple Icons. Saved site addresses are not sent
+              to an external icon service, and Tabibe does not make analytics or telemetry requests.
+            </p>
+            <p>
+              Only searches you submit and links you open (including links in notes) navigate
+              outside Tabibe. Search uses your browser’s default provider unless you explicitly
+              choose another provider in Tabibe. Queries are not saved by Tabibe. Destination sites
+              receive normal connection data, such as your IP address, under their own policies.
+              Browser services operate under the browser provider’s policies.
+            </p>
+          </div>
+        </section>
+        <!-- /.privacy-section -->
+
+        <section class="privacy-section" aria-labelledby="privacy-control-title">
+          <h2 id="privacy-control-title">Your controls</h2>
+          <div id="privacy-control-content">
+            <p>
+              You can edit or delete sites, folders, notes, and notebooks; change or reset
+              appearance preferences; grant or revoke optional permissions; and export or restore a
+              validated backup from Settings.
+            </p>
+          </div>
+        </section>
+        <!-- /.privacy-section -->
+
+        <section class="privacy-section" aria-labelledby="privacy-retention-title">
+          <h2 id="privacy-retention-title">Retention and deletion</h2>
+          <div id="privacy-retention-content">
+            <p>
+              Deleting an item removes it from the active workspace. Undo copies, recovery drafts
+              and the snapshot created before a backup restore or data reset can retain earlier
+              content locally. Clearing Tabibe’s entire extension storage or uninstalling it removes
+              that local extension data. Exported JSON files and device/browser backups remain until
+              you delete them separately.
+            </p>
+          </div>
+        </section>
+        <!-- /.privacy-section -->
+
+        <section class="privacy-section" aria-labelledby="privacy-security-title">
+          <h2 id="privacy-security-title">Storage and service limits</h2>
+          <div id="privacy-security-content">
+            <p>
+              Local storage and exported JSON files are not encrypted by Tabibe. This is not a
+              password vault; avoid storing passwords, payment details or other sensitive
+              information. Protect your browser profile, device and backups. The developer does not
+              hold a copy of your local workspace and cannot retrieve, delete or restore it
+              remotely.
+            </p>
+            <p>
+              No guarantee of uninterrupted operation, loss-free storage, recovery or ongoing
+              support is made. To the extent permitted by applicable law, the software is provided
+              as is, without additional warranties. Mandatory consumer rights and liabilities that
+              cannot legally be excluded remain unaffected. These limits do not reduce the data-use
+              commitments in this policy.
+            </p>
+          </div>
+        </section>
+        <!-- /.privacy-section -->
+        <section class="privacy-section" aria-labelledby="privacy-limited-title">
+          <h2 id="privacy-limited-title">Limited Use</h2>
+          <div id="privacy-limited-content">
+            <p>
+              Tabibe’s use of user data, including information obtained through Chrome APIs, follows
+              the Chrome Web Store User Data Policy and its Limited Use requirements. Data is used
+              only for the disclosed new-tab features. It is not sold or used for advertising,
+              profiling, credit decisions or unrelated purposes. The developer has no access to
+              local workspace content unless you choose to share it for support.
+            </p>
+          </div>
+        </section>
+        <!-- /.privacy-section -->
+        <section class="privacy-section" aria-labelledby="privacy-changes-title">
+          <h2 id="privacy-changes-title">Changes to this policy</h2>
+          <div id="privacy-changes-content">
+            <p>
+              Material changes to this policy will be documented with the related Tabibe release.
+              The effective date will be updated when the policy changes.
+            </p>
+          </div>
+        </section>
+        <!-- /.privacy-section -->
+
+        <section class="privacy-section" aria-labelledby="privacy-contact-title">
+          <h2 id="privacy-contact-title">Contact</h2>
+          <p id="privacy-contact-text">
+            Developer: Tercan Keskin. Use the project issue tracker for privacy questions. GitHub
+            issues are public: do not attach private notes, backup files or credentials. Information
+            you voluntarily submit is processed by GitHub under its policies and may be read by the
+            developer to answer your request. The public project website is hosted by GitHub Pages,
+            whose hosting policies also apply.
+          </p>
+          <a
+            class="privacy-contact-link"
+            id="privacy-contact-link"
+            href="https://github.com/tercan/tabibe/issues"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Open the Tabibe issue tracker</a
+          >
+        </section>
+        <!-- /.privacy-section -->
+      </article>
+      <!-- /.privacy-document -->
+    </main>
+    <!-- /.privacy-main -->
+
+    <footer class="privacy-footer">
+      <div class="privacy-container">
+        <p id="privacy-footer-text">
+          Tabibe works locally and keeps your extension data under your control.
+        </p>
+      </div>
+      <!-- /.privacy-container -->
+    </footer>
+    <!-- /.privacy-footer -->
+  </body>
+</html>
