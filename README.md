@@ -10,7 +10,7 @@ A modern, minimalist, and high-performance new tab extension for Chromium-based 
 
 - [Tabibe 1.5.0 ZIP](https://github.com/tercan/tabibe/releases/download/v1.5.0/tabibe-v1.5.0.zip)
 - [GitHub release](https://github.com/tercan/tabibe/releases/tag/v1.5.0)
-- [Website / Kurulum](https://tercan.github.io/tabibe/)
+- [Website / Installation](https://tercan.github.io/tabibe/)
 
 ## About
 
