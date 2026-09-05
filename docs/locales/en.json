@@ -4,92 +4,71 @@
   "skip": "Skip to content",
   "navigation": "Main navigation",
   "featuresLink": "Features",
-  "previewLink": "Screenshots",
   "installLink": "Installation",
   "privacyLink": "Privacy Policy",
-  "languageLink": "Türkçe",
+  "languageLink": "TR",
   "languageLabel": "Read this page in Turkish",
-  "badge": "Version {version} · Open source",
-  "heroTitle": "Your next tab.\nYour own space.",
-  "heroDescription": "Your favorite sites, everyday notes and next idea — together in a quiet, personal new-tab page.",
+  "badge": "Open Source · {version}",
+  "heroDescription": "Tabibe transforms every new tab into a personal productivity space with shortcuts, folders, notes and the search engine you choose.",
   "download": "Download {version}",
   "releaseNotes": "Release notes",
   "downloadNote": "GitHub download · Install manually in Chrome. A Chrome Web Store listing is not available yet.",
-  "heroAlt": "Tabibe new-tab page with clock, browser-default search, shortcuts and a folder",
-  "heroCaption": "The real Tabibe {version} interface. Screenshots use sample content.",
-  "statLabels": ["interface languages", "local workspace", "account required"],
-  "statValues": ["13", "On your device", "None"],
-  "newEyebrow": "New in {version}",
-  "newTitle": "An idea now. A useful note later.",
-  "newDescription": "Capture a thought without losing your place. Open your notes library when you are ready to organize it.",
-  "newItems": [
-    "Quick capture from the new-tab footer, or Alt + Shift + N.",
-    "A notes library with notebooks, tags, search, pinning and archive views.",
-    "Markdown previews and a visible local save status, with recovery options when saving fails.",
-    "Browser-default search and a privacy policy available offline in 13 languages."
-  ],
-  "notesAlt": "Tabibe notes library with searchable notes, notebooks, tags and a Markdown checklist preview",
-  "notesCaption": "Write, find and organize your notes in one workspace.",
-  "featuresTitle": "The things you reach for, close at hand.",
-  "featuresDescription": "A few everyday tools, built around your new tab.",
+  "heroCaption": "Tabibe {version} · Dark and light appearance",
+  "statLabels": ["Languages", "Search Engines", "Free"],
+  "statValues": ["13", "4", "100%"],
+  "featuresTitle": "Powerful Features",
+  "featuresDescription": "The everyday tools you need, together in your new tab.",
   "features": [
     {
-      "icon": "folder",
-      "title": "Sites, sorted your way",
-      "description": "Save shortcuts, group them in folders and reorder them with drag and drop or keyboard actions. Choose bundled icons or optional Chrome site icons."
+      "icon": "clock",
+      "title": "Time & Date Widget",
+      "description": "Keep time and date at a glance, or hide the clock from Settings."
+    },
+    {
+      "icon": "zap",
+      "title": "Speed Dial Grid",
+      "description": "Reach saved sites quickly, organize folders and choose local brand or optional Chrome site icons."
     },
     {
       "icon": "search",
-      "title": "Your browser’s search",
-      "description": "Start with the search engine already selected in Chrome. Explicitly choose an alternative in Tabibe whenever you prefer."
+      "title": "Your Search Engines",
+      "description": "Use Chrome’s default provider or explicitly choose Google, Bing, DuckDuckGo or Yandex."
     },
     {
-      "icon": "palette",
-      "title": "A familiar-looking space",
-      "description": "Choose a light or dark theme, a solid background color or a picture from your device. Show or hide the clock and search box."
+      "icon": "notes",
+      "title": "Notes & Quick Capture",
+      "description": "Capture an idea, then organize it with notebooks, tags, search, pins and archives. Preview Markdown and see local save status."
     },
     {
-      "icon": "download",
-      "title": "A backup you can keep",
-      "description": "Export your workspace as a JSON file and preview a backup before restoring it. Keep a separate copy of important notes."
+      "icon": "move",
+      "title": "Drag & Drop Layout",
+      "description": "Reorder sites and move them into or out of folders. Keyboard actions are available too."
     },
     {
-      "icon": "shield",
-      "title": "Local by design",
-      "description": "No account, analytics, ads or cloud sync. Workspace data is stored in your browser profile and is not sent to the developer."
+      "icon": "moon",
+      "title": "Light & Dark Theme",
+      "description": "Switch appearance and use matching background colors for a consistent workspace."
+    },
+    {
+      "icon": "image",
+      "title": "Background Customization",
+      "description": "Choose a solid color or an image from your device to personalize the page."
+    },
+    {
+      "icon": "database",
+      "title": "Data Backup",
+      "description": "Export a local JSON backup and preview it before restoring. Keep a separate copy of important notes."
     },
     {
       "icon": "language",
-      "title": "13 languages, one workspace",
-      "description": "Switch languages in Settings. Includes right-to-left Arabic, keyboard controls and layouts for narrower windows."
+      "title": "13 Languages",
+      "description": "Choose your interface language in Settings. The bundled privacy policy is also available offline in all 13 languages."
     }
   ],
-  "screenshotsTitle": "A closer look",
-  "screenshotsDescription": "Open any screenshot to view it at full size.",
-  "screenshots": [
-    {
-      "file": "02-folders",
-      "title": "Keep related sites together",
-      "description": "Folders keep your shortcut grid easy to scan.",
-      "alt": "An open Tabibe folder showing three saved websites"
-    },
-    {
-      "file": "04-quick-note",
-      "title": "Catch an idea as it arrives",
-      "description": "Quick capture stays close to the new-tab page.",
-      "alt": "Tabibe quick-note panel with a sample idea saved on the device"
-    },
-    {
-      "file": "05-settings-dark",
-      "title": "Make the space your own",
-      "description": "Appearance, search and optional controls live in Settings.",
-      "alt": "Tabibe dark Settings panel with browser-default search, optional permissions and background colors"
-    }
-  ],
-  "languagesTitle": "Choose your language",
-  "languagesDescription": "The interface and bundled privacy policy support all 13 languages. This website is available in English and Turkish.",
-  "installTitle": "Ready for a new tab?",
-  "installDescription": "Download the GitHub release and load the extension into Chrome in a few steps. No account is needed in Tabibe.",
+  "languagesTitle": "Language Support",
+  "languagesDescription": "Available in 13 interface languages, with right-to-left Arabic support.",
+  "installTitle": "Ready to Get Started?",
+  "installDescription": "Download Tabibe {version} from GitHub and make your new tab your own.",
   "installSteps": [
     {
       "title": "Download and extract",
@@ -131,5 +110,78 @@
   "footerText": "Built by",
   "source": "Source code",
   "support": "Report an issue",
-  "license": "GPL-3.0 license"
+  "license": "GPL-3.0 license",
+  "designLink": "Design",
+  "technologyLink": "Technology",
+  "languagesLink": "Languages",
+  "heroTitlePrefix": "Transform Your",
+  "heroTitleAccent": "New Tab",
+  "heroTitleBreak": true,
+  "heroSecondary": "Explore Features",
+  "designTitle": "Design Philosophy",
+  "designDescription": "Built with a minimalist approach that brings together form and function.",
+  "designItems": [
+    {
+      "title": "Flat Design",
+      "description": "A clean interface with simple surfaces and purposeful controls."
+    },
+    {
+      "title": "Sharp Corners",
+      "description": "Crisp edges and a consistent, structured appearance."
+    },
+    {
+      "title": "Solid Colors",
+      "description": "A coherent palette without gradients or visual clutter."
+    },
+    {
+      "title": "Clear Typography",
+      "description": "Readable text and a clear hierarchy for everyday use."
+    }
+  ],
+  "technologyTitle": "Technology Stack",
+  "technologyDescription": "Open-source tools behind the new-tab experience.",
+  "technologyItems": [
+    {
+      "icon": "box",
+      "title": "React",
+      "description": "UI library"
+    },
+    {
+      "icon": "zap",
+      "title": "Vite",
+      "description": "Build tool"
+    },
+    {
+      "icon": "pen",
+      "title": "Vanilla CSS",
+      "description": "Style architecture"
+    },
+    {
+      "icon": "package",
+      "title": "Manifest V3",
+      "description": "Extension standard"
+    },
+    {
+      "icon": "database",
+      "title": "chrome.storage",
+      "description": "Local data layer"
+    }
+  ],
+  "installDetails": "How to install in Chrome",
+  "menuOpen": "Open menu",
+  "menuClose": "Close menu",
+  "carouselLabel": "Tabibe appearance",
+  "carouselRole": "carousel",
+  "slideRole": "slide",
+  "darkLabel": "Dark appearance",
+  "lightLabel": "Light appearance",
+  "darkAlt": "Tabibe new-tab page in dark appearance with clock, search, shortcuts and a folder",
+  "lightAlt": "Tabibe new-tab page in light appearance with the same clock, search, shortcuts and folder",
+  "previousSlide": "Previous appearance",
+  "nextSlide": "Next appearance",
+  "playSlides": "Start automatic transitions",
+  "pauseSlides": "Stop automatic transitions",
+  "reducedSlides": "Automatic transitions disabled by your reduced-motion preference",
+  "slideError": "This preview could not be loaded. Use the controls to open the other appearance.",
+  "slideLoading": "Loading preview…"
 }

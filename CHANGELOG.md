@@ -16,6 +16,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Restored the original Pages logo, uppercase navigation, two-color hero, statistics and section order; added an accessible dark/light preview carousel and local Inter fonts.
 - Simplified note controls and refined new-tab surfaces, keyboard actions and RTL layouts.
 - Rebuilt the English and Turkish GitHub Pages site with actual screenshots, current features, release downloads, installation instructions and local data limits.
 - Generate site pages from shared localized content, with local assets, metadata, sitemap and responsive accessibility checks.

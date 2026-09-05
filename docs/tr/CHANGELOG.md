@@ -16,6 +16,7 @@ Versiyon numaralandırması [Semantic Versioning](https://semver.org/lang/tr/) p
 
 ### Changed
 
+- Pages sitesinin önceki logosu, uppercase menüsü, çift renkli hero başlığı, istatistikleri ve bölüm sırası geri getirildi; erişilebilir koyu/açık önizleme slaytı ve yerel Inter fontları eklendi.
 - Not kontrolleri sadeleştirildi; yeni sekme yüzeyleri, klavye eylemleri ve RTL düzenleri iyileştirildi.
 - İngilizce ve Türkçe GitHub Pages sitesi gerçek ekran görüntüleri, güncel özellikler, sürüm indirmeleri, kurulum adımları ve yerel veri sınırlarıyla yenilendi.
 - Site ortak yerelleştirme kaynağından üretiliyor; yerel görseller, metadata, sitemap ve responsive erişilebilirlik kontrolleri eklendi.
