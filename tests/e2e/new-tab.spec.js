@@ -830,20 +830,13 @@ test('renders the unpacked new-tab experience without critical accessibility vio
     await page.setViewportSize({ width: 1280, height: 720 });
 
     const settingsButton = page.locator('.footer-right > button.footer-button').last();
-    await settingsButton.click();
+    await settingsButton.focus();
+    await page.keyboard.press('Enter');
     const settingsPanel = page.locator('.settings-panel');
-    await expect(settingsPanel.locator('.settings-close')).toBeFocused();
-    const settingsFocusStyle = await settingsPanel
-      .locator('.settings-close')
-      .evaluate((element) => {
-        const style = getComputedStyle(element);
-        return {
-          borderColor: style.borderColor,
-          outlineWidth: style.outlineWidth,
-        };
-      });
-    expect(settingsFocusStyle.outlineWidth).toBe('0px');
-    expect(settingsFocusStyle.borderColor).not.toBe('rgba(0, 0, 0, 0)');
+    const settingsClose = settingsPanel.locator('.settings-close');
+    await expect(settingsClose).toBeFocused();
+    await expect(settingsClose).toHaveCSS('outline-width', '0px');
+    await expect(settingsClose).not.toHaveCSS('border-color', 'rgba(0, 0, 0, 0)');
     const privacyPolicyLink = settingsPanel.locator('.settings-about-privacy a');
     await expect(privacyPolicyLink).toHaveAttribute('href', 'privacy-policy.html?lang=en');
     expect(
