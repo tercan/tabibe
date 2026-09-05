@@ -24,6 +24,21 @@ async function getHomeAppearance(page) {
   });
 }
 
+async function waitForMatchingHomeSurfaces(page) {
+  await expect
+    .poll(async () => {
+      const appearance = await getHomeAppearance(page);
+      return new Set([
+        appearance.actionSurface,
+        appearance.iconSurface,
+        appearance.labelSurface,
+        appearance.searchSurface,
+        appearance.toolbarSurface,
+      ]).size;
+    })
+    .toBe(1);
+}
+
 async function getMoveActionIconLayout(contextMenu) {
   return contextMenu.locator('.context-menu-order-actions').evaluate((element) => {
     const [moveLeftButton, moveRightButton] = element.querySelectorAll('.context-menu-item');
@@ -994,6 +1009,7 @@ test('renders the unpacked new-tab experience without critical accessibility vio
     await expect(page.locator('.new-tab')).toHaveAttribute('data-background-kind', 'color');
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
     await expect.poll(async () => (await getStoredSettings()).backgroundColor).toBe('#e3f2fd');
+    await waitForMatchingHomeSurfaces(page);
     const lightHomeAppearance = await getHomeAppearance(page);
     expect(lightHomeAppearance.customColor).toBe('#e3f2fd');
     expect(lightHomeAppearance.pageSurface).toBe('rgb(227, 242, 253)');
@@ -1018,6 +1034,7 @@ test('renders the unpacked new-tab experience without critical accessibility vio
     await settingsPanel.locator('.settings-bg-swatch[title="#1b5e20"]').click();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
     await expect.poll(async () => (await getStoredSettings()).backgroundColor).toBe('#1b5e20');
+    await waitForMatchingHomeSurfaces(page);
     const darkHomeAppearance = await getHomeAppearance(page);
     expect(darkHomeAppearance.customColor).toBe('#1b5e20');
     expect(darkHomeAppearance.pageSurface).toBe('rgb(27, 94, 32)');
