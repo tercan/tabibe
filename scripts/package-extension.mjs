@@ -1,12 +1,16 @@
 import { execFileSync } from 'node:child_process';
-import { mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
+import { copyFile, mkdir, mkdtemp, readFile, readdir, rename, stat } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { basename, join, relative, resolve } from 'node:path';
 
 const packageJson = JSON.parse(await readFile(resolve('package.json'), 'utf8'));
 const distDirectory = resolve('dist');
 const releaseDirectory = resolve('release');
 const archivePath = join(releaseDirectory, `tabibe-v${packageJson.version}.zip`);
-const forbiddenNames = new Set(['.DS_Store', '.env', 'Thumbs.db']);
+const stagingDirectory = await mkdtemp(join(tmpdir(), 'tabibe-package-'));
+const contentDirectory = join(stagingDirectory, 'content');
+const candidatePath = join(stagingDirectory, basename(archivePath));
+const metadataNames = new Set(['.DS_Store', 'Thumbs.db']);
 const forbiddenDirectories = new Set([
   '.git',
   '.github',
@@ -16,60 +20,52 @@ const forbiddenDirectories = new Set([
   'test-results',
   'tests',
 ]);
-const forbiddenExtensions = new Set(['.crx', '.key', '.map', '.p12', '.pem', '.pfx', '.zip']);
-const removableMetadataNames = new Set(['.DS_Store', 'Thumbs.db']);
+const forbiddenExtensions = /\.(?:crx|key|map|p12|pem|pfx|zip)$/iu;
 
-async function removeMetadataFiles(directory) {
+async function copyPackageFiles(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
-
-  await Promise.all(
-    entries.map(async (entry) => {
-      const path = join(directory, entry.name);
-      if (removableMetadataNames.has(entry.name)) {
-        await rm(path, { force: true });
-        return;
-      }
-      if (entry.isDirectory()) await removeMetadataFiles(path);
-    }),
-  );
-}
-
-async function validateDirectory(directory) {
-  const entries = await readdir(directory, { withFileTypes: true });
-
   for (const entry of entries) {
+    if (metadataNames.has(entry.name)) continue;
     const path = join(directory, entry.name);
-    if (entry.isSymbolicLink()) {
-      throw new Error(
-        `Symbolic links are not allowed in the package: ${relative(distDirectory, path)}`,
-      );
-    }
     if (
-      forbiddenNames.has(entry.name) ||
+      entry.isSymbolicLink() ||
+      entry.name.startsWith('.env') ||
       (entry.isDirectory() && forbiddenDirectories.has(entry.name)) ||
-      forbiddenExtensions.has(entry.name.slice(entry.name.lastIndexOf('.')))
+      forbiddenExtensions.test(entry.name)
     ) {
       throw new Error(`Forbidden package file: ${relative(distDirectory, path)}`);
     }
-    if (entry.isDirectory()) await validateDirectory(path);
+    const target = join(contentDirectory, relative(distDirectory, path));
+    if (entry.isDirectory()) {
+      await mkdir(target, { recursive: true });
+      await copyPackageFiles(path);
+    } else await copyFile(path, target);
   }
 }
 
-await removeMetadataFiles(distDirectory);
-await validateDirectory(distDirectory);
 const manifest = JSON.parse(await readFile(join(distDirectory, 'manifest.json'), 'utf8'));
-if (manifest.version !== packageJson.version) {
-  throw new Error(`Manifest ${manifest.version} does not match package ${packageJson.version}.`);
-}
-
+if (manifest.version !== packageJson.version)
+  throw new Error('Build version does not match package.json.');
+await mkdir(contentDirectory, { recursive: true });
+await copyPackageFiles(distDirectory);
+await copyFile('LICENSE', join(contentDirectory, 'LICENSE'));
+execFileSync('zip', ['-q', '-r', candidatePath, '.'], { cwd: contentDirectory });
+const archiveSize = (await stat(candidatePath)).size;
+if (archiveSize > 10 * 1024 * 1024)
+  throw new Error(`Internal 10 MB budget exceeded: ${candidatePath}`);
 await mkdir(releaseDirectory, { recursive: true });
-await rm(archivePath, { force: true });
-execFileSync('zip', ['-q', '-r', archivePath, '.'], { cwd: distDirectory });
-
-const archiveSize = (await stat(archivePath)).size;
-if (archiveSize > 10 * 1024 * 1024) {
-  await rm(archivePath, { force: true });
-  throw new Error(`Extension archive exceeds 10 MB: ${archiveSize} bytes.`);
+try {
+  await stat(archivePath);
+  const previousDirectory = join(releaseDirectory, 'previous');
+  await mkdir(previousDirectory, { recursive: true });
+  await rename(
+    archivePath,
+    join(previousDirectory, `tabibe-v${packageJson.version}-${Date.now()}.zip`),
+  );
+} catch (error) {
+  if (error.code !== 'ENOENT') throw error;
 }
-
-console.info(`${basename(archivePath)}: ${archiveSize} bytes`);
+await rename(candidatePath, archivePath);
+console.info(
+  `${basename(archivePath)}: ${archiveSize} bytes; existing archives retained in release/previous.`,
+);

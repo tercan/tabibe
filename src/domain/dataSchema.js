@@ -1,9 +1,10 @@
-const SCHEMA_VERSION = 2;
-const BACKUP_VERSION = 2;
+const SCHEMA_VERSION = 3;
+const BACKUP_VERSION = 3;
 const MAX_ROOT_ITEMS = 500;
 const MAX_FOLDER_ITEMS = 500;
 const MAX_NOTES = 500;
 const MAX_NOTE_TAGS = 100;
+const MAX_NOTE_NOTEBOOKS = 100;
 const MAX_TAGS_PER_NOTE = 8;
 const MAX_NAME_LENGTH = 200;
 const MAX_URL_LENGTH = 2048;
@@ -11,11 +12,27 @@ const MAX_ICON_SLUG_LENGTH = 100;
 const MAX_NOTE_TITLE_LENGTH = 300;
 const MAX_NOTE_CONTENT_LENGTH = 100_000;
 const MAX_NOTE_TAG_NAME_LENGTH = 40;
+const MAX_NOTE_NOTEBOOK_NAME_LENGTH = 40;
+const MAX_CAPTURE_SESSION_ID_LENGTH = 128;
 const MAX_BACKGROUND_DATA_LENGTH = 7_000_000;
 const ALLOWED_PROTOCOLS = new Set(['http:', 'https:', 'chrome:', 'edge:', 'about:']);
 const ICON_PREFERENCES = new Set(['auto', 'brand', 'favicon', 'monogram']);
 const NOTE_TAG_COLOR_TOKENS = new Set(['blue', 'green', 'yellow', 'red', 'gray']);
-const SUPPORTED_LOCALES = new Set(['en', 'tr', 'zh', 'es', 'hi', 'ar', 'pt', 'bn', 'ru', 'ja']);
+const SUPPORTED_LOCALES = new Set([
+  'en',
+  'tr',
+  'fr',
+  'de',
+  'it',
+  'es',
+  'pt',
+  'ru',
+  'ar',
+  'hi',
+  'bn',
+  'zh',
+  'ja',
+]);
 
 class DataValidationError extends Error {
   constructor(code, field = '') {
@@ -175,15 +192,66 @@ function normalizeNoteTags(value) {
   return tags;
 }
 
-function normalizeNote(note, validTagIds = new Set()) {
+function normalizeNoteNotebook(notebook) {
+  if (!notebook || typeof notebook !== 'object' || Array.isArray(notebook)) {
+    throw new DataValidationError('invalid_note_notebook', 'noteNotebooks');
+  }
+
+  const now = new Date().toISOString();
+  const createdAt = normalizeDate(notebook.createdAt, now);
+
+  return {
+    id:
+      typeof notebook.id === 'string' && notebook.id.trim()
+        ? notebook.id.trim()
+        : createId('notebook'),
+    name: getString(notebook.name, 'noteNotebookName', MAX_NOTE_NOTEBOOK_NAME_LENGTH),
+    createdAt,
+    updatedAt: normalizeDate(notebook.updatedAt, createdAt),
+  };
+}
+
+function normalizeNoteNotebooks(value) {
+  if (!Array.isArray(value)) {
+    throw new DataValidationError('invalid_note_notebooks', 'noteNotebooks');
+  }
+  if (value.length > MAX_NOTE_NOTEBOOKS) {
+    throw new DataValidationError('too_many_note_notebooks', 'noteNotebooks');
+  }
+
+  const notebooks = value.map(normalizeNoteNotebook);
+  const ids = new Set();
+  const names = new Set();
+
+  notebooks.forEach((notebook) => {
+    const normalizedName = notebook.name.toLocaleLowerCase();
+    if (ids.has(notebook.id)) {
+      throw new DataValidationError('duplicate_note_notebook_id', 'noteNotebooks');
+    }
+    if (names.has(normalizedName)) {
+      throw new DataValidationError('duplicate_note_notebook_name', 'noteNotebooks');
+    }
+    ids.add(notebook.id);
+    names.add(normalizedName);
+  });
+
+  return notebooks;
+}
+
+function normalizeNote(note, validTagIds = new Set(), validNotebookIds = new Set()) {
   if (!note || typeof note !== 'object' || Array.isArray(note)) {
     throw new DataValidationError('invalid_note', 'notes');
   }
 
-  const title = typeof note.title === 'string' ? note.title.slice(0, MAX_NOTE_TITLE_LENGTH) : '';
+  const title = typeof note.title === 'string' ? note.title : '';
   const rawContent = typeof note.content === 'string' ? note.content : note.text;
-  const content =
-    typeof rawContent === 'string' ? rawContent.slice(0, MAX_NOTE_CONTENT_LENGTH) : '';
+  const content = typeof rawContent === 'string' ? rawContent : '';
+  if (title.length > MAX_NOTE_TITLE_LENGTH) {
+    throw new DataValidationError('string_too_long', 'noteTitle');
+  }
+  if (content.length > MAX_NOTE_CONTENT_LENGTH) {
+    throw new DataValidationError('string_too_long', 'noteContent');
+  }
   if (!title.trim() && !content.trim()) return null;
 
   const now = new Date().toISOString();
@@ -193,12 +261,22 @@ function normalizeNote(note, validTagIds = new Set()) {
     0,
     MAX_TAGS_PER_NOTE,
   );
+  const candidateNotebookId = typeof note.notebookId === 'string' ? note.notebookId.trim() : '';
+  const captureSessionId =
+    typeof note.captureSessionId === 'string' && note.captureSessionId.trim()
+      ? note.captureSessionId.trim()
+      : null;
+  if (captureSessionId && captureSessionId.length > MAX_CAPTURE_SESSION_ID_LENGTH) {
+    throw new DataValidationError('string_too_long', 'captureSessionId');
+  }
 
   return {
     id: typeof note.id === 'string' && note.id.trim() ? note.id.trim() : createId('note'),
     title,
     content,
     tagIds,
+    notebookId: validNotebookIds.has(candidateNotebookId) ? candidateNotebookId : null,
+    captureSessionId,
     isPinned: Boolean(note.isPinned),
     isArchived: Boolean(note.isArchived),
     createdAt,
@@ -207,18 +285,20 @@ function normalizeNote(note, validTagIds = new Set()) {
   };
 }
 
-function normalizeNotes(value, noteTags = []) {
+function normalizeNotes(value, noteTags = [], noteNotebooks = []) {
   if (!Array.isArray(value)) throw new DataValidationError('invalid_notes', 'notes');
   if (value.length > MAX_NOTES) throw new DataValidationError('too_many_notes', 'notes');
   const validTagIds = new Set(noteTags.map((tag) => tag.id));
-  return value.map((note) => normalizeNote(note, validTagIds)).filter(Boolean);
+  const validNotebookIds = new Set(noteNotebooks.map((notebook) => notebook.id));
+  return value.map((note) => normalizeNote(note, validTagIds, validNotebookIds)).filter(Boolean);
 }
 
 function createDefaultSettings(systemTheme = 'light') {
   return {
     theme: systemTheme === 'dark' ? 'dark' : 'light',
     iconStyle: 'favicon',
-    searchEngine: 'google',
+    searchEngine: 'browser',
+    searchEngineChoiceVersion: 1,
     showClock: true,
     showSearch: true,
     notePinned: false,
@@ -251,9 +331,13 @@ function normalizeSettings(value, systemTheme = 'light') {
       source.iconStyle === 'simple' || source.iconStyle === 'favicon'
         ? source.iconStyle
         : defaults.iconStyle,
-    searchEngine: ['google', 'bing', 'duckduckgo', 'yandex'].includes(source.searchEngine)
-      ? source.searchEngine
-      : defaults.searchEngine,
+    // Legacy settings did not distinguish an automatic Google default from a user choice.
+    searchEngine:
+      source.searchEngineChoiceVersion === 1 &&
+      ['browser', 'google', 'bing', 'duckduckgo', 'yandex'].includes(source.searchEngine)
+        ? source.searchEngine
+        : defaults.searchEngine,
+    searchEngineChoiceVersion: 1,
     showClock: typeof source.showClock === 'boolean' ? source.showClock : defaults.showClock,
     showSearch: typeof source.showSearch === 'boolean' ? source.showSearch : defaults.showSearch,
     notePinned: typeof source.notePinned === 'boolean' ? source.notePinned : defaults.notePinned,
@@ -292,14 +376,18 @@ function normalizeAppState(value, options = {}) {
   const noteTags = normalizeNoteTags(
     Object.prototype.hasOwnProperty.call(value, 'noteTags') ? value.noteTags : [],
   );
+  const noteNotebooks = normalizeNoteNotebooks(
+    Object.prototype.hasOwnProperty.call(value, 'noteNotebooks') ? value.noteNotebooks : [],
+  );
   const notes = Object.prototype.hasOwnProperty.call(value, 'notes') ? value.notes : [];
 
   return {
     schemaVersion: SCHEMA_VERSION,
     revision: Number.isSafeInteger(value.revision) && value.revision >= 0 ? value.revision : 0,
     sites: normalizeSites(sites),
-    notes: normalizeNotes(notes, noteTags),
+    notes: normalizeNotes(notes, noteTags, noteNotebooks),
     noteTags,
+    noteNotebooks,
     settings: normalizeSettings(value.settings, systemTheme),
   };
 }
@@ -314,6 +402,7 @@ function createBackupEnvelope(state, appVersion) {
       sites: normalizedState.sites,
       notes: normalizedState.notes,
       noteTags: normalizedState.noteTags,
+      noteNotebooks: normalizedState.noteNotebooks,
       settings: normalizedState.settings,
     },
   };
@@ -327,6 +416,7 @@ export {
   createDefaultSettings,
   normalizeAppState,
   normalizeNotes,
+  normalizeNoteNotebooks,
   normalizeNoteTags,
   normalizeSettings,
   normalizeSiteUrl,

@@ -4,7 +4,7 @@
     "description": "The name of the extension"
   },
   "extension_description": {
-    "message": "A modern, minimalist new tab page extension for Chromium-based browsers.",
+    "message": "Make each new tab your own with shortcuts, folders, notes, themes and search using your browser’s default provider.",
     "description": "The description of the extension"
   }
 }

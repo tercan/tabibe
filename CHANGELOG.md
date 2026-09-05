@@ -6,6 +6,32 @@ This file documents all notable changes in the project.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Versioning follows [Semantic Versioning](https://semver.org/).
 
+## [1.5.0] - 2026-09-06 00:30
+
+### Added
+
+- Added a notes library and quick capture flow with notebooks, tags, local recovery drafts and sample notes.
+- Added French, German and Italian interface support, bringing supported languages to 13.
+- Added an offline multilingual privacy policy and synchronized public policy pages.
+
+### Changed
+
+- Simplified note controls and refined new-tab surfaces, keyboard actions and RTL layouts.
+- Rebuilt the English and Turkish GitHub Pages site with actual screenshots, current features, release downloads, installation instructions and local data limits.
+- Generate site pages from shared localized content, with local assets, metadata, sitemap and responsive accessibility checks.
+- Raised the development runtime requirement to Node.js 22.19+ for the current Lighthouse toolchain.
+
+### Fixed
+
+- Respect the browser’s default search provider through Chrome Search API; migrate unversioned preferences once and preserve subsequent explicit choices.
+- Corrected search-provider target sizing and keyboard focus.
+- Verify release ZIP contents against the production build and include the project license.
+
+### Security
+
+- Updated the Lighthouse and supporting development dependencies; the full npm audit reports no known vulnerabilities.
+- Clarified storage, backup, recovery-copy, support and Limited Use disclosures without promising encryption or guaranteed data recovery.
+
 ## [1.4.0] - 2026-07-18 00:48
 
 ### Added

@@ -21,6 +21,8 @@ describe('note operations', () => {
       title: '',
       content: '',
       tagIds: [],
+      notebookId: null,
+      captureSessionId: null,
       isArchived: false,
       revision: 1,
     });
@@ -41,6 +43,24 @@ describe('note operations', () => {
     ).toEqual(['pinned', 'older']);
     expect(filterNotes(notes, { showArchived: true }).map((note) => note.id)).toEqual(['archived']);
     expect(notes[0].id).toBe('older');
+  });
+
+  it('ranks title matches before body and organization matches', () => {
+    const notes = [
+      makeNote({ id: 'body', title: 'Meeting', content: 'Project roadmap details' }),
+      makeNote({ id: 'contains', title: 'The Roadmap' }),
+      makeNote({ id: 'prefix', title: 'Roadmap review' }),
+      makeNote({ id: 'exact', title: 'Roadmap' }),
+      makeNote({ id: 'derived', content: '# Roadmap\nDetails' }),
+      makeNote({ id: 'tag', title: 'Reference', tagIds: ['roadmap-tag'] }),
+    ];
+
+    expect(
+      filterNotes(notes, {
+        noteTags: [{ id: 'roadmap-tag', name: 'Roadmap' }],
+        searchQuery: 'roadmap',
+      }).map((note) => note.id),
+    ).toEqual(['exact', 'derived', 'prefix', 'contains', 'body', 'tag']);
   });
 
   it('filters by tags, pin state, date, and sort selection', () => {
@@ -82,6 +102,22 @@ describe('note operations', () => {
       'personal',
       'project',
     ]);
+  });
+
+  it('filters and searches by notebook assignment', () => {
+    const notes = [
+      makeNote({ id: 'project', title: 'Roadmap', notebookId: 'projects' }),
+      makeNote({ id: 'personal', title: 'Shopping', notebookId: 'personal' }),
+    ];
+    const noteNotebooks = [
+      { id: 'projects', name: 'Projects' },
+      { id: 'personal', name: 'Personal' },
+    ];
+
+    expect(
+      filterNotes(notes, { noteNotebooks, selectedNotebookId: 'projects' }).map((note) => note.id),
+    ).toEqual(['project']);
+    expect(filterNotes(notes, { noteNotebooks, searchQuery: 'personal' })[0].id).toBe('personal');
   });
 
   it('updates and restores notes immutably', () => {

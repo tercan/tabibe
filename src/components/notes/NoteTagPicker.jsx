@@ -1,3 +1,4 @@
+import { Tags } from 'lucide-react';
 import { useTranslation } from '../../hooks/useTranslation.js';
 
 function NoteTagPicker({ activeNote, noteTags, onManageTags, onToggleTag }) {
@@ -18,8 +19,14 @@ function NoteTagPicker({ activeNote, noteTags, onManageTags, onToggleTag }) {
           </button>
         ))}
       </div>
-      <button className="note-tag-manage-button" type="button" onClick={onManageTags}>
-        {t('note_manage_tags')}
+      <button
+        className="notes-button notes-button--icon note-tag-manage-button"
+        type="button"
+        onClick={onManageTags}
+        aria-label={t('note_manage_tags')}
+        title={t('note_manage_tags')}
+      >
+        <Tags aria-hidden="true" />
       </button>
     </div>
   );

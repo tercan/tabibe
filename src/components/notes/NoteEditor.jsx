@@ -1,16 +1,12 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, Bold, Eye, Italic, Link, List, ListChecks, Pencil } from 'lucide-react';
+import { ArrowLeft, ExternalLink, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useTranslation } from '../../hooks/useTranslation.js';
-import {
-  applyInlineFormat,
-  applyLinePrefix,
-  applyLinkFormat,
-  getNoteMetrics,
-  transformPreviewUrl,
-} from '../../domain/noteEditor.js';
-import NoteTagPicker from './NoteTagPicker.jsx';
+import { transformPreviewUrl } from '../../domain/noteEditor.js';
+import NoteActions from './NoteActions.jsx';
+import NoteDetails from './NoteDetails.jsx';
+import NoteSaveStatus from './NoteSaveStatus.jsx';
 
 const PREVIEW_ELEMENTS = [
   'a',
@@ -41,229 +37,190 @@ const PREVIEW_ELEMENTS = [
 
 function NoteEditor({
   activeNote,
-  formatDate,
+  contentInputRef,
+  noteNotebooks,
   noteTags,
   onBack,
+  onCommitAndClose,
+  onCopy,
+  onDiscard,
   onManageTags,
+  onOpenLibrary,
+  onRequestClose,
+  onRequestDelete,
   onRetrySave,
+  onToggleArchive,
+  onTogglePin,
   onToggleTag,
   onUpdate,
+  presentation,
+  saveErrorCode,
   saveStatus,
-  titleInputRef,
 }) {
   const { t } = useTranslation();
   const [isPreview, setIsPreview] = useState(false);
-  const contentInputRef = useRef(null);
-  const metrics = useMemo(() => getNoteMetrics(activeNote.content), [activeNote.content]);
+  const isCapture = presentation === 'capture';
 
   useEffect(() => {
     setIsPreview(false);
   }, [activeNote.id]);
 
-  function applyFormat(format) {
-    const input = contentInputRef.current;
-    if (!input || isPreview) return;
-
-    const { selectionStart, selectionEnd } = input;
-    let result;
-    if (format === 'bold') {
-      result = applyInlineFormat(activeNote.content, selectionStart, selectionEnd, {
-        prefix: '**',
-        suffix: '**',
-        placeholder: t('note_format_text_placeholder'),
-      });
-    } else if (format === 'italic') {
-      result = applyInlineFormat(activeNote.content, selectionStart, selectionEnd, {
-        prefix: '_',
-        suffix: '_',
-        placeholder: t('note_format_text_placeholder'),
-      });
-    } else if (format === 'list') {
-      result = applyLinePrefix(activeNote.content, selectionStart, selectionEnd, '- ');
-    } else if (format === 'checklist') {
-      result = applyLinePrefix(activeNote.content, selectionStart, selectionEnd, '- [ ] ');
-    } else {
-      result = applyLinkFormat(
-        activeNote.content,
-        selectionStart,
-        selectionEnd,
-        t('note_format_link_placeholder'),
-      );
+  function handleContentKeyDown(event) {
+    if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
+      event.preventDefault();
+      void onCommitAndClose();
     }
-
-    onUpdate('content', result.value);
-    requestAnimationFrame(() => {
-      input.focus({ preventScroll: true });
-      input.setSelectionRange(result.selectionStart, result.selectionEnd);
-    });
   }
 
   return (
-    <div className="note-editor" role="region" aria-label={t('note_editor_label')}>
-      <div className="note-editor-header">
-        <button
-          className="note-panel-button"
-          type="button"
-          onClick={onBack}
-          aria-label={t('note_back_to_list')}
-          title={t('note_back_to_list')}
-        >
-          <ArrowLeft size={16} aria-hidden="true" />
-        </button>
-      </div>
-      <label className="visually-hidden" htmlFor="note-title">
-        {t('note_title_label')}
-      </label>
-      <input
-        id="note-title"
-        ref={titleInputRef}
-        className="note-title-input"
-        type="text"
-        value={activeNote.title}
-        onChange={(event) => onUpdate('title', event.target.value)}
-        placeholder={t('note_title_placeholder')}
-      />
-      <NoteTagPicker
-        activeNote={activeNote}
-        noteTags={noteTags}
-        onManageTags={onManageTags}
-        onToggleTag={onToggleTag}
-      />
-      <div className="note-editor-toolbar" role="toolbar" aria-label={t('note_format_toolbar')}>
-        <button
-          className="note-editor-tool"
-          type="button"
-          disabled={isPreview}
-          onClick={() => applyFormat('bold')}
-          aria-label={t('note_format_bold')}
-          title={t('note_format_bold')}
-        >
-          <Bold size={16} aria-hidden="true" />
-        </button>
-        <button
-          className="note-editor-tool"
-          type="button"
-          disabled={isPreview}
-          onClick={() => applyFormat('italic')}
-          aria-label={t('note_format_italic')}
-          title={t('note_format_italic')}
-        >
-          <Italic size={16} aria-hidden="true" />
-        </button>
-        <button
-          className="note-editor-tool"
-          type="button"
-          disabled={isPreview}
-          onClick={() => applyFormat('list')}
-          aria-label={t('note_format_list')}
-          title={t('note_format_list')}
-        >
-          <List size={16} aria-hidden="true" />
-        </button>
-        <button
-          className="note-editor-tool"
-          type="button"
-          disabled={isPreview}
-          onClick={() => applyFormat('checklist')}
-          aria-label={t('note_format_checklist')}
-          title={t('note_format_checklist')}
-        >
-          <ListChecks size={16} aria-hidden="true" />
-        </button>
-        <button
-          className="note-editor-tool"
-          type="button"
-          disabled={isPreview}
-          onClick={() => applyFormat('link')}
-          aria-label={t('note_format_link')}
-          title={t('note_format_link')}
-        >
-          <Link size={16} aria-hidden="true" />
-        </button>
-        <button
-          className={`note-editor-tool note-editor-tool--preview ${isPreview ? 'note-editor-tool--active' : ''}`}
-          type="button"
-          aria-pressed={isPreview}
-          onClick={() => setIsPreview((currentValue) => !currentValue)}
-          aria-label={isPreview ? t('note_preview_hide') : t('note_preview_show')}
-          title={isPreview ? t('note_preview_hide') : t('note_preview_show')}
-        >
-          {isPreview ? (
-            <Pencil size={16} aria-hidden="true" />
-          ) : (
-            <Eye size={16} aria-hidden="true" />
+    <article
+      className={`note-composer note-composer--${presentation}`}
+      aria-label={t('note_editor_label')}
+    >
+      <header className="note-composer-header">
+        {isCapture ? (
+          <h2 className="note-composer-title" id="note-capture-title">
+            {t('note_capture_entry')}
+          </h2>
+        ) : (
+          <button className="notes-button notes-button--back" type="button" onClick={onBack}>
+            <ArrowLeft aria-hidden="true" />
+            <span>{t('note_back_to_list')}</span>
+          </button>
+        )}
+
+        <div className="note-composer-header-actions">
+          {!isCapture && (
+            <NoteSaveStatus
+              compact
+              onCopy={onCopy}
+              onDiscard={undefined}
+              onRetry={onRetrySave}
+              saveErrorCode={saveErrorCode}
+              saveStatus={saveStatus}
+            />
           )}
-        </button>
-      </div>
-      {isPreview ? (
-        <div className="note-markdown-preview" aria-label={t('note_preview_show')}>
-          {activeNote.content.trim() ? (
-            <ReactMarkdown
-              allowedElements={PREVIEW_ELEMENTS}
-              remarkPlugins={[remarkGfm]}
-              skipHtml
-              urlTransform={transformPreviewUrl}
-              components={{
-                a: ({ children, href }) =>
-                  href ? (
-                    <a href={href} target="_blank" rel="noreferrer noopener">
-                      {children}
-                    </a>
-                  ) : (
-                    <span>{children}</span>
-                  ),
-                input: ({ checked, type }) => (
-                  <input type={type} checked={checked} disabled readOnly />
-                ),
-              }}
+          {!isCapture && (
+            <NoteActions
+              activeNote={activeNote}
+              onCopy={onCopy}
+              onRequestDelete={onRequestDelete}
+              onToggleArchive={onToggleArchive}
+              onTogglePin={onTogglePin}
+            />
+          )}
+          {isCapture && (
+            <button
+              className="notes-button notes-button--icon"
+              type="button"
+              onClick={onRequestClose}
+              aria-label={t('note_capture_close')}
+              title={t('note_capture_close')}
             >
-              {activeNote.content}
-            </ReactMarkdown>
-          ) : (
-            <p className="note-markdown-preview-empty">{t('note_preview_empty')}</p>
+              <X aria-hidden="true" />
+            </button>
           )}
         </div>
-      ) : (
-        <>
+        {/* /.note-composer-header */}
+      </header>
+
+      <div className="note-composer-body">
+        <label className="note-composer-title-field">
+          <span className="visually-hidden">{t('note_title_label')}</span>
+          <input
+            className="note-composer-title-input"
+            type="text"
+            maxLength={300}
+            value={activeNote.title}
+            onChange={(event) => onUpdate('title', event.target.value)}
+            placeholder={t('note_title_placeholder')}
+          />
+        </label>
+        <div className="note-composer-textarea-wrap">
           <label className="visually-hidden" htmlFor="note-content">
             {t('note_content_label')}
           </label>
           <textarea
             id="note-content"
             ref={contentInputRef}
-            className="note-panel-textarea"
+            className="note-composer-textarea"
+            maxLength={100000}
             value={activeNote.content}
             onChange={(event) => onUpdate('content', event.target.value)}
-            placeholder={t('note_placeholder')}
-            aria-label={t('note_content_label')}
+            onKeyDown={handleContentKeyDown}
+            placeholder={isCapture ? t('note_capture_placeholder') : t('note_placeholder')}
+            hidden={isPreview}
           />
-        </>
-      )}
-      <div className="note-editor-footer">
-        <p className="note-editor-metrics">
-          <span>{t('note_word_count', { count: metrics.words })}</span>
-          <span>{t('note_character_count', { count: metrics.characters })}</span>
-        </p>
-        <p className="note-editor-meta">
-          {t('note_updated_at', { date: formatDate(activeNote.updatedAt) })}
-        </p>
+          <div
+            className="note-composer-preview"
+            aria-label={t('note_preview_show')}
+            hidden={!isPreview}
+          >
+            {activeNote.content.trim() ? (
+              <ReactMarkdown
+                allowedElements={PREVIEW_ELEMENTS}
+                remarkPlugins={[remarkGfm]}
+                skipHtml
+                urlTransform={transformPreviewUrl}
+                components={{
+                  a: ({ children, href }) =>
+                    href ? (
+                      <a href={href} target="_blank" rel="noreferrer noopener">
+                        {children}
+                      </a>
+                    ) : (
+                      <span>{children}</span>
+                    ),
+                  input: ({ checked, type }) => (
+                    <input type={type} checked={checked} disabled readOnly />
+                  ),
+                }}
+              >
+                {activeNote.content}
+              </ReactMarkdown>
+            ) : (
+              <p>{t('note_preview_empty')}</p>
+            )}
+          </div>
+        </div>
+        <NoteDetails
+          activeNote={activeNote}
+          isPreview={isPreview}
+          noteNotebooks={noteNotebooks}
+          noteTags={noteTags}
+          onManageTags={onManageTags}
+          onTogglePreview={() => setIsPreview((currentValue) => !currentValue)}
+          onToggleTag={onToggleTag}
+          onUpdate={onUpdate}
+        />
+        {/* /.note-composer-body */}
       </div>
-      <p
-        className={`note-save-status note-save-status--${saveStatus}`}
-        role="status"
-        aria-live="polite"
-      >
-        {saveStatus === 'saving' && t('note_save_saving')}
-        {saveStatus === 'saved' && t('note_save_saved')}
-        {saveStatus === 'error' && t('note_save_error')}
-        {saveStatus === 'conflict' && t('note_save_conflict')}
-      </p>
-      {saveStatus === 'error' && (
-        <button className="note-save-retry" type="button" onClick={onRetrySave}>
-          {t('note_save_retry')}
-        </button>
+
+      {isCapture && (
+        <footer className="note-composer-footer">
+          <button
+            className="notes-button note-capture-expand"
+            type="button"
+            onClick={onOpenLibrary}
+          >
+            <ExternalLink aria-hidden="true" />
+            {t('note_open_library')}
+          </button>
+          <div className="note-composer-save">
+            <NoteSaveStatus
+              onCopy={onCopy}
+              onDiscard={onDiscard}
+              onRetry={onRetrySave}
+              saveErrorCode={saveErrorCode}
+              saveStatus={saveStatus}
+            />
+            <kbd>Ctrl/⌘ + Enter</kbd>
+          </div>
+          {/* /.note-composer-footer */}
+        </footer>
       )}
-    </div>
+      {/* /.note-composer */}
+    </article>
   );
 }
 

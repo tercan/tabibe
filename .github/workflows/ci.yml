@@ -25,7 +25,9 @@ jobs:
       - run: npm run test:coverage
       - run: npm run build
       - run: npm run budget:bundle
+      - run: npm run check:site
       - run: npm run lighthouse
+      - run: npm run lighthouse:site
       - run: npm run audit
       - run: npm run package:extension
       - run: npm run check:release
@@ -41,4 +43,5 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run build
+      - run: npm run package:extension
       - run: xvfb-run -a npm run test:e2e

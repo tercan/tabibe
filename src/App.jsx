@@ -9,10 +9,16 @@ import {
   getBackgroundPresetTheme,
   getEquivalentBackgroundPresetColor,
 } from './lib/backgroundPresets.js';
-import { createDefaultSettings, loadSettings, saveSettings } from './lib/storage.js';
+import {
+  createDefaultSettings,
+  loadSettings,
+  mergeDevelopmentDemoNotes,
+  saveSettings,
+} from './lib/storage.js';
 import { detectLocale } from './i18n/translationContext.js';
 import useFaviconPermission from './hooks/useFaviconPermission.js';
 import useBackgroundImageUrl from './hooks/useBackgroundImageUrl.js';
+import { getBackgroundAppearance } from './lib/backgroundAppearance.js';
 
 const NotePanel = lazy(() => import('./components/NotePanel.jsx'));
 const SettingsPanel = lazy(() => import('./components/SettingsPanel.jsx'));
@@ -21,13 +27,31 @@ function getSystemTheme() {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
+async function loadPreparedSettings() {
+  let demoError = null;
+
+  if (import.meta.env.DEV) {
+    try {
+      const demoResult = await mergeDevelopmentDemoNotes();
+      if (demoResult.status !== 'not-requested') {
+        const cleanUrl = new URL(window.location.href);
+        cleanUrl.searchParams.delete('demo-notes');
+        window.history.replaceState(window.history.state, '', cleanUrl);
+      }
+    } catch (error) {
+      demoError = error;
+    }
+  }
+
+  return { settings: await loadSettings(), demoError };
+}
+
 function App() {
   const { locale, setLocale, t } = useTranslation();
   const faviconPermission = useFaviconPermission();
   const [settings, setSettings] = useState(() => createDefaultSettings(getSystemTheme()));
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [notePanelOpen, setNotePanelOpen] = useState(false);
-  const [noteCaptureRequest, setNoteCaptureRequest] = useState(0);
+  const [notesRequest, setNotesRequest] = useState(null);
   const [storageError, setStorageError] = useState(false);
   const [settingsLoadState, setSettingsLoadState] = useState('loading');
 
@@ -37,9 +61,6 @@ function App() {
     searchEngine,
     showClock,
     showSearch,
-    notePinned,
-    notePanelSide,
-    notePanelMode,
     noteSort,
     backgroundColor,
     backgroundImage,
@@ -47,14 +68,19 @@ function App() {
     locale: selectedLocale,
   } = settings;
   const renderedBackgroundImage = useBackgroundImageUrl(backgroundImage);
+  const backgroundAppearance = getBackgroundAppearance({
+    backgroundColor,
+    hasBackgroundImage: Boolean(backgroundImage),
+  });
 
   useEffect(() => {
     let active = true;
 
-    loadSettings()
-      .then((savedSettings) => {
+    loadPreparedSettings()
+      .then(({ settings: savedSettings, demoError }) => {
         if (active) {
           setSettings(savedSettings);
+          setStorageError(Boolean(demoError));
           setSettingsLoadState('ready');
         }
       })
@@ -80,8 +106,8 @@ function App() {
       if (!event.altKey || !event.shiftKey || event.metaKey || event.ctrlKey) return;
       if (event.key.toLocaleLowerCase() !== 'n') return;
       event.preventDefault();
-      setNotePanelOpen(true);
-      setNoteCaptureRequest((currentRequest) => currentRequest + 1);
+      const requestId = crypto.randomUUID();
+      setNotesRequest({ type: 'capture', requestId, captureSessionId: requestId });
     }
 
     document.addEventListener('keydown', handleQuickCaptureShortcut);
@@ -165,29 +191,24 @@ function App() {
     updateSettings({ showMemory: !showMemory });
   }
 
-  function handleToggleNotePin() {
-    updateSettings({ notePinned: !notePinned });
-  }
-
-  function handleChangeNotePanelSide() {
-    updateSettings({ notePanelSide: notePanelSide === 'left' ? 'right' : 'left' });
-  }
-
-  function handleToggleNoteFullscreen() {
-    const nextMode = notePanelMode === 'fullscreen' ? 'panel' : 'fullscreen';
-    if (nextMode === 'fullscreen') setNotePanelOpen(true);
-    updateSettings({ notePanelMode: nextMode });
-  }
-
   function handleChangeNoteSort(nextSort) {
     updateSettings({ noteSort: nextSort });
   }
 
-  function handleOpenNotes(options = {}) {
-    setNotePanelOpen(true);
-    if (options.quickCapture) {
-      setNoteCaptureRequest((currentRequest) => currentRequest + 1);
-    }
+  function handleOpenNoteCapture() {
+    const requestId = crypto.randomUUID();
+    setNotesRequest({ type: 'capture', requestId, captureSessionId: requestId });
+  }
+
+  function handleOpenNoteLibrary() {
+    const requestId = crypto.randomUUID();
+    setNotesRequest({ type: 'library', requestId, captureSessionId: null });
+  }
+
+  function handleExpandNoteCapture() {
+    setNotesRequest((currentRequest) =>
+      currentRequest ? { ...currentRequest, type: 'library' } : currentRequest,
+    );
   }
 
   function handleChangeLocale(nextLocale) {
@@ -241,9 +262,10 @@ function App() {
 
   function handleRetrySettingsLoad() {
     setSettingsLoadState('loading');
-    loadSettings()
-      .then((savedSettings) => {
+    loadPreparedSettings()
+      .then(({ settings: savedSettings, demoError }) => {
         setSettings(savedSettings);
+        setStorageError(Boolean(demoError));
         setSettingsLoadState('ready');
       })
       .catch(() => setSettingsLoadState('error'));
@@ -252,17 +274,17 @@ function App() {
   if (settingsLoadState === 'loading') return <AppLoading />;
   if (settingsLoadState === 'error') return <AppRecovery onRetry={handleRetrySettingsLoad} />;
 
-  const isNotePanelPinned = notePinned && notePanelMode === 'panel';
-  const className = [
-    'new-tab',
-    isNotePanelPinned ? `new-tab--pinned-${notePanelSide}` : '',
-    backgroundImage ? 'new-tab--custom-background' : '',
-  ]
+  const className = ['new-tab', backgroundImage ? 'new-tab--custom-background' : '']
     .filter(Boolean)
     .join(' ');
 
   return (
-    <main className={className} lang={locale} style={getBackgroundStyle()}>
+    <main
+      className={className}
+      data-background-kind={backgroundAppearance.kind}
+      lang={locale}
+      style={{ ...getBackgroundStyle(), ...backgroundAppearance.cssVariables }}
+    >
       {showClock && <Clock />}
       {showSearch && <SearchBar search_engine={searchEngine} />}
       <SpeedDial
@@ -277,30 +299,20 @@ function App() {
           </span>
         }
       >
-        {(notePanelOpen || isNotePanelPinned) && (
+        {notesRequest && (
           <NotePanel
-            is_open={notePanelOpen}
-            is_pinned={isNotePanelPinned}
-            capture_request={noteCaptureRequest}
-            layout_side={notePanelSide}
-            layout_mode={notePanelMode}
+            request={notesRequest}
             note_sort={noteSort}
-            on_close={() => setNotePanelOpen(false)}
-            on_capture_consumed={() => setNoteCaptureRequest(0)}
-            on_toggle_pin={handleToggleNotePin}
-            on_change_side={handleChangeNotePanelSide}
-            on_toggle_fullscreen={handleToggleNoteFullscreen}
+            on_close={() => setNotesRequest(null)}
+            on_open_library={handleExpandNoteCapture}
             on_change_sort={handleChangeNoteSort}
           />
         )}
       </Suspense>
       <Footer
-        theme={theme}
-        on_toggle_theme={toggleTheme}
-        icon_style={iconStyle}
-        on_toggle_icon_style={toggleIconStyle}
         on_open_settings={() => setSettingsOpen(true)}
-        on_open_notes={handleOpenNotes}
+        on_open_note_capture={handleOpenNoteCapture}
+        on_open_note_library={handleOpenNoteLibrary}
         show_memory={showMemory}
       />
       <Suspense
@@ -314,6 +326,10 @@ function App() {
           <SettingsPanel
             is_open={settingsOpen}
             on_close={() => setSettingsOpen(false)}
+            iconStyle={iconStyle}
+            onToggleIconStyle={toggleIconStyle}
+            theme={theme}
+            onToggleTheme={toggleTheme}
             search_engine={searchEngine}
             on_change_search_engine={handleChangeSearchEngine}
             show_clock={showClock}

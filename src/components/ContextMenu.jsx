@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { FolderInput, FolderOutput, MoveLeft, MoveRight, Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from '../hooks/useTranslation.js';
 
 /**
@@ -80,6 +81,7 @@ function ContextMenu({
       ref={menu_ref}
       style={{ top: `${y}px`, left: `${x}px` }}
       aria-label={t('context_actions_label')}
+      role="group"
     >
       <button
         ref={first_action_ref}
@@ -87,7 +89,8 @@ function ContextMenu({
         type="button"
         onClick={() => run_action(on_edit)}
       >
-        {t('context_edit')}
+        <Pencil aria-hidden="true" />
+        <span>{t('context_edit')}</span>
       </button>
       <div className="context-menu-order-actions">
         <button
@@ -96,15 +99,17 @@ function ContextMenu({
           disabled={!can_move_left}
           onClick={() => run_action(on_move_left)}
         >
-          {t('context_move_left')}
+          <MoveLeft aria-hidden="true" />
+          <span>{t('context_move_left')}</span>
         </button>
         <button
-          className="context-menu-item"
+          className="context-menu-item context-menu-item--move-right"
           type="button"
           disabled={!can_move_right}
           onClick={() => run_action(on_move_right)}
         >
-          {t('context_move_right')}
+          <span>{t('context_move_right')}</span>
+          <MoveRight aria-hidden="true" />
         </button>
       </div>
       {on_move_to_folder && move_folders.length > 0 && (
@@ -129,7 +134,8 @@ function ContextMenu({
             type="button"
             onClick={() => run_action(() => on_move_to_folder(target_folder_id))}
           >
-            {t('context_move_to_folder')}
+            <FolderInput aria-hidden="true" />
+            <span>{t('context_move_to_folder')}</span>
           </button>
         </div>
       )}
@@ -139,7 +145,8 @@ function ContextMenu({
           type="button"
           onClick={() => run_action(on_remove_from_folder)}
         >
-          {t('context_move_to_root')}
+          <FolderOutput aria-hidden="true" />
+          <span>{t('context_move_to_root')}</span>
         </button>
       )}
       <button
@@ -147,7 +154,8 @@ function ContextMenu({
         type="button"
         onClick={() => run_action(on_delete)}
       >
-        {t('context_delete')}
+        <Trash2 aria-hidden="true" />
+        <span>{t('context_delete')}</span>
       </button>
     </div>
   );

@@ -1,9 +1,12 @@
 import { createContext } from 'react';
 import ar from '../locales/ar.js';
 import bn from '../locales/bn.js';
+import de from '../locales/de.js';
 import en from '../locales/en.js';
 import es from '../locales/es.js';
+import fr from '../locales/fr.js';
 import hi from '../locales/hi.js';
+import it from '../locales/it.js';
 import ja from '../locales/ja.js';
 import pt from '../locales/pt.js';
 import ru from '../locales/ru.js';
@@ -11,10 +14,13 @@ import tr from '../locales/tr.js';
 import zh from '../locales/zh.js';
 
 const DEFAULT_LOCALE = 'en';
-const LOCALE_MAP = { en, tr, zh, es, hi, ar, pt, bn, ru, ja };
+const LOCALE_MAP = { en, tr, fr, de, it, es, pt, ru, ar, hi, bn, zh, ja };
 const LOCALE_OPTIONS = [
   { id: 'en', name: 'English' },
   { id: 'tr', name: 'Türkçe' },
+  { id: 'fr', name: 'Français' },
+  { id: 'de', name: 'Deutsch' },
+  { id: 'it', name: 'Italiano' },
   { id: 'es', name: 'Español' },
   { id: 'pt', name: 'Português' },
   { id: 'ru', name: 'Русский' },

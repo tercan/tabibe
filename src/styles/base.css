@@ -13,7 +13,13 @@ h6 {
   line-height: var(--line-height-tight);
 }
 
-:focus-visible {
-  outline: var(--focus-ring-width) solid var(--color-focus);
-  outline-offset: var(--focus-ring-offset);
+:focus {
+  outline-width: 0;
+  outline-offset: 0;
+}
+
+:focus-visible,
+:is(button, a, input, select, textarea, summary, [tabindex]):focus-visible {
+  border-color: var(--color-focus);
+  box-shadow: var(--shadow-focus-border);
 }

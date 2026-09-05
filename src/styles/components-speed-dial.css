@@ -17,7 +17,7 @@
   gap: var(--space-md);
   padding: var(--space-lg);
   border: var(--border-width) solid var(--color-error);
-  background-color: var(--color-surface);
+  background-color: var(--color-home-control-surface);
   color: var(--color-error);
   text-align: center;
 }
@@ -33,12 +33,6 @@
   gap: var(--space-sm);
 }
 
-.speed-dial-toolbar-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
 .speed-dial-toolbar-button {
   display: inline-flex;
   align-items: center;
@@ -47,9 +41,9 @@
   height: 2.5rem;
   min-height: 2.5rem;
   padding: 0;
-  border: var(--border-width) solid var(--color-border);
+  border: var(--border-width) solid var(--color-home-control-border);
   border-radius: var(--border-radius);
-  background-color: var(--color-surface);
+  background-color: var(--color-home-control-surface);
   color: var(--color-text);
   box-shadow: var(--shadow-sm);
   transition:
@@ -64,9 +58,9 @@
 }
 
 .speed-dial-toolbar-button:hover,
-.speed-dial-toolbar-button--active {
+.speed-dial-toolbar-button:focus-visible {
   border-color: var(--color-primary);
-  background-color: var(--color-surface-hover);
+  background-color: var(--color-home-control-surface-hover);
   color: var(--color-primary);
 }
 
@@ -117,9 +111,9 @@
   justify-content: center;
   width: 2rem;
   height: 2rem;
-  border: var(--border-width) solid var(--color-border);
+  border: var(--border-width) solid var(--color-home-control-border);
   border-radius: var(--border-radius);
-  background-color: var(--color-surface);
+  background-color: var(--color-home-control-surface);
   color: var(--color-text-muted);
   box-shadow: var(--shadow-sm);
   opacity: 0;
@@ -133,8 +127,7 @@
 }
 
 .speed-dial-card:hover .speed-dial-action-button,
-.speed-dial-card:focus-within .speed-dial-action-button,
-.speed-dial--manage .speed-dial-action-button {
+.speed-dial-card:focus-within .speed-dial-action-button {
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
@@ -166,7 +159,7 @@
 .speed-dial-drop-target .speed-dial-icon-wrapper {
   border-color: var(--color-primary);
   border-style: dashed;
-  background-color: var(--color-surface-hover);
+  background-color: var(--color-home-control-surface-hover);
 }
 
 .speed-dial-root-drop-preview {
@@ -181,7 +174,7 @@
 .speed-dial-root-drop-preview .speed-dial-icon-wrapper {
   border-color: var(--color-primary);
   border-style: dashed;
-  background-color: var(--color-surface-hover);
+  background-color: var(--color-home-control-surface-hover);
   box-shadow: var(--shadow-md);
 }
 
@@ -201,11 +194,6 @@
   cursor: grabbing;
 }
 
-.speed-dial-item:focus-visible {
-  outline: var(--focus-ring-width) solid var(--color-focus);
-  outline-offset: var(--focus-ring-offset);
-}
-
 .speed-dial-icon-wrapper {
   display: flex;
   align-items: center;
@@ -214,8 +202,8 @@
   height: var(--speed-dial-icon-wrapper-size);
   padding: var(--speed-dial-icon-wrapper-padding);
   border-radius: var(--border-radius);
-  background-color: var(--color-surface);
-  border: var(--border-width) solid var(--color-border);
+  background-color: var(--color-home-control-surface);
+  border: var(--border-width) solid var(--color-home-control-border);
   transition:
     background-color var(--transition-base),
     border-color var(--transition-base),
@@ -265,8 +253,8 @@
 }
 
 .site-icon-monogram--neutral {
-  border: var(--border-width) solid var(--color-border);
-  background-color: var(--color-surface-hover);
+  border: var(--border-width) solid var(--color-home-control-border);
+  background-color: var(--color-home-control-surface-hover);
   color: var(--color-text);
 }
 
@@ -295,15 +283,16 @@
   opacity: 1;
 }
 
-.speed-dial-item:hover .speed-dial-icon-wrapper {
-  background-color: var(--color-surface-hover);
+.speed-dial-item:hover .speed-dial-icon-wrapper,
+.speed-dial-item:focus-visible .speed-dial-icon-wrapper {
+  background-color: var(--color-home-control-surface-hover);
   border-color: var(--color-primary);
 }
 
 .speed-dial-icon--folder {
   position: relative;
-  border-color: var(--color-folder-border);
-  background-color: var(--color-folder-surface);
+  border-color: var(--color-home-folder-border);
+  background-color: var(--color-home-folder-surface);
   color: var(--color-folder-icon);
 }
 
@@ -322,7 +311,7 @@
   min-width: 1.25rem;
   height: 1.25rem;
   padding: 0 var(--space-xs);
-  border: var(--border-width) solid var(--color-folder-surface);
+  border: var(--border-width) solid var(--color-home-folder-surface);
   border-radius: var(--border-radius);
   background-color: var(--color-folder-icon);
   color: var(--color-folder-badge-text);
@@ -333,21 +322,33 @@
 
 .speed-dial-item:hover .speed-dial-icon--folder {
   border-color: var(--color-folder-icon);
-  background-color: var(--color-folder-surface-hover);
+  background-color: var(--color-home-folder-surface-hover);
 }
 
 .speed-dial-item--folder[aria-expanded='true'] .speed-dial-icon--folder,
 .speed-dial-drop-target .speed-dial-icon--folder {
   border-color: var(--color-folder-icon);
-  background-color: var(--color-folder-surface-hover);
+  background-color: var(--color-home-folder-surface-hover);
   color: var(--color-folder-icon);
 }
 
 .speed-dial-folder--drop-target .speed-dial-icon--folder {
   border-color: var(--color-primary);
   border-style: solid;
-  background-color: var(--color-folder-surface-hover);
+  background-color: var(--color-home-folder-surface-hover);
   color: var(--color-primary);
+}
+
+.speed-dial-label {
+  max-width: 100%;
+  padding: var(--space-2xs) var(--space-sm);
+  overflow: hidden;
+  border-radius: var(--border-radius);
+  background-color: var(--color-home-control-surface);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .speed-dial-folder {
@@ -451,8 +452,6 @@
   border-color: var(--color-primary);
   color: var(--color-primary);
   background-color: var(--color-surface-hover);
-  outline: var(--focus-ring-width) solid var(--color-focus);
-  outline-offset: var(--focus-ring-offset);
 }
 
 .folder-header-button--danger:hover,

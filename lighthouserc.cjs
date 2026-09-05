@@ -4,7 +4,6 @@ module.exports = {
       staticDistDir: './dist',
       numberOfRuns: 1,
       settings: {
-        preset: 'desktop',
         onlyCategories: ['performance', 'accessibility', 'best-practices', 'seo'],
         chromeFlags: '--headless --no-sandbox --disable-gpu',
       },

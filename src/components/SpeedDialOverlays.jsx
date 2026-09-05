@@ -28,6 +28,8 @@ function SpeedDialOverlays({
   modalFolderId,
   modalMode,
   modalOpen,
+  moveLeftDelta,
+  moveRightDelta,
   onClearSaveError,
   onCloseContextMenu,
   onCloseFolderDelete,
@@ -74,9 +76,15 @@ function SpeedDialOverlays({
           <ContextMenu
             x={contextMenu.x}
             y={contextMenu.y}
-            can_move_left={contextPosition.index > 0}
+            can_move_left={
+              contextPosition.index >= 0 &&
+              contextPosition.index + moveLeftDelta >= 0 &&
+              contextPosition.index + moveLeftDelta < contextPosition.total
+            }
             can_move_right={
-              contextPosition.index >= 0 && contextPosition.index < contextPosition.total - 1
+              contextPosition.index >= 0 &&
+              contextPosition.index + moveRightDelta >= 0 &&
+              contextPosition.index + moveRightDelta < contextPosition.total
             }
             move_folders={
               !contextMenu.folderId && contextMenu.site.type !== 'folder' ? folders : []

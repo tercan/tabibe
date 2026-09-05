@@ -1,227 +1,68 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { NotebookPen } from 'lucide-react';
 import { useTranslation } from '../hooks/useTranslation.js';
-import useFocusTrap from '../hooks/useFocusTrap.jsx';
 import useBodyScrollLock from '../hooks/useBodyScrollLock.js';
+import useFocusTrap from '../hooks/useFocusTrap.jsx';
 import useNotes from '../hooks/useNotes.js';
 import { isNoteEmpty } from '../domain/noteOperations.js';
-import { getNoteTemplate } from '../domain/noteTemplates.js';
-import CloseIcon from './icons/CloseIcon.jsx';
-import NoteBulkActions from './notes/NoteBulkActions.jsx';
+import { groupNotesForLibrary } from '../domain/notePresentation.js';
 import NoteConflictDialog from './notes/NoteConflictDialog.jsx';
 import NoteEditor from './notes/NoteEditor.jsx';
-import NoteFilters from './notes/NoteFilters.jsx';
+import NoteLibraryHeader from './notes/NoteLibraryHeader.jsx';
+import { NoteFilterContent, NoteMoreContent, NoteSortContent } from './notes/NoteLibraryMenus.jsx';
+import NoteListPane from './notes/NoteListPane.jsx';
+import NoteListToolbar from './notes/NoteListToolbar.jsx';
+import NoteNotebookManager from './notes/NoteNotebookManager.jsx';
 import NoteTagManager from './notes/NoteTagManager.jsx';
-import NoteTemplateMenu from './notes/NoteTemplateMenu.jsx';
 
-/**
- * 2. Icons
- */
-
-function PinIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M12 2v8M9 4h6M12 10c-3.31 0-6 2.69-6 6h12c0-3.31-2.69-6-6-6zM12 16v6M10 22h4" />
-    </svg>
-  );
-}
-
-function ArchiveIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <rect x="3" y="3" width="18" height="4" rx="1" />
-      <path d="M5 7v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7" />
-      <path d="M10 12h4" />
-    </svg>
-  );
-}
-
-function RestoreIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M3 12a9 9 0 1 0 3-6.7" />
-      <path d="M3 3v6h6" />
-    </svg>
-  );
-}
-
-function DeleteIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M3 6h18" />
-      <path d="M8 6V4h8v2" />
-      <path d="M19 6l-1 14H6L5 6" />
-      <path d="M10 11v5" />
-      <path d="M14 11v5" />
-    </svg>
-  );
-}
-
-function PanelSideIcon({ side }) {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <rect x="3" y="4" width="18" height="16" />
-      <path d={side === 'left' ? 'M9 4v16' : 'M15 4v16'} />
-    </svg>
-  );
-}
-
-function FullscreenIcon({ active }) {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      {active ? (
-        <>
-          <path d="M8 3v5H3" />
-          <path d="M16 3v5h5" />
-          <path d="M8 21v-5H3" />
-          <path d="M16 21v-5h5" />
-        </>
-      ) : (
-        <>
-          <path d="M8 3H3v5" />
-          <path d="M16 3h5v5" />
-          <path d="M8 21H3v-5" />
-          <path d="M16 21h5v-5" />
-        </>
-      )}
-    </svg>
-  );
-}
-
-function SelectIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <rect x="3" y="3" width="18" height="18" />
-      <path d="m8 12 3 3 5-6" />
-    </svg>
-  );
-}
-
-/**
- * 3. NotePanel component
- */
-
-function NotePanel({
-  capture_request,
-  is_open,
-  is_pinned,
-  layout_side,
-  layout_mode,
-  note_sort,
-  on_close,
-  on_capture_consumed,
-  on_toggle_pin,
-  on_change_side,
-  on_toggle_fullscreen,
-  on_change_sort,
-}) {
+function NotePanel({ note_sort, on_change_sort, on_close, on_open_library, request }) {
   const { t } = useTranslation();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showArchived, setShowArchived] = useState(false);
-  const [selectedTagIds, setSelectedTagIds] = useState([]);
-  const [pinnedOnly, setPinnedOnly] = useState(false);
-  const [dateRange, setDateRange] = useState('all');
-  const [noteView, setNoteView] = useState('list');
-  const [selectionMode, setSelectionMode] = useState(false);
-  const [selectedNoteIds, setSelectedNoteIds] = useState([]);
+  const [isNotebookManagerOpen, setIsNotebookManagerOpen] = useState(false);
   const [isTagManagerOpen, setIsTagManagerOpen] = useState(false);
+  const [narrowPane, setNarrowPane] = useState('list');
+  const [noteScope, setNoteScope] = useState('all');
   const [pendingDeleteNoteIds, setPendingDeleteNoteIds] = useState([]);
-  const wasVisibleRef = useRef(false);
-  const panelRef = useRef(null);
-  const titleInputRef = useRef(null);
-  const searchInputRef = useRef(null);
-  const createButtonRef = useRef(null);
-  const captureRequestRef = useRef(0);
-  const deleteDialogRef = useRef(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedNotebookId, setSelectedNotebookId] = useState(null);
+  const [captureNoteId, setCaptureNoteId] = useState(null);
+  const [captureHasPersisted, setCaptureHasPersisted] = useState(false);
+  const closeInProgressRef = useRef(false);
+  const contentInputRef = useRef(null);
   const deleteCancelButtonRef = useRef(null);
+  const deleteDialogRef = useRef(null);
+  const panelRef = useRef(null);
+  const processedRequestRef = useRef(null);
   const {
     activeNote,
     activeNoteId,
+    addNoteNotebook,
     addNoteTag,
-    bulkArchiveNotes,
-    bulkTagNotes,
+    beginCapture,
     conflictState,
+    createNewNote,
     deleteNotes,
+    discardRecoveryDraft,
+    editNoteNotebook,
     editNoteTag,
-    ensureEditableNote,
     filteredNotes,
+    flushPendingNotes,
     isLoaded,
+    loadStatus,
+    moveNotebook,
+    noteNotebooks,
     notes,
     noteTags,
     removeEmptyNote,
+    removeNoteNotebook,
     removeNoteTag,
+    reorderNotebooks,
+    recoveryDrafts,
     resolveConflict,
+    restoreRecoveryDraft,
     restoreDeletedNote,
+    retryLoad,
     retrySave,
+    saveErrorCode,
     saveStatus,
     setActiveNoteId,
     toggleNoteArchive,
@@ -230,565 +71,397 @@ function NotePanel({
     undoState,
     updateActiveNote,
   } = useNotes({
-    dateRange,
-    pinnedOnly,
+    pinnedOnly: noteScope === 'pinned',
     searchQuery,
-    selectedTagIds,
-    showArchived,
+    selectedNotebookId,
+    showArchived: noteScope === 'archived',
     sortBy: note_sort,
   });
+  const isCapture = request.type === 'capture';
+  const isReady = loadStatus ? loadStatus === 'ready' : isLoaded;
+  const panelActiveNote = isCapture && activeNote?.id !== captureNoteId ? null : activeNote;
   const pendingDeleteNotes = notes.filter((note) => pendingDeleteNoteIds.includes(note.id));
-  const isEditorView = noteView === 'editor' && activeNote;
-  const isPanelVisible = is_open || is_pinned;
-  const isFullscreen = layout_mode === 'fullscreen';
+  const noteGroups = useMemo(
+    () => groupNotesForLibrary(filteredNotes, { preserveOrder: true }),
+    [filteredNotes],
+  );
+
+  const commitAndClose = useCallback(async () => {
+    if (closeInProgressRef.current) return false;
+    closeInProgressRef.current = true;
+
+    try {
+      if (activeNote && isNoteEmpty(activeNote)) {
+        removeEmptyNote(activeNote.id);
+        on_close();
+        return true;
+      }
+
+      const didSave = await flushPendingNotes();
+      if (didSave) on_close();
+      return didSave;
+    } finally {
+      closeInProgressRef.current = false;
+    }
+  }, [activeNote, flushPendingNotes, on_close, removeEmptyNote]);
+
+  function handleEscape() {
+    const isNarrowLibraryEditor =
+      !isCapture &&
+      narrowPane === 'editor' &&
+      globalThis.matchMedia?.('(max-width: 48rem)').matches;
+
+    if (isNarrowLibraryEditor) {
+      setNarrowPane('list');
+      return;
+    }
+
+    void commitAndClose();
+  }
 
   useFocusTrap({
     containerRef: panelRef,
     isActive:
-      isLoaded &&
-      is_open &&
-      (!is_pinned || isFullscreen) &&
+      isReady &&
       pendingDeleteNoteIds.length === 0 &&
+      !isNotebookManagerOpen &&
       !isTagManagerOpen &&
       !conflictState,
-    initialFocusRef: isEditorView ? titleInputRef : createButtonRef,
-    onEscape: handleClosePanel,
+    initialFocusRef: contentInputRef,
+    onEscape: handleEscape,
   });
-  useBodyScrollLock(is_open && (!is_pinned || isFullscreen));
+  useBodyScrollLock(true);
 
   useFocusTrap({
     containerRef: deleteDialogRef,
-    isActive: isPanelVisible && pendingDeleteNoteIds.length > 0,
+    isActive: isReady && pendingDeleteNoteIds.length > 0,
     initialFocusRef: deleteCancelButtonRef,
-    onEscape: cancelDeleteConfirmation,
+    onEscape: () => setPendingDeleteNoteIds([]),
   });
 
-  const focusTitleInput = useCallback(() => {
-    requestAnimationFrame(() => {
-      titleInputRef.current?.focus({ preventScroll: true });
-    });
-  }, []);
-
-  const openNewNote = useCallback(
-    (initialValues = {}) => {
-      setShowArchived(false);
-      setSearchQuery('');
-      setSelectionMode(false);
-      setSelectedNoteIds([]);
-      ensureEditableNote(initialValues);
-      setNoteView('editor');
-      focusTitleInput();
-    },
-    [ensureEditableNote, focusTitleInput],
-  );
-
-  const createNewNote = useCallback(() => {
-    openNewNote();
-  }, [openNewNote]);
-
   useEffect(() => {
-    if (!isLoaded) return;
-    if (noteView === 'editor' && activeNote) return;
-    if (
-      activeNote &&
-      activeNote.isArchived === showArchived &&
-      filteredNotes.some((note) => note.id === activeNote.id)
-    )
+    if (!isReady || processedRequestRef.current === request.requestId) return;
+    processedRequestRef.current = request.requestId;
+
+    if (request.type === 'capture') {
+      const note = beginCapture(request.captureSessionId);
+      setCaptureNoteId(note.id);
+      setCaptureHasPersisted(false);
+      setNarrowPane('editor');
       return;
-
-    setActiveNoteId(filteredNotes[0]?.id || null);
-  }, [activeNote, filteredNotes, isLoaded, noteView, setActiveNoteId, showArchived]);
-
-  useEffect(() => {
-    if (isPanelVisible && !wasVisibleRef.current) {
-      setNoteView('list');
     }
 
-    wasVisibleRef.current = isPanelVisible;
-  }, [isPanelVisible]);
+    setCaptureNoteId(null);
+    setNarrowPane('list');
+  }, [beginCapture, isReady, request]);
 
   useEffect(() => {
-    setSelectedNoteIds((currentIds) =>
-      currentIds.filter((noteId) => filteredNotes.some((note) => note.id === noteId)),
-    );
-  }, [filteredNotes]);
+    if (!isCapture || !panelActiveNote) return undefined;
+    const frameId = requestAnimationFrame(() => {
+      contentInputRef.current?.focus({ preventScroll: true });
+    });
+    return () => cancelAnimationFrame(frameId);
+  }, [isCapture, panelActiveNote]);
 
   useEffect(() => {
-    if (!isLoaded || !isPanelVisible || capture_request <= captureRequestRef.current) return;
-    captureRequestRef.current = capture_request;
-    createNewNote();
-    on_capture_consumed();
-  }, [capture_request, createNewNote, isLoaded, isPanelVisible, on_capture_consumed]);
+    if (isCapture && saveStatus === 'saved') setCaptureHasPersisted(true);
+  }, [isCapture, saveStatus]);
 
   useEffect(() => {
-    if (!isLoaded || !isPanelVisible) return undefined;
+    if (!isReady || isCapture || activeNote || filteredNotes.length === 0) return;
+    setActiveNoteId(filteredNotes[0].id);
+  }, [activeNote, filteredNotes, isCapture, isReady, setActiveNoteId]);
 
-    function handleWorkspaceShortcut(event) {
-      const target = event.target;
-      const isEditing =
-        target instanceof HTMLElement &&
-        (target.matches('input, textarea, select') || target.isContentEditable);
-      if (isEditing || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
-      const key = event.key.toLocaleLowerCase();
-      if (key === 'n') {
-        event.preventDefault();
-        createNewNote();
-      }
-      if (key === '/') {
-        event.preventDefault();
-        setNoteView('list');
-        requestAnimationFrame(() => searchInputRef.current?.focus({ preventScroll: true }));
-      }
-    }
-
-    document.addEventListener('keydown', handleWorkspaceShortcut);
-    return () => document.removeEventListener('keydown', handleWorkspaceShortcut);
-  }, [createNewNote, isLoaded, isPanelVisible]);
-
-  function formatNoteDate(value) {
-    try {
-      return new Intl.DateTimeFormat(undefined, {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      }).format(new Date(value));
-    } catch {
-      return '';
-    }
+  function focusContent() {
+    requestAnimationFrame(() => contentInputRef.current?.focus({ preventScroll: true }));
   }
 
-  function createNoteFromTemplate(templateId) {
-    openNewNote(getNoteTemplate(templateId, t));
+  function handleCreateNote() {
+    const note = createNewNote({ notebookId: selectedNotebookId });
+    setNoteScope('all');
+    setSearchQuery('');
+    setCaptureNoteId(note.id);
+    setNarrowPane('editor');
+    focusContent();
   }
 
-  function getNoteTitle(note) {
-    return note.title.trim() || t('note_untitled');
+  function handleOpenNote(noteId) {
+    setActiveNoteId(noteId);
+    setNarrowPane('editor');
+    focusContent();
   }
 
   function handleBackToList() {
-    if (activeNote && isNoteEmpty(activeNote)) {
-      removeEmptyNote(activeNote.id);
-      setActiveNoteId(filteredNotes[0]?.id || null);
-    }
-
-    setNoteView('list');
+    if (activeNote && isNoteEmpty(activeNote)) removeEmptyNote(activeNote.id);
+    setActiveNoteId(null);
+    setNarrowPane('list');
   }
 
-  function handleClosePanel() {
-    if (activeNote && isNoteEmpty(activeNote)) {
-      removeEmptyNote(activeNote.id);
-      setActiveNoteId(filteredNotes[0]?.id || null);
-    }
-
-    setPendingDeleteNoteIds([]);
-    setIsTagManagerOpen(false);
-    setSelectionMode(false);
-    setSelectedNoteIds([]);
-    setNoteView('list');
-    on_close();
+  function handleOpenLibrary() {
+    const selectionStart = contentInputRef.current?.selectionStart;
+    const selectionEnd = contentInputRef.current?.selectionEnd;
+    setNarrowPane('editor');
+    on_open_library();
+    requestAnimationFrame(() => {
+      const input = contentInputRef.current;
+      if (!input) return;
+      input.focus({ preventScroll: true });
+      if (Number.isInteger(selectionStart) && Number.isInteger(selectionEnd)) {
+        input.setSelectionRange(selectionStart, selectionEnd);
+      }
+    });
   }
 
-  function openNote(noteId) {
-    setActiveNoteId(noteId);
-    setNoteView('editor');
-  }
-
-  function requestDeleteNote(noteId) {
-    setPendingDeleteNoteIds([noteId]);
-  }
-
-  function cancelDeleteConfirmation() {
-    setPendingDeleteNoteIds([]);
-  }
-
-  function confirmDeleteNote() {
-    if (pendingDeleteNoteIds.length === 0) return;
-
-    deleteNotes(pendingDeleteNoteIds);
-    setPendingDeleteNoteIds([]);
-    setSelectedNoteIds([]);
-    setSelectionMode(false);
-  }
-
-  function handleDeleteConfirmationOverlayClick(event) {
-    if (event.target === event.currentTarget) {
-      cancelDeleteConfirmation();
+  async function handleCopyActiveNote() {
+    if (!activeNote || !navigator.clipboard?.writeText) return false;
+    const title = activeNote.title.trim();
+    const content = title ? `${title}\n\n${activeNote.content}` : activeNote.content;
+    try {
+      await navigator.clipboard.writeText(content);
+      return true;
+    } catch {
+      return false;
     }
   }
 
-  function handleRestoreDeletedNote() {
-    const restoredNotes = restoreDeletedNote();
-    if (restoredNotes?.[0]) setShowArchived(restoredNotes[0].isArchived);
+  async function handleDiscardAndClose() {
+    if (activeNote) {
+      deleteNotes([activeNote.id]);
+    }
+    const didDiscard = await discardRecoveryDraft();
+    if (didDiscard) on_close();
   }
 
-  function handleToggleNoteSelection(noteId) {
-    setSelectedNoteIds((currentIds) =>
-      currentIds.includes(noteId)
-        ? currentIds.filter((id) => id !== noteId)
-        : [...currentIds, noteId],
-    );
-  }
-
-  function handleToggleSelectAll() {
-    const visibleIds = filteredNotes.map((note) => note.id);
-    const allSelected = visibleIds.every((noteId) => selectedNoteIds.includes(noteId));
-    setSelectedNoteIds(allSelected ? [] : visibleIds);
-  }
-
-  function handleBulkTag(tagId, shouldAdd) {
-    bulkTagNotes(selectedNoteIds, tagId, shouldAdd);
-  }
-
-  function handleBulkArchive() {
-    bulkArchiveNotes(selectedNoteIds, !showArchived);
-    setSelectedNoteIds([]);
-    setSelectionMode(false);
-  }
-
-  function handleRequestBulkDelete() {
-    setPendingDeleteNoteIds(selectedNoteIds);
-  }
-
-  function handleToggleFilterTag(tagId) {
-    setSelectedTagIds((currentIds) =>
-      currentIds.includes(tagId) ? currentIds.filter((id) => id !== tagId) : [...currentIds, tagId],
-    );
+  function handleToggleArchive(noteId) {
+    toggleNoteArchive(noteId);
+    if (noteId === activeNoteId) {
+      setActiveNoteId(null);
+      setNarrowPane('list');
+    }
   }
 
   function handleClearFilters() {
-    setSelectedTagIds([]);
-    setPinnedOnly(false);
-    setDateRange('all');
+    setSearchQuery('');
+    setNoteScope('all');
+    setSelectedNotebookId(null);
   }
 
-  function handleClearSearchAndFilters() {
-    setSearchQuery('');
-    handleClearFilters();
+  function handleClearListFilters() {
+    setNoteScope('all');
+    setSelectedNotebookId(null);
+  }
+
+  function handleSelectNoteScope(nextScope) {
+    setNoteScope(nextScope);
+    setActiveNoteId(null);
+    setNarrowPane('list');
+  }
+
+  function handleSelectNotebook(notebookId) {
+    setSelectedNotebookId(notebookId);
+    setActiveNoteId(null);
+    setNarrowPane('list');
   }
 
   function handleRemoveNoteTag(tagId) {
     removeNoteTag(tagId);
-    setSelectedTagIds((currentIds) => currentIds.filter((id) => id !== tagId));
+  }
+
+  function handleRemoveNoteNotebook(notebookId) {
+    removeNoteNotebook(notebookId);
+    if (selectedNotebookId === notebookId) setSelectedNotebookId(null);
   }
 
   function handleResolveConflict(strategy) {
     resolveConflict(strategy, t('note_conflict_copy_suffix'));
   }
 
-  if (!isLoaded) return null;
-  if (!is_open && !is_pinned) return null;
+  function handleRestoreRecoveryDraft() {
+    const draft = recoveryDrafts[0];
+    if (!draft) return;
+    const note = restoreRecoveryDraft(draft.sessionId);
+    if (!note) return;
+    setActiveNoteId(note.id);
+    setNarrowPane('editor');
+    focusContent();
+  }
 
-  const isSearchEmpty = searchQuery.trim().length > 0 && filteredNotes.length === 0;
-  const hasAdvancedFilters = selectedTagIds.length > 0 || pinnedOnly || dateRange !== 'all';
-  const hasNoMatches = isSearchEmpty || hasAdvancedFilters;
-  const emptyMessage = showArchived
-    ? t('note_archived_empty')
-    : hasNoMatches
-      ? t('note_search_empty')
-      : t('note_empty');
-  const activeNoteCount = notes.filter((note) => !note.isArchived).length;
-  const archivedNoteCount = notes.length - activeNoteCount;
-  const allVisibleSelected =
-    filteredNotes.length > 0 && filteredNotes.every((note) => selectedNoteIds.includes(note.id));
+  async function handleDiscardRecoveryDraft() {
+    const draft = recoveryDrafts[0];
+    if (draft) await discardRecoveryDraft(draft.sessionId);
+  }
+
+  function confirmDeleteNote() {
+    if (pendingDeleteNoteIds.length === 0) return;
+    deleteNotes(pendingDeleteNoteIds);
+    if (pendingDeleteNoteIds.includes(activeNoteId)) {
+      setActiveNoteId(null);
+      setNarrowPane('list');
+    }
+    setPendingDeleteNoteIds([]);
+  }
+
+  const hasFilters =
+    searchQuery.trim().length > 0 || noteScope !== 'all' || selectedNotebookId !== null;
+  const hasListFilters = noteScope !== 'all' || selectedNotebookId !== null;
+  const emptyMessage =
+    noteScope === 'archived'
+      ? t('note_archived_empty')
+      : hasFilters
+        ? t('note_search_empty')
+        : t('note_empty');
+
+  if (!isReady) {
+    const hasLoadError = loadStatus === 'error';
+    return (
+      <>
+        <div className="notes-backdrop" role="presentation" />
+        <section
+          className={`notes-surface notes-surface--${request.type}`}
+          ref={panelRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label={t('note_aria_label')}
+          tabIndex={-1}
+        >
+          <div className="notes-empty" role={hasLoadError ? 'alert' : 'status'}>
+            <p>{hasLoadError ? t('note_load_error') : t('app_loading')}</p>
+            {hasLoadError && (
+              <button
+                className="notes-button notes-button--primary"
+                type="button"
+                onClick={retryLoad}
+              >
+                {t('common_retry')}
+              </button>
+            )}
+          </div>
+        </section>
+      </>
+    );
+  }
 
   return (
     <>
-      {!is_pinned && is_open && !isFullscreen && (
-        <div className="settings-overlay" onClick={handleClosePanel} role="presentation" />
+      {isCapture && (
+        <div className="notes-backdrop" onClick={() => void commitAndClose()} role="presentation" />
       )}
-      <aside
-        className={[
-          'note-panel',
-          `note-panel--${layout_side}`,
-          is_pinned ? 'note-panel--pinned' : '',
-          is_open ? 'note-panel--open' : '',
-          isFullscreen ? 'note-panel--fullscreen' : '',
-        ]
-          .filter(Boolean)
-          .join(' ')}
+      <section
+        className={`notes-surface notes-surface--${request.type}`}
+        data-pane={narrowPane}
         ref={panelRef}
-        role={is_pinned ? 'complementary' : 'dialog'}
-        aria-modal={is_pinned ? undefined : 'true'}
+        role="dialog"
+        aria-modal="true"
         aria-label={t('note_aria_label')}
         tabIndex={-1}
       >
-        <header className="note-panel-header">
-          <h2 className="note-panel-title">{t('note_aria_label')}</h2>
-          <div className="note-panel-actions">
-            <NoteTemplateMenu buttonRef={createButtonRef} onSelect={createNoteFromTemplate} />
-            <button
-              className={`note-panel-button ${selectionMode ? 'note-panel-button--active' : ''}`}
-              type="button"
-              onClick={() => {
-                setSelectionMode((currentValue) => !currentValue);
-                setSelectedNoteIds([]);
-                setNoteView('list');
-              }}
-              aria-pressed={selectionMode}
-              aria-label={t('note_select_mode')}
-              title={t('note_select_mode')}
-            >
-              <SelectIcon />
-            </button>
-            <button
-              className="note-panel-button"
-              type="button"
-              onClick={on_change_side}
-              aria-label={
-                layout_side === 'left' ? t('note_move_panel_right') : t('note_move_panel_left')
-              }
-              title={
-                layout_side === 'left' ? t('note_move_panel_right') : t('note_move_panel_left')
-              }
-            >
-              <PanelSideIcon side={layout_side === 'left' ? 'right' : 'left'} />
-            </button>
-            <button
-              className={`note-panel-button ${isFullscreen ? 'note-panel-button--active' : ''}`}
-              type="button"
-              onClick={on_toggle_fullscreen}
-              aria-label={isFullscreen ? t('note_exit_fullscreen') : t('note_enter_fullscreen')}
-              title={isFullscreen ? t('note_exit_fullscreen') : t('note_enter_fullscreen')}
-            >
-              <FullscreenIcon active={isFullscreen} />
-            </button>
-            {!isFullscreen && (
-              <button
-                className={`note-panel-button ${is_pinned ? 'note-panel-button--active' : ''}`}
-                type="button"
-                onClick={on_toggle_pin}
-                aria-label={t('note_pin_panel')}
-                title={t('note_pin_panel')}
-              >
-                <PinIcon />
-              </button>
-            )}
-            {(!is_pinned || isFullscreen) && (
-              <button
-                className="note-panel-button"
-                type="button"
-                onClick={handleClosePanel}
-                aria-label={t('modal_cancel')}
-              >
-                <CloseIcon />
-              </button>
-            )}
-          </div>
-        </header>
-
-        <div className="note-workspace">
-          <nav className="note-workspace-navigation" aria-label={t('note_filter_label')}>
-            <h3 className="note-workspace-navigation-title">{t('note_filter_label')}</h3>
-            <div className="note-workspace-navigation-items">
-              <button
-                className={`note-workspace-navigation-button ${!showArchived ? 'note-workspace-navigation-button--active' : ''}`}
-                type="button"
-                aria-pressed={!showArchived}
-                onClick={() => setShowArchived(false)}
-              >
-                <span>{t('note_filter_active')}</span>
-                <span className="note-workspace-count">{activeNoteCount}</span>
-              </button>
-              <button
-                className={`note-workspace-navigation-button ${showArchived ? 'note-workspace-navigation-button--active' : ''}`}
-                type="button"
-                aria-pressed={showArchived}
-                onClick={() => setShowArchived(true)}
-              >
-                <span>{t('note_filter_archived')}</span>
-                <span className="note-workspace-count">{archivedNoteCount}</span>
-              </button>
-            </div>
-          </nav>
-
-          <div
-            className={`note-workspace-list-pane ${isEditorView ? 'note-workspace-pane--compact-hidden' : ''}`}
-          >
-            <div className="note-panel-controls">
-              <label className="visually-hidden" htmlFor="note-search">
-                {t('note_search_label')}
-              </label>
-              <input
-                id="note-search"
-                ref={searchInputRef}
-                className="note-panel-search"
-                type="search"
-                value={searchQuery}
-                onChange={(event) => setSearchQuery(event.target.value)}
-                placeholder={t('note_search_placeholder')}
-              />
-              <div className="note-panel-tabs" role="group" aria-label={t('note_filter_label')}>
-                <button
-                  className={`note-panel-tab ${!showArchived ? 'note-panel-tab--active' : ''}`}
-                  type="button"
-                  aria-pressed={!showArchived}
-                  onClick={() => setShowArchived(false)}
-                >
-                  {t('note_filter_active')}
-                </button>
-                <button
-                  className={`note-panel-tab ${showArchived ? 'note-panel-tab--active' : ''}`}
-                  type="button"
-                  aria-pressed={showArchived}
-                  onClick={() => setShowArchived(true)}
-                >
-                  {t('note_filter_archived')}
-                </button>
-              </div>
-            </div>
-
-            <NoteFilters
-              dateRange={dateRange}
-              noteTags={noteTags}
-              onChangeDateRange={setDateRange}
-              onChangeSort={on_change_sort}
-              onClear={handleClearFilters}
+        <NoteLibraryHeader
+          moreContent={
+            <NoteMoreContent
+              onManageNotebooks={() => setIsNotebookManagerOpen(true)}
               onManageTags={() => setIsTagManagerOpen(true)}
-              onTogglePinned={() => setPinnedOnly((currentValue) => !currentValue)}
-              onToggleTag={handleToggleFilterTag}
-              pinnedOnly={pinnedOnly}
-              resultCount={filteredNotes.length}
-              selectedTagIds={selectedTagIds}
-              sortBy={note_sort}
             />
+          }
+          onClose={() => void commitAndClose()}
+          onCreate={handleCreateNote}
+        />
 
-            {selectionMode && (
-              <NoteBulkActions
-                allVisibleSelected={allVisibleSelected}
-                noteTags={noteTags}
-                onArchive={handleBulkArchive}
-                onCancel={() => {
-                  setSelectionMode(false);
-                  setSelectedNoteIds([]);
-                }}
-                onDelete={handleRequestBulkDelete}
-                onSelectAll={handleToggleSelectAll}
-                onTag={handleBulkTag}
-                selectedCount={selectedNoteIds.length}
-                showArchived={showArchived}
-              />
-            )}
-
-            {filteredNotes.length > 0 ? (
-              <ul className="note-list" aria-label={t('note_list_label')}>
-                {filteredNotes.map((note) => (
-                  <li
-                    key={note.id}
-                    className={[
-                      'note-list-row',
-                      activeNoteId === note.id ? 'note-list-row--active' : '',
-                      selectionMode ? 'note-list-row--selecting' : '',
-                      selectedNoteIds.includes(note.id) ? 'note-list-row--selected' : '',
-                    ]
-                      .filter(Boolean)
-                      .join(' ')}
-                  >
-                    {selectionMode && (
-                      <label className="note-list-selection">
-                        <input
-                          type="checkbox"
-                          checked={selectedNoteIds.includes(note.id)}
-                          onChange={() => handleToggleNoteSelection(note.id)}
-                        />
-                        <span className="visually-hidden">
-                          {t('note_select_item', { title: getNoteTitle(note) })}
-                        </span>
-                      </label>
-                    )}
-                    <button
-                      className="note-list-item"
-                      type="button"
-                      onClick={() =>
-                        selectionMode ? handleToggleNoteSelection(note.id) : openNote(note.id)
-                      }
-                      aria-current={activeNoteId === note.id}
-                    >
-                      <span className="note-list-title">{getNoteTitle(note)}</span>
-                    </button>
-                    {!selectionMode && (
-                      <div className="note-list-actions">
-                        <button
-                          className={`note-panel-button note-panel-button--compact ${note.isPinned ? 'note-panel-button--active' : ''}`}
-                          type="button"
-                          onClick={() => toggleNotePin(note.id)}
-                          aria-label={note.isPinned ? t('note_unpin_item') : t('note_pin_item')}
-                          title={note.isPinned ? t('note_unpin_item') : t('note_pin_item')}
-                        >
-                          <PinIcon />
-                        </button>
-                        <button
-                          className="note-panel-button note-panel-button--compact"
-                          type="button"
-                          onClick={() => toggleNoteArchive(note.id)}
-                          aria-label={
-                            note.isArchived ? t('note_restore_item') : t('note_archive_item')
-                          }
-                          title={note.isArchived ? t('note_restore_item') : t('note_archive_item')}
-                        >
-                          {note.isArchived ? <RestoreIcon /> : <ArchiveIcon />}
-                        </button>
-                        <button
-                          className="note-panel-button note-panel-button--compact note-panel-button--danger"
-                          type="button"
-                          onClick={() => requestDeleteNote(note.id)}
-                          aria-label={t('note_delete_item')}
-                          title={t('note_delete_item')}
-                        >
-                          <DeleteIcon />
-                        </button>
-                      </div>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div className="note-panel-empty">
-                <p>{emptyMessage}</p>
-                <button
-                  className="modal-button modal-button--save"
-                  type="button"
-                  onClick={hasNoMatches ? handleClearSearchAndFilters : createNewNote}
-                >
-                  {hasNoMatches ? t('note_clear_search') : t('note_add')}
-                </button>
-              </div>
-            )}
-          </div>
-
-          <div
-            className={`note-workspace-editor-pane ${!isEditorView ? 'note-workspace-pane--compact-hidden' : ''}`}
+        {!isCapture && recoveryDrafts.length > 0 && (
+          <section
+            className="notes-recovery-banner"
+            aria-label={t('note_recovery_available', {
+              count: recoveryDrafts.length,
+            })}
           >
-            {activeNote ? (
+            <p role="status">{t('note_recovery_available', { count: recoveryDrafts.length })}</p>
+            <div className="notes-recovery-actions">
+              <button className="notes-button" type="button" onClick={handleRestoreRecoveryDraft}>
+                {t('note_recovery_restore')}
+              </button>
+              <button
+                className="notes-button notes-button--danger"
+                type="button"
+                onClick={() => void handleDiscardRecoveryDraft()}
+              >
+                {t('note_recovery_discard')}
+              </button>
+            </div>
+          </section>
+        )}
+
+        <div className="notes-workspace">
+          <NoteListPane
+            activeNoteId={activeNoteId}
+            emptyActionLabel={hasFilters ? t('note_clear_filters') : t('note_add')}
+            emptyMessage={emptyMessage}
+            groups={noteGroups}
+            noteNotebooks={noteNotebooks}
+            onCreate={hasFilters ? handleClearFilters : handleCreateNote}
+            onOpenNote={handleOpenNote}
+            toolbar={
+              <NoteListToolbar
+                filterContent={
+                  <NoteFilterContent
+                    hasFilters={hasListFilters}
+                    noteScope={noteScope}
+                    noteNotebooks={noteNotebooks}
+                    onClear={handleClearListFilters}
+                    onSelectNotebook={handleSelectNotebook}
+                    onSelectScope={handleSelectNoteScope}
+                    selectedNotebookId={selectedNotebookId}
+                  />
+                }
+                hasFilters={hasListFilters}
+                onSearchChange={setSearchQuery}
+                searchQuery={searchQuery}
+                sortContent={<NoteSortContent onChangeSort={on_change_sort} sortBy={note_sort} />}
+              />
+            }
+          />
+
+          <section className="notes-editor-pane" aria-label={t('note_editor_label')}>
+            {panelActiveNote ? (
               <NoteEditor
-                activeNote={activeNote}
-                formatDate={formatNoteDate}
+                key={panelActiveNote.id}
+                activeNote={panelActiveNote}
+                contentInputRef={contentInputRef}
+                noteNotebooks={noteNotebooks}
                 noteTags={noteTags}
                 onBack={handleBackToList}
+                onCommitAndClose={commitAndClose}
+                onCopy={handleCopyActiveNote}
+                onDiscard={captureHasPersisted ? undefined : handleDiscardAndClose}
                 onManageTags={() => setIsTagManagerOpen(true)}
+                onOpenLibrary={handleOpenLibrary}
+                onRequestClose={() => void commitAndClose()}
+                onRequestDelete={() => setPendingDeleteNoteIds([panelActiveNote.id])}
                 onRetrySave={retrySave}
+                onToggleArchive={() => handleToggleArchive(panelActiveNote.id)}
+                onTogglePin={() => toggleNotePin(panelActiveNote.id)}
                 onToggleTag={toggleNoteTag}
                 onUpdate={updateActiveNote}
+                presentation={request.type}
+                saveErrorCode={saveErrorCode}
                 saveStatus={saveStatus}
-                titleInputRef={titleInputRef}
               />
             ) : (
-              <div className="note-panel-empty note-panel-empty--editor">
+              <div className="notes-empty">
+                <NotebookPen aria-hidden="true" />
                 <p>{t('note_select_to_edit')}</p>
                 <button
-                  className="modal-button modal-button--save"
+                  className="notes-button notes-button--primary"
                   type="button"
-                  onClick={createNewNote}
+                  onClick={handleCreateNote}
                 >
                   {t('note_add')}
                 </button>
               </div>
             )}
-          </div>
+          </section>
         </div>
 
         <NoteTagManager
-          isOpen={isTagManagerOpen && !conflictState}
+          isOpen={isTagManagerOpen && !isNotebookManagerOpen && !conflictState}
           noteTags={noteTags}
           onAdd={addNoteTag}
           onClose={() => setIsTagManagerOpen(false)}
@@ -796,16 +469,24 @@ function NotePanel({
           onEdit={editNoteTag}
         />
 
+        <NoteNotebookManager
+          isOpen={isNotebookManagerOpen && !isTagManagerOpen && !conflictState}
+          noteNotebooks={noteNotebooks}
+          notes={notes}
+          onAdd={addNoteNotebook}
+          onClose={() => setIsNotebookManagerOpen(false)}
+          onDelete={handleRemoveNoteNotebook}
+          onEdit={editNoteNotebook}
+          onMove={moveNotebook}
+          onReorder={reorderNotebooks}
+        />
+
         {pendingDeleteNotes.length > 0 && (
-          <div
-            className="note-confirm-overlay"
-            onClick={handleDeleteConfirmationOverlayClick}
-            role="presentation"
-          >
+          <div className="note-confirm-overlay" role="presentation">
             <div
               className="note-confirm-dialog"
               ref={deleteDialogRef}
-              role="dialog"
+              role="alertdialog"
               aria-modal="true"
               aria-labelledby="note-delete-confirm-title"
               aria-describedby="note-delete-confirm-description"
@@ -828,7 +509,7 @@ function NotePanel({
                   className="modal-button modal-button--cancel"
                   type="button"
                   ref={deleteCancelButtonRef}
-                  onClick={cancelDeleteConfirmation}
+                  onClick={() => setPendingDeleteNoteIds([])}
                 >
                   {t('note_delete_confirm_cancel')}
                 </button>
@@ -853,13 +534,13 @@ function NotePanel({
                 ? t('note_deleted_count', { count: undoState.items.length })
                 : t('note_deleted')}
             </span>
-            <button className="toast-action" type="button" onClick={handleRestoreDeletedNote}>
+            <button className="toast-action" type="button" onClick={restoreDeletedNote}>
               {t('toast_undo')}
             </button>
           </div>
         )}
-        {/* /.note-panel */}
-      </aside>
+        {/* /.notes-surface */}
+      </section>
     </>
   );
 }

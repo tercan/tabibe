@@ -100,7 +100,6 @@ function Folder({
   on_add_site,
   on_edit_folder,
   on_delete_folder,
-  is_manage_mode,
   is_modal_blocked,
   is_drag_over,
   is_folder_drop_target,
@@ -137,10 +136,6 @@ function Folder({
 
   function toggle_folder(event) {
     event.stopPropagation();
-    if (is_manage_mode) {
-      on_edit_folder();
-      return;
-    }
     set_is_open((prev) => !prev);
   }
 

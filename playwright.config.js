@@ -6,6 +6,11 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   reporter: [['list']],
+  webServer: {
+    command: 'npm run preview:site',
+    url: 'http://127.0.0.1:4178/tabibe/',
+    reuseExistingServer: !process.env.CI,
+  },
   use: {
     trace: 'retain-on-failure',
   },

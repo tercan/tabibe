@@ -1,5 +1,26 @@
+import { getNoteDisplayTitle } from './notePresentation.js';
+
 function getSafeString(value) {
   return typeof value === 'string' ? value : '';
+}
+
+function getNoteSearchScore(note, query, tagNames, notebookNames) {
+  if (!query) return 0;
+  const displayTitle = getNoteDisplayTitle(note).toLocaleLowerCase();
+  const content = getSafeString(note.content).toLocaleLowerCase();
+  const relatedNames = [
+    ...(note.tagIds || []).map((tagId) => tagNames.get(tagId) || ''),
+    notebookNames.get(note.notebookId) || '',
+  ]
+    .join(' ')
+    .toLocaleLowerCase();
+
+  if (displayTitle === query) return 0;
+  if (displayTitle.startsWith(query)) return 1;
+  if (displayTitle.includes(query)) return 2;
+  if (content.includes(query)) return 3;
+  if (relatedNames.includes(query)) return 4;
+  return 5;
 }
 
 function createNote(
@@ -12,6 +33,8 @@ function createNote(
     title: '',
     content: '',
     tagIds: [],
+    notebookId: null,
+    captureSessionId: null,
     isPinned: false,
     isArchived: false,
     createdAt: now,
@@ -44,17 +67,22 @@ function filterNotes(notes, options = {}) {
     pinnedOnly = false,
     searchQuery = '',
     selectedTagIds = [],
+    selectedNotebookId = null,
     showArchived = false,
     sortBy = 'updated-desc',
     now = new Date(),
   } = options;
   const query = searchQuery.trim().toLocaleLowerCase();
   const tagNames = new Map(noteTags.map((tag) => [tag.id, tag.name]));
+  const notebookNames = new Map(
+    (options.noteNotebooks || []).map((notebook) => [notebook.id, notebook.name]),
+  );
   const dateThreshold = getDateThreshold(dateRange, now);
 
   return notes
     .filter((note) => !isNoteEmpty(note) && note.isArchived === showArchived)
     .filter((note) => !pinnedOnly || note.isPinned)
+    .filter((note) => selectedNotebookId === null || note.notebookId === selectedNotebookId)
     .filter(
       (note) =>
         selectedTagIds.length === 0 || selectedTagIds.every((tagId) => note.tagIds.includes(tagId)),
@@ -63,12 +91,27 @@ function filterNotes(notes, options = {}) {
     .filter((note) => {
       if (!query) return true;
       const noteTagNames = note.tagIds.map((tagId) => tagNames.get(tagId) || '').join(' ');
-      return `${note.title} ${note.content} ${noteTagNames}`.toLocaleLowerCase().includes(query);
+      const notebookName = notebookNames.get(note.notebookId) || '';
+      return `${note.title} ${note.content} ${noteTagNames} ${notebookName}`
+        .toLocaleLowerCase()
+        .includes(query);
     })
     .sort((firstNote, secondNote) => {
       if (firstNote.isPinned !== secondNote.isPinned) return firstNote.isPinned ? -1 : 1;
+      if (query) {
+        const scoreDifference =
+          getNoteSearchScore(firstNote, query, tagNames, notebookNames) -
+          getNoteSearchScore(secondNote, query, tagNames, notebookNames);
+        if (scoreDifference !== 0) return scoreDifference;
+      }
       if (sortBy === 'title-asc') {
-        return firstNote.title.localeCompare(secondNote.title, undefined, { sensitivity: 'base' });
+        return getNoteDisplayTitle(firstNote).localeCompare(
+          getNoteDisplayTitle(secondNote),
+          undefined,
+          {
+            sensitivity: 'base',
+          },
+        );
       }
       if (sortBy === 'created-desc') {
         return new Date(secondNote.createdAt).getTime() - new Date(firstNote.createdAt).getTime();

@@ -23,6 +23,19 @@ describe('translation locale coverage', () => {
       expect(Object.keys(messages).sort(), `${localeId} message keys`).toEqual(referenceKeys);
       expect(messages.day_names, `${localeId} day names`).toHaveLength(7);
       expect(messages.month_names, `${localeId} month names`).toHaveLength(12);
+
+      referenceKeys.forEach((key) => {
+        const referenceValue = LOCALE_MAP.en[key];
+        const localizedValue = messages[key];
+
+        if (typeof referenceValue !== 'string') return;
+
+        expect(localizedValue.trim(), `${localeId}.${key} content`).not.toBe('');
+        expect(
+          [...localizedValue.matchAll(/\{([^}]+)\}/gu)].map((match) => match[1]).sort(),
+          `${localeId}.${key} placeholders`,
+        ).toEqual([...referenceValue.matchAll(/\{([^}]+)\}/gu)].map((match) => match[1]).sort());
+      });
     });
   });
 });

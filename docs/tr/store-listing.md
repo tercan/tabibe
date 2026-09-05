@@ -1,55 +1,60 @@
-# Tabibe Chrome Web Mağazası Listeleme Metni
-
-Dil: [English](../store-listing.md) | Türkçe
+# Tabibe Chrome Web Mağazası listelemesi
 
 ## Ürün Adı
 
-Tabibe - Kişisel Yeni Sekme Çalışma Alanı
+Tabibe
 
 ## Kısa Açıklama
 
-Her yeni sekmeyi kısayollar, klasörler, notlar, arama, temalar, arka planlar ve yerel araçlarla odaklı bir alana dönüştürür.
+Kısayollar, klasörler, notlar, temalar ve tarayıcınızın varsayılan aramasıyla yeni sekmenizi kişisel çalışma alanına dönüştürün.
 
 ## Ayrıntılı Açıklama
 
-Tabibe, tarayıcının yeni sekme sayfasını her gün kullandığınız araçlara ve bilgilere yakın duran, gizlilik odaklı bir kişisel çalışma alanıyla değiştirir.
+Yeni sekmeyi açın, kaldığınız yerden devam edin. Tabibe; kayıtlı sitelerinizi, notlarınızı ve günlük araçlarınızı kişisel bir yeni sekme sayfasında bir araya getirir.
 
-Kayıtlı siteleri sıralanabilir hızlı erişim ızgarasında düzenleyebilir, klasörlerde gruplayabilir ve öğeleri sürükle-bırak ya da klavye eylemleriyle taşıyabilirsiniz. Her site; paketlenmiş marka simgesi, isteğe bağlı Chrome favicon sağlayıcısı veya yerel harf fallback'i ile ayırt edilebilir kalır. Kayıtlı adresler harici bir simge servisine gönderilmez.
+SİTELERİNİZ ELİNİZİN ALTINDA
+Sık kullandığınız siteleri kısayol ızgarasında tutun. Klasörlerde gruplayın, sürükle-bırak veya klavye eylemleriyle sıralayın, tanıdık simgeler seçin. Paketlenmiş simgeler yerel çalışır; Chrome site simgeleri isteğe bağlıdır.
 
-Arama, aktif ve arşiv görünümleri, sabitleme, güvenli silme ve geri alma desteği sunan çoklu not paneliyle fikirlerinizi yakalayabilirsiniz. Arama sağlayıcısını seçebilir, açık ve koyu tema arasında geçiş yapabilir, eşleşen arka plan renklerini kullanabilir veya tarayıcıda yerel olarak işlenen bir arka plan görseli yükleyebilirsiniz.
+FİKİRLERİNİZE YER AÇIN
+Hızlıca not alın veya tüm not kütüphanesini açın. Notları defter ve etiketlerle düzenleyin, içeriklerinde arayın, önemli olanları sabitleyin, biten işleri arşivleyin. Markdown ile yazın; listeleri, kontrol listelerini ve bağlantıları önizleyin.
 
-Tabibe; siteleri, klasörleri, notları, ayarları ve arka plan tercihlerini tarayıcı profilinde saklar. Doğrulanmış JSON yedekleme ve geri yükleme bütün çalışma alanını kapsar; önizleme, otomatik rollback ve geri alma korumaları sağlar. Eklenti analiz, reklam, telemetri, kullanıcı hesabı veya uzak uygulama sunucusu içermez.
+TARAYICINIZIN ARAMA TERCİHİ
+Arama kutusu başlangıçta Chrome’da seçili varsayılan arama sağlayıcısını kullanır. Tabibe içinden açıkça başka bir sağlayıcı seçebilirsiniz. Tabibe, Chrome’un arama ayarlarını değiştirmez ve sorgularınızı kaydetmez.
 
-Arayüz 10 dilde kullanılabilir; kalıcı dil seçimi, sağdan sola Arapça düzeni, görünür klavye odağı, klavyeyle öğe yönetimi, reduced-motion desteği ve WCAG odaklı kontrast sunar.
+SİZE UYAN BİR GÖRÜNÜM
+Açık veya koyu görünüm, düz arka plan rengi ya da cihazınızdan bir görsel seçin. Saati ve arama kutusunu gösterin veya gizleyin. Yerel sekme/pencere sayıları ve isteğe bağlı bellek göstergesi de kullanılabilir.
+
+VERİLER YERELDE, HESAP GEREKMEZ
+Kısayollar, notlar, ayarlar ve arka plan görselleri tarayıcı profilinizde saklanır. Ayarlar’dan JSON yedeği dışa aktarabilir ve geri yükleyebilirsiniz. Tabibe’de hesap, bulut eşitlemesi, reklam veya analiz bulunmaz; çalışma alanı içeriği geliştiriciye gönderilmez. Yerel veriler ve dışa aktarılan dosyalar Tabibe tarafından şifrelenmez; yedeklerinizi koruyun. Gönderdiğiniz aramalar ve açtığınız bağlantılarda hedef hizmetin politikaları geçerlidir.
+
+Türkçe, İngilizce, Fransızca, Almanca, İtalyanca ve Arapça dâhil 13 dilde kullanılabilir. Klavye kontrolleri, azaltılmış hareket desteği ve dar pencerelere uyumlu düzenler içerir.
+
+Tabibe yeni sekme sayfasını değiştirir. Tarama geçmişini veya başka web sayfalarını okumaz. Depolama, kurtarma kopyaları ve isteğe bağlı izinlerin ayrıntıları için gizlilik politikasını okuyabilirsiniz.
 
 ## Tek Amaç
 
-Tabibe, tarayıcının yeni sekme sayfasını kısayolları, klasörleri, notları, arama tercihlerini, görünümü ve hafif yerel durum araçlarını yönetmeye yarayan kişisel bir üretkenlik alanıyla değiştirir.
-
-## İzinler
+Yeni sekme sayfasını kayıtlı kısayol ve notların, görünüm tercihlerinin ve tarayıcı varsayılanıyla aramanın bulunduğu kişisel bir çalışma alanına dönüştürmek.
 
 Zorunlu izin: `storage`
 
-Yalnızca kullanıcının çalışma alanı verilerini ve tercihlerini oturumlar arasında yerel Chrome profilinde saklamak için kullanılır.
+Kısayolları, klasörleri, notları, etiketleri, defterleri, ayarları, arka plan görsellerini ve yerel kurtarma kopyalarını chrome.storage.local içinde oturumlar arasında saklar.
+
+Zorunlu izin: `search`
+
+Yalnızca kullanıcının gönderdiği sorguyu Chrome Search API ile tarayıcının varsayılan arama sağlayıcısına iletir. Varsayılan arama ayarlarını değiştirmez.
 
 İsteğe bağlı izin: `favicon`
 
-Yalnızca kullanıcı site simgelerini etkinleştirdiğinde istenir. Tabibe'nin tarayıcı tarafından bilinen adresler için Chrome'un yerleşik favicon sağlayıcısını kullanmasına izin verir. İzin Tabibe içinden geri alınabilir.
+Yalnız kullanıcı site simgelerini etkinleştirdiğinde istenir. Chrome’un yerleşik favicon sağlayıcısını kullanır; Ayarlar’dan geri alınabilir.
 
 İsteğe bağlı izin: `system.memory`
 
-Yalnızca kullanıcı bellek göstergesini etkinleştirdiğinde istenir. Değer yerel olarak gösterilir; saklanmaz veya iletilmez.
+Yalnız kullanıcı bellek göstergesini etkinleştirdiğinde istenir. Yerel bellek değerlerini saklamadan veya aktarmadan geçici olarak gösterir.
 
-## Gizlilik Beyanları
+## URL
 
-- Uzaktan barındırılan JavaScript veya WebAssembly yüklenmez ve çalıştırılmaz.
-- Analiz, telemetri, reklam, profilleme veya veri satışı bulunmaz.
-- Kayıtlı adresler Google S2, Iconify, Simple Icons CDN veya başka bir harici simge servisine gönderilmez.
-- Ağ yönlendirmesi yalnızca site açma, arama yapma veya proje bağlantısını izleme gibi görünür kullanıcı eylemlerinden sonra gerçekleşir.
+[Tabibe](https://tercan.github.io/tabibe/)
 
-## Listeleme Bilgileri
+[GitHub](https://github.com/tercan/tabibe/issues)
 
-- Kategori: Workflow & Planning
-- Ana sayfa: <https://tercan.github.io/tabibe/>
-- Destek: <https://github.com/tercan/tabibe/issues>
-- Gizlilik politikası: <https://tercan.github.io/tabibe/privacy-policy>
+[Privacy](https://tercan.github.io/tabibe/privacy/?lang=tr)

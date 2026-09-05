@@ -1,91 +1,100 @@
+import { ArrowUpDown, Check, Pin } from 'lucide-react';
 import { useTranslation } from '../../hooks/useTranslation.js';
+import NoteNotebooks from './NoteNotebooks.jsx';
+
+function closeParentMenu(event) {
+  event.currentTarget.closest('details')?.removeAttribute('open');
+}
 
 function NoteFilters({
-  dateRange,
+  activeNoteCount,
+  archivedNoteCount,
+  noteNotebooks,
   noteTags,
-  onChangeDateRange,
+  notes,
   onChangeSort,
-  onClear,
+  onManageNotebooks,
   onManageTags,
+  onReorderNotebooks,
+  onSelectAll,
+  onSelectArchive,
+  onSelectNotebook,
+  onSelectTag,
   onTogglePinned,
-  onToggleTag,
   pinnedOnly,
   resultCount,
+  selectedNotebookId,
   selectedTagIds,
+  showArchived,
   sortBy,
 }) {
   const { t } = useTranslation();
-  const hasActiveFilters = pinnedOnly || dateRange !== 'all' || selectedTagIds.length > 0;
+  const sortOptions = [
+    { value: 'updated-desc', label: t('note_sort_updated') },
+    { value: 'created-desc', label: t('note_sort_created') },
+    { value: 'title-asc', label: t('note_sort_title') },
+  ];
+  const activeSortLabel = sortOptions.find((option) => option.value === sortBy)?.label;
 
   return (
     <div className="note-filter-bar">
-      <details className="note-filter-menu">
-        <summary className="note-filter-control">
-          {t('note_filter_tags')}
-          {selectedTagIds.length > 0 && (
-            <span className="note-filter-count">{selectedTagIds.length}</span>
-          )}
+      <NoteNotebooks
+        compact
+        activeNoteCount={activeNoteCount}
+        archivedNoteCount={archivedNoteCount}
+        noteNotebooks={noteNotebooks}
+        noteTags={noteTags}
+        notes={notes}
+        onManageNotebooks={onManageNotebooks}
+        onManageTags={onManageTags}
+        onReorderNotebooks={onReorderNotebooks}
+        onSelectAll={onSelectAll}
+        onSelectArchive={onSelectArchive}
+        onSelectNotebook={onSelectNotebook}
+        onSelectTag={onSelectTag}
+        selectedNotebookId={selectedNotebookId}
+        selectedTagIds={selectedTagIds}
+        showArchived={showArchived}
+      />
+
+      <details className="note-filter-menu note-sort-menu">
+        <summary
+          className="note-filter-icon-button"
+          aria-label={t('note_sort_label')}
+          title={t('note_sort_label')}
+        >
+          <ArrowUpDown aria-hidden="true" />
+          <span className="visually-hidden">{activeSortLabel}</span>
         </summary>
-        <div className="note-filter-menu-content">
-          {noteTags.length > 0 ? (
-            noteTags.map((tag) => (
-              <label className="note-filter-checkbox" key={tag.id}>
-                <input
-                  type="checkbox"
-                  checked={selectedTagIds.includes(tag.id)}
-                  onChange={() => onToggleTag(tag.id)}
-                />
-                <span className={`note-tag-dot note-tag-dot--${tag.colorToken}`} />
-                <span>{tag.name}</span>
-              </label>
-            ))
-          ) : (
-            <p className="note-filter-empty">{t('note_tag_empty')}</p>
-          )}
-          {hasActiveFilters && (
-            <button className="note-filter-menu-action" type="button" onClick={onClear}>
-              {t('note_clear_filters')}
+        <div className="note-filter-menu-content note-sort-menu-content">
+          {sortOptions.map((option) => (
+            <button
+              className={`note-sort-option ${sortBy === option.value ? 'note-sort-option--active' : ''}`}
+              type="button"
+              aria-pressed={sortBy === option.value}
+              key={option.value}
+              onClick={(event) => {
+                onChangeSort(option.value);
+                closeParentMenu(event);
+              }}
+            >
+              <span>{option.label}</span>
+              {sortBy === option.value && <Check aria-hidden="true" />}
             </button>
-          )}
-          <button className="note-filter-menu-action" type="button" onClick={onManageTags}>
-            {t('note_manage_tags')}
-          </button>
+          ))}
         </div>
       </details>
 
-      <label className="note-filter-select">
-        <span className="visually-hidden">{t('note_filter_date')}</span>
-        <select value={dateRange} onChange={(event) => onChangeDateRange(event.target.value)}>
-          <option value="all">{t('note_date_all')}</option>
-          <option value="today">{t('note_date_today')}</option>
-          <option value="7-days">{t('note_date_7_days')}</option>
-          <option value="30-days">{t('note_date_30_days')}</option>
-        </select>
-      </label>
-
-      <label className="note-filter-select">
-        <span className="visually-hidden">{t('note_sort_label')}</span>
-        <select value={sortBy} onChange={(event) => onChangeSort(event.target.value)}>
-          <option value="updated-desc">{t('note_sort_updated')}</option>
-          <option value="created-desc">{t('note_sort_created')}</option>
-          <option value="title-asc">{t('note_sort_title')}</option>
-        </select>
-      </label>
-
       <button
-        className={`note-filter-control ${pinnedOnly ? 'note-filter-control--active' : ''}`}
+        className={`note-filter-icon-button ${pinnedOnly ? 'note-filter-icon-button--active' : ''}`}
         type="button"
+        aria-label={t('note_filter_pinned')}
         aria-pressed={pinnedOnly}
+        title={t('note_filter_pinned')}
         onClick={onTogglePinned}
       >
-        {t('note_filter_pinned')}
+        <Pin aria-hidden="true" />
       </button>
-
-      {hasActiveFilters && (
-        <button className="note-filter-clear" type="button" onClick={onClear}>
-          {t('note_clear_filters')}
-        </button>
-      )}
 
       <p className="note-result-count" role="status" aria-live="polite">
         {t('note_result_count', { count: resultCount })}

@@ -1,0 +1,135 @@
+{
+  "title": "Tabibe {version} — Your personal new-tab workspace",
+  "description": "Make your new tab a home for shortcuts, folders and notes. Explore Tabibe {version}, download the extension and learn how your data stays local.",
+  "skip": "Skip to content",
+  "navigation": "Main navigation",
+  "featuresLink": "Features",
+  "previewLink": "Screenshots",
+  "installLink": "Installation",
+  "privacyLink": "Privacy Policy",
+  "languageLink": "Türkçe",
+  "languageLabel": "Read this page in Turkish",
+  "badge": "Version {version} · Open source",
+  "heroTitle": "Your next tab.\nYour own space.",
+  "heroDescription": "Your favorite sites, everyday notes and next idea — together in a quiet, personal new-tab page.",
+  "download": "Download {version}",
+  "releaseNotes": "Release notes",
+  "downloadNote": "GitHub download · Install manually in Chrome. A Chrome Web Store listing is not available yet.",
+  "heroAlt": "Tabibe new-tab page with clock, browser-default search, shortcuts and a folder",
+  "heroCaption": "The real Tabibe {version} interface. Screenshots use sample content.",
+  "statLabels": ["interface languages", "local workspace", "account required"],
+  "statValues": ["13", "On your device", "None"],
+  "newEyebrow": "New in {version}",
+  "newTitle": "An idea now. A useful note later.",
+  "newDescription": "Capture a thought without losing your place. Open your notes library when you are ready to organize it.",
+  "newItems": [
+    "Quick capture from the new-tab footer, or Alt + Shift + N.",
+    "A notes library with notebooks, tags, search, pinning and archive views.",
+    "Markdown previews and a visible local save status, with recovery options when saving fails.",
+    "Browser-default search and a privacy policy available offline in 13 languages."
+  ],
+  "notesAlt": "Tabibe notes library with searchable notes, notebooks, tags and a Markdown checklist preview",
+  "notesCaption": "Write, find and organize your notes in one workspace.",
+  "featuresTitle": "The things you reach for, close at hand.",
+  "featuresDescription": "A few everyday tools, built around your new tab.",
+  "features": [
+    {
+      "icon": "folder",
+      "title": "Sites, sorted your way",
+      "description": "Save shortcuts, group them in folders and reorder them with drag and drop or keyboard actions. Choose bundled icons or optional Chrome site icons."
+    },
+    {
+      "icon": "search",
+      "title": "Your browser’s search",
+      "description": "Start with the search engine already selected in Chrome. Explicitly choose an alternative in Tabibe whenever you prefer."
+    },
+    {
+      "icon": "palette",
+      "title": "A familiar-looking space",
+      "description": "Choose a light or dark theme, a solid background color or a picture from your device. Show or hide the clock and search box."
+    },
+    {
+      "icon": "download",
+      "title": "A backup you can keep",
+      "description": "Export your workspace as a JSON file and preview a backup before restoring it. Keep a separate copy of important notes."
+    },
+    {
+      "icon": "shield",
+      "title": "Local by design",
+      "description": "No account, analytics, ads or cloud sync. Workspace data is stored in your browser profile and is not sent to the developer."
+    },
+    {
+      "icon": "language",
+      "title": "13 languages, one workspace",
+      "description": "Switch languages in Settings. Includes right-to-left Arabic, keyboard controls and layouts for narrower windows."
+    }
+  ],
+  "screenshotsTitle": "A closer look",
+  "screenshotsDescription": "Open any screenshot to view it at full size.",
+  "screenshots": [
+    {
+      "file": "02-folders",
+      "title": "Keep related sites together",
+      "description": "Folders keep your shortcut grid easy to scan.",
+      "alt": "An open Tabibe folder showing three saved websites"
+    },
+    {
+      "file": "04-quick-note",
+      "title": "Catch an idea as it arrives",
+      "description": "Quick capture stays close to the new-tab page.",
+      "alt": "Tabibe quick-note panel with a sample idea saved on the device"
+    },
+    {
+      "file": "05-settings-dark",
+      "title": "Make the space your own",
+      "description": "Appearance, search and optional controls live in Settings.",
+      "alt": "Tabibe dark Settings panel with browser-default search, optional permissions and background colors"
+    }
+  ],
+  "languagesTitle": "Choose your language",
+  "languagesDescription": "The interface and bundled privacy policy support all 13 languages. This website is available in English and Turkish.",
+  "installTitle": "Ready for a new tab?",
+  "installDescription": "Download the GitHub release and load the extension into Chrome in a few steps. No account is needed in Tabibe.",
+  "installSteps": [
+    {
+      "title": "Download and extract",
+      "description": "Get tabibe-v{version}.zip from this release and extract it to a folder you can keep."
+    },
+    {
+      "title": "Open Chrome extensions",
+      "description": "Paste the address below into Chrome’s address bar, then enable Developer mode."
+    },
+    {
+      "title": "Load your folder",
+      "description": "Choose Load unpacked and select the extracted folder containing manifest.json. Open a new tab to use Tabibe."
+    }
+  ],
+  "copyAddress": "Copy address",
+  "copied": "Address copied. Paste it into Chrome’s address bar.",
+  "copyError": "Copy was unavailable. Select and copy the address manually.",
+  "updateNote": "Updating an unpacked installation? Export a backup first, replace files in the same extension folder and click Reload in chrome://extensions. Keep that folder in place.",
+  "checksums": "Download SHA-256 checksums",
+  "faqTitle": "A few things to know",
+  "faq": [
+    {
+      "question": "Does Tabibe change my search engine?",
+      "answer": "No. The first search option follows Chrome’s existing default through Chrome Search API. You can explicitly select another provider in Tabibe. Older unversioned Tabibe search preferences move once to the browser default."
+    },
+    {
+      "question": "Where are my notes stored?",
+      "answer": "Notes, shortcuts, settings and background images stay in the local browser profile. Tabibe does not encrypt that storage or exported JSON files. Avoid sensitive information and protect your device and backups. The developer cannot recover your local data remotely."
+    },
+    {
+      "question": "What happens when I remove the extension?",
+      "answer": "Removing Tabibe removes its local extension data, including local recovery copies. Export a backup first if you want to keep your workspace. Previously exported files and device backups need to be managed separately."
+    },
+    {
+      "question": "Can I use Tabibe offline?",
+      "answer": "The new-tab page, notes, bundled icons and privacy policy work offline. Web searches and the websites you open need a connection and follow the destination service’s policies."
+    }
+  ],
+  "footerText": "Built by",
+  "source": "Source code",
+  "support": "Report an issue",
+  "license": "GPL-3.0 license"
+}

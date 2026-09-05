@@ -7,7 +7,7 @@
   padding: var(--space-xs) var(--space-lg);
   margin-top: auto;
   gap: var(--space-md);
-  background-color: var(--color-footer-bg);
+  background-color: var(--color-home-footer-surface);
   position: fixed;
   bottom: 0;
   inset-inline: 0;
@@ -105,19 +105,20 @@
   justify-content: center;
   width: 2rem;
   height: 2rem;
+  border: var(--border-width) solid transparent;
   border-radius: var(--border-radius);
   color: var(--color-text-muted);
   transition:
+    border-color var(--transition-base),
     color var(--transition-base),
     background-color var(--transition-base);
 }
 
 .footer-button:hover {
   color: var(--color-text);
-  background-color: var(--color-surface-hover);
+  background-color: var(--color-home-control-surface-hover);
 }
 
 .footer-button:focus-visible {
-  outline: var(--focus-ring-width) solid var(--color-focus);
-  outline-offset: var(--focus-ring-offset);
+  border-color: var(--color-primary);
 }

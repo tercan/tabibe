@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Download, Grid2X2, ImageUp, Moon, RotateCcw, Sun, Upload } from 'lucide-react';
 import { useTranslation } from '../hooks/useTranslation.js';
 import useFocusTrap from '../hooks/useFocusTrap.jsx';
 import useBodyScrollLock from '../hooks/useBodyScrollLock.js';
@@ -7,6 +8,7 @@ import { prepareBackgroundImage } from '../lib/backgroundImage.js';
 import { downloadBackupFile } from '../lib/backupFile.js';
 import { BACKGROUND_PRESET_GROUPS } from '../lib/backgroundPresets.js';
 import CloseIcon from './icons/CloseIcon.jsx';
+import LocaleFlag from './icons/LocaleFlag.jsx';
 import { SEARCH_ENGINES } from '../config/searchEngines.js';
 import { LOCALE_OPTIONS } from '../i18n/translationContext.js';
 
@@ -19,6 +21,10 @@ const APP_VERSION = import.meta.env.VITE_APP_VERSION;
 function SettingsPanel({
   is_open,
   on_close,
+  iconStyle,
+  onToggleIconStyle,
+  theme,
+  onToggleTheme,
   search_engine,
   on_change_search_engine,
   show_clock,
@@ -41,10 +47,16 @@ function SettingsPanel({
   const { t } = useTranslation();
   const panel_ref = useRef(null);
   const close_button_ref = useRef(null);
+  const language_menu_ref = useRef(null);
+  const language_trigger_ref = useRef(null);
   const reload_timer_ref = useRef(null);
   const [status, set_status] = useState(null);
   const [pending_import, set_pending_import] = useState(null);
   const [can_undo_import, set_can_undo_import] = useState(false);
+  const [is_language_menu_open, set_is_language_menu_open] = useState(false);
+  const active_locale = LOCALE_OPTIONS.find((option) => option.id === locale) || LOCALE_OPTIONS[0];
+  const iconStyleLabel =
+    iconStyle === 'simple' ? t('footer_icon_style_simple') : t('footer_icon_style_favicon');
 
   useFocusTrap({
     containerRef: panel_ref,
@@ -53,6 +65,36 @@ function SettingsPanel({
     onEscape: on_close,
   });
   useBodyScrollLock(is_open);
+
+  useEffect(() => {
+    if (!is_language_menu_open) return undefined;
+
+    function handle_pointer_down(event) {
+      if (!language_menu_ref.current?.contains(event.target)) {
+        set_is_language_menu_open(false);
+      }
+    }
+
+    function handle_key_down(event) {
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
+      event.stopPropagation();
+      set_is_language_menu_open(false);
+      language_trigger_ref.current?.focus();
+    }
+
+    document.addEventListener('pointerdown', handle_pointer_down);
+    document.addEventListener('keydown', handle_key_down, true);
+
+    return () => {
+      document.removeEventListener('pointerdown', handle_pointer_down);
+      document.removeEventListener('keydown', handle_key_down, true);
+    };
+  }, [is_language_menu_open]);
+
+  useEffect(() => {
+    if (!is_open) set_is_language_menu_open(false);
+  }, [is_open]);
 
   async function handle_export() {
     try {
@@ -154,6 +196,20 @@ function SettingsPanel({
     }
   }
 
+  function handle_favicon_permission_change(event) {
+    if (event.target.checked) {
+      on_request_favicon_permission();
+      return;
+    }
+    on_revoke_favicon_permission();
+  }
+
+  function handle_locale_change(locale_id) {
+    on_change_locale(locale_id);
+    set_is_language_menu_open(false);
+    language_trigger_ref.current?.focus();
+  }
+
   if (!is_open) return null;
 
   return (
@@ -168,41 +224,81 @@ function SettingsPanel({
       >
         <header className="settings-header">
           <h2 className="settings-title">{t('settings_title')}</h2>
-          <button
-            className="settings-close"
-            ref={close_button_ref}
-            onClick={on_close}
-            aria-label={t('modal_cancel')}
-          >
-            <CloseIcon />
-          </button>
+          <div className="settings-header-actions">
+            <button
+              type="button"
+              className="settings-header-button settings-header-button--icon-style"
+              onClick={onToggleIconStyle}
+              aria-label={iconStyleLabel}
+              aria-pressed={iconStyle === 'favicon'}
+              title={iconStyleLabel}
+            >
+              <Grid2X2 aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              className="settings-header-button settings-header-button--theme"
+              onClick={onToggleTheme}
+              aria-label={t('footer_theme_toggle')}
+              title={t('footer_theme_toggle')}
+            >
+              {theme === 'dark' ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
+            </button>
+            <div className="settings-language-menu" ref={language_menu_ref}>
+              <button
+                type="button"
+                className="settings-language-trigger"
+                ref={language_trigger_ref}
+                onClick={() => set_is_language_menu_open((is_open) => !is_open)}
+                aria-label={`${t('settings_language')}: ${active_locale.name}`}
+                aria-controls="settings-language-options"
+                aria-expanded={is_language_menu_open}
+                aria-haspopup="true"
+                title={active_locale.name}
+              >
+                <LocaleFlag locale={active_locale.id} />
+                <span className="visually-hidden">{active_locale.name}</span>
+              </button>
+              {is_language_menu_open && (
+                <div
+                  className="settings-language-options"
+                  id="settings-language-options"
+                  role="group"
+                  aria-label={t('settings_language')}
+                >
+                  {LOCALE_OPTIONS.filter((option) => option.id !== locale).map((option) => (
+                    <button
+                      type="button"
+                      className="settings-language-option"
+                      key={option.id}
+                      onClick={() => handle_locale_change(option.id)}
+                      title={option.name}
+                    >
+                      <LocaleFlag locale={option.id} />
+                      <span className="visually-hidden">{option.name}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            {/* /.settings-language-menu */}
+            <button
+              className="settings-close"
+              ref={close_button_ref}
+              onClick={on_close}
+              aria-label={t('modal_cancel')}
+            >
+              <CloseIcon />
+            </button>
+          </div>
+          {/* /.settings-header-actions */}
         </header>
         {/* /.settings-header */}
 
         <div className="settings-body">
-          <div className="settings-group">
-            <h3 className="settings-group-title">{t('settings_language')}</h3>
-            <label className="settings-field" htmlFor="settings-language">
-              <span className="visually-hidden">{t('settings_language')}</span>
-              <select
-                id="settings-language"
-                className="modal-input modal-select"
-                value={locale}
-                onChange={(event) => on_change_locale(event.target.value)}
-              >
-                {LOCALE_OPTIONS.map((option) => (
-                  <option key={option.id} value={option.id}>
-                    {option.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-          {/* /.settings-group */}
-
-          <div className="settings-group">
+          <div className="settings-group settings-group--search-engines">
             <h3 className="settings-group-title">{t('settings_search_engine')}</h3>
-            <div className="settings-options">
+            <div className="settings-options settings-options--search-engines">
               {SEARCH_ENGINES.map((engine) => (
                 <label
                   key={engine.id}
@@ -215,53 +311,54 @@ function SettingsPanel({
                     checked={search_engine === engine.id}
                     onChange={() => on_change_search_engine(engine.id)}
                   />
-                  <span className="settings-radio-label">{engine.name}</span>
+                  <span className="settings-radio-label">
+                    {engine.nameKey ? t(engine.nameKey) : engine.name}
+                  </span>
                 </label>
               ))}
             </div>
           </div>
           {/* /.settings-group */}
 
-          <div className="settings-group">
+          <div className="settings-group settings-group--site-icons">
             <h3 className="settings-group-title">{t('settings_site_icons')}</h3>
-            <p className="settings-description">{t('settings_site_icons_description')}</p>
-            {favicon_permission?.hasPermission ? (
-              <>
-                <p className="settings-permission-state settings-permission-state--success">
-                  {t('settings_site_icons_enabled')}
-                </p>
-                <button
-                  type="button"
-                  className="modal-button modal-button--cancel settings-permission-button"
-                  onClick={on_revoke_favicon_permission}
-                  disabled={favicon_permission?.requestState === 'revoking'}
-                >
-                  {t('settings_site_icons_disable')}
-                </button>
-              </>
-            ) : (
-              <button
-                type="button"
-                className="modal-button modal-button--cancel settings-permission-button"
-                onClick={on_request_favicon_permission}
+            <label className="settings-toggle settings-toggle--described">
+              <span className="settings-toggle-copy">
+                <span className="settings-toggle-label">{t('settings_site_icons_toggle')}</span>
+                <span className="settings-toggle-description" id="settings-site-icons-description">
+                  {t('settings_site_icons_description')}
+                </span>
+              </span>
+              <input
+                type="checkbox"
+                checked={Boolean(favicon_permission?.hasPermission)}
+                onChange={handle_favicon_permission_change}
                 disabled={
                   !favicon_permission?.supported ||
-                  favicon_permission?.requestState === 'requesting'
+                  favicon_permission?.requestState === 'requesting' ||
+                  favicon_permission?.requestState === 'revoking'
                 }
+                aria-describedby="settings-site-icons-description"
+              />
+            </label>
+            {favicon_permission?.requestState === 'granted' && (
+              <p
+                className="settings-permission-feedback settings-permission-feedback--success"
+                role="status"
               >
-                {t('settings_site_icons_enable')}
-              </button>
+                {t('settings_site_icons_enabled')}
+              </p>
             )}
             {favicon_permission?.requestState === 'denied' && (
               <p
-                className="settings-permission-state settings-permission-state--error"
+                className="settings-permission-feedback settings-permission-feedback--error"
                 role="status"
               >
                 {t('settings_site_icons_denied')}
               </p>
             )}
             {favicon_permission?.requestState === 'revoked' && (
-              <p className="settings-permission-state" role="status">
+              <p className="settings-permission-feedback" role="status">
                 {t('settings_site_icons_disabled')}
               </p>
             )}
@@ -318,7 +415,8 @@ function SettingsPanel({
             </div>
             <div className="settings-bg-actions">
               <label className="modal-button modal-button--cancel settings-bg-upload">
-                {t('settings_bg_upload')}
+                <ImageUp aria-hidden="true" />
+                <span>{t('settings_bg_upload')}</span>
                 <input
                   type="file"
                   accept="image/png,image/jpeg,image/webp,image/avif"
@@ -327,7 +425,8 @@ function SettingsPanel({
                 />
               </label>
               <button className="modal-button modal-button--cancel" onClick={on_reset_bg}>
-                {t('settings_bg_reset')}
+                <RotateCcw aria-hidden="true" />
+                <span>{t('settings_bg_reset')}</span>
               </button>
             </div>
           </div>
@@ -335,12 +434,14 @@ function SettingsPanel({
 
           <div className="settings-group">
             <h3 className="settings-group-title">{t('settings_data_management')}</h3>
-            <div className="settings-bg-actions">
+            <div className="settings-bg-actions settings-data-actions">
               <button className="modal-button modal-button--cancel" onClick={handle_export}>
-                {t('settings_export')}
+                <Download aria-hidden="true" />
+                <span>{t('settings_export')}</span>
               </button>
               <label className="modal-button modal-button--cancel">
-                {t('settings_import')}
+                <Upload aria-hidden="true" />
+                <span>{t('settings_import')}</span>
                 <input
                   type="file"
                   accept=".json"
@@ -389,43 +490,43 @@ function SettingsPanel({
             )}
           </div>
           {/* /.settings-group */}
-
-          <div className="settings-about">
-            <p className="settings-about-title">
-              <a
-                href="https://tercan.github.io/tabibe/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="settings-about-link"
-              >
-                Tabibe <span>v{APP_VERSION}</span>
-              </a>
-            </p>
-            <p className="settings-about-author">
-              {t('settings_about_developer')}:{' '}
-              <a
-                href="https://tercan.net"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="settings-author-link"
-              >
-                Tercan Keskin
-              </a>
-            </p>
-            <p className="settings-about-privacy">
-              <a
-                href={`https://tercan.github.io/tabibe/privacy-policy${locale === 'tr' ? '.tr' : ''}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="settings-author-link"
-              >
-                {t('settings_privacy_policy')}
-              </a>
-            </p>
-          </div>
-          {/* /.settings-about */}
         </div>
         {/* /.settings-body */}
+
+        <footer className="settings-about">
+          <p className="settings-about-title">
+            <a
+              href="https://tercan.github.io/tabibe/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="settings-about-link"
+            >
+              Tabibe <span>v{APP_VERSION}</span>
+            </a>
+          </p>
+          <p className="settings-about-author">
+            {t('settings_about_developer')}:{' '}
+            <a
+              href="https://tercan.net"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="settings-author-link"
+            >
+              Tercan Keskin
+            </a>
+          </p>
+          <p className="settings-about-privacy">
+            <a
+              href={`privacy-policy.html?lang=${encodeURIComponent(locale)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="settings-author-link"
+            >
+              {t('settings_privacy_policy')}
+            </a>
+          </p>
+        </footer>
+        {/* /.settings-about */}
       </aside>
       {/* /.settings-panel */}
     </div>

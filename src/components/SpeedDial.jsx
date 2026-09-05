@@ -86,49 +86,12 @@ function FolderPlusIcon() {
   );
 }
 
-function EditIcon() {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M12 20h9" />
-      <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
-    </svg>
-  );
-}
-
-function CheckIcon() {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
-  );
-}
-
 /**
  * 3. SpeedDial component
  */
 
 function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favicon_permission }) {
-  const { t } = useTranslation();
+  const { locale, t } = useTranslation();
   const icon_catalog = useIconCatalog();
   const {
     clearSaveError: clear_save_error,
@@ -151,8 +114,9 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
   const [modal_folder_id, set_modal_folder_id] = useState(ROOT_FOLDER_ID);
   const [folder_delete_candidate, set_folder_delete_candidate] = useState(null);
   const [context_menu, set_context_menu] = useState(null);
-  const [manage_mode, set_manage_mode] = useState(false);
   const [move_announcement, set_move_announcement] = useState('');
+  const move_left_delta = locale === 'ar' ? 1 : -1;
+  const move_right_delta = move_left_delta * -1;
 
   /**
    * 4. Navigation handlers
@@ -171,10 +135,6 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
   function handle_key_down(event, site) {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
-      if (manage_mode) {
-        handle_edit(site);
-        return;
-      }
       handle_click(site.url);
     }
   }
@@ -475,42 +435,30 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
 
   return (
     <nav
-      className={`speed-dial${manage_mode ? ' speed-dial--manage' : ''}${is_dragging_any ? ' speed-dial--dragging' : ''}`}
+      className={`speed-dial${is_dragging_any ? ' speed-dial--dragging' : ''}`}
       aria-label={t('speed_dial_aria_label')}
     >
       <p className="visually-hidden" aria-live="polite" aria-atomic="true">
         {move_announcement}
       </p>
       <div className="speed-dial-toolbar" role="toolbar" aria-label={t('speed_dial_toolbar_label')}>
-        <div className="speed-dial-toolbar-actions">
-          <button
-            className="speed-dial-toolbar-button"
-            type="button"
-            onClick={() => handle_add_click()}
-            aria-label={t('speed_dial_add')}
-            title={t('speed_dial_add')}
-          >
-            <PlusIcon />
-          </button>
-          <button
-            className="speed-dial-toolbar-button"
-            type="button"
-            onClick={handle_add_folder_click}
-            aria-label={t('speed_dial_add_folder')}
-            title={t('speed_dial_add_folder')}
-          >
-            <FolderPlusIcon />
-          </button>
-        </div>
         <button
-          className={`speed-dial-toolbar-button${manage_mode ? ' speed-dial-toolbar-button--active' : ''}`}
+          className="speed-dial-toolbar-button"
           type="button"
-          onClick={() => set_manage_mode((prev) => !prev)}
-          aria-label={manage_mode ? t('speed_dial_done') : t('speed_dial_manage')}
-          aria-pressed={manage_mode}
-          title={manage_mode ? t('speed_dial_done') : t('speed_dial_manage')}
+          onClick={() => handle_add_click()}
+          aria-label={t('speed_dial_add')}
+          title={t('speed_dial_add')}
         >
-          {manage_mode ? <CheckIcon /> : <EditIcon />}
+          <PlusIcon />
+        </button>
+        <button
+          className="speed-dial-toolbar-button"
+          type="button"
+          onClick={handle_add_folder_click}
+          aria-label={t('speed_dial_add_folder')}
+          title={t('speed_dial_add_folder')}
+        >
+          <FolderPlusIcon />
         </button>
       </div>
       {/* /.speed-dial-toolbar */}
@@ -529,7 +477,6 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
                 on_add_site={() => handle_add_click(item.id)}
                 on_edit_folder={() => handle_edit(item)}
                 on_delete_folder={() => handle_delete(item)}
-                is_manage_mode={manage_mode}
                 is_modal_blocked={modal_open || !!folder_delete_candidate}
                 is_drag_over={drag_over_folder_id === item.id || drag_over_index === index}
                 is_folder_drop_target={drag_over_folder_id === item.id}
@@ -570,7 +517,7 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
                   className="speed-dial-item"
                   role="link"
                   tabIndex={0}
-                  onClick={() => (manage_mode ? handle_edit(item) : handle_click(item.url))}
+                  onClick={() => handle_click(item.url)}
                   onKeyDown={(e) => handle_key_down(e, item)}
                   onContextMenu={(e) => open_context_menu(e, item)}
                   aria-label={`${item.name} - ${item.url}`}
@@ -621,6 +568,8 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
         modalFolderId={modal_folder_id}
         modalMode={modal_mode}
         modalOpen={modal_open}
+        moveLeftDelta={move_left_delta}
+        moveRightDelta={move_right_delta}
         onClearSaveError={clear_save_error}
         onCloseContextMenu={handle_close_context_menu}
         onCloseFolderDelete={() => set_folder_delete_candidate(null)}
@@ -628,8 +577,8 @@ function SpeedDial({ icon_style, has_favicon_permission = false, on_request_favi
         onConfirmFolderDelete={handle_confirm_folder_delete}
         onDelete={handle_delete}
         onEdit={handle_edit}
-        onMoveLeft={() => handle_move_item(-1)}
-        onMoveRight={() => handle_move_item(1)}
+        onMoveLeft={() => handle_move_item(move_left_delta)}
+        onMoveRight={() => handle_move_item(move_right_delta)}
         onMoveToFolder={handle_move_to_folder}
         onRemoveFromFolder={handle_remove_from_folder}
         onRequestFaviconPermission={on_request_favicon_permission}

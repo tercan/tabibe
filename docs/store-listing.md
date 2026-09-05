@@ -1,55 +1,60 @@
-# Tabibe Chrome Web Store Listing
+# Tabibe Chrome Web Store listing
 
-Language: English | [Türkçe](tr/store-listing.md)
+## Name
 
-## Product Name
-
-Tabibe - Personal New Tab Workspace
+Tabibe
 
 ## Short Description
 
-Turn each new tab into a focused workspace with shortcuts, folders, notes, search, themes, backgrounds, and local widgets.
+Make each new tab your own with shortcuts, folders, notes, themes and search using your browser’s default provider.
 
 ## Detailed Description
 
-Tabibe replaces the browser's new tab page with a private, focused workspace that stays close to the tools and information you use every day.
+Open a new tab and pick up where you left off. Tabibe brings your saved sites, notes and everyday tools into one personal new-tab page.
 
-Organize saved sites in a reorderable quick-access grid, group them into folders, and move items with drag and drop or keyboard actions. Every site remains recognizable through bundled brand icons, an optional Chrome favicon provider, or a local letter fallback. No saved address is sent to an external icon service.
+YOUR SITES, WITH LESS SEARCHING
+Keep favorite sites in a shortcut grid. Group them in folders, rearrange them with drag and drop or keyboard actions, and choose recognizable icons. Bundled icons work locally; Chrome site icons are optional.
 
-Capture ideas in a multi-note panel with search, active and archived views, pinning, safe deletion, and undo. Choose a search provider, switch between light and dark themes, select matching background colors, or use a locally processed background image.
+A PLACE FOR YOUR NOTES
+Capture an idea quickly or open the full notes library. Organize notes with notebooks and tags, search their text, pin the ones you need, and archive finished work. Write Markdown and preview lists, checklists and links.
 
-Tabibe stores sites, folders, notes, settings, and background preferences in the browser profile. Validated JSON backup and restore includes the complete workspace and provides preview, rollback, and undo protections. The extension contains no analytics, advertising, telemetry, user account, or remote application backend.
+YOUR BROWSER, YOUR SEARCH
+By default, the search box uses the search provider already selected in Chrome. You can explicitly select an alternative in Tabibe. Tabibe does not change Chrome’s search settings or store your queries.
 
-The interface is available in 10 languages and includes persistent language selection, right-to-left Arabic layout, visible keyboard focus, keyboard item management, reduced-motion support, and WCAG-aware contrast.
+MAKE IT FEEL LIKE YOUR SPACE
+Choose light or dark appearance, a solid background color or an image from your device. Show or hide the clock and search box. Local tab/window counts and an optional memory indicator are available.
+
+LOCAL DATA, NO ACCOUNT
+Shortcuts, notes, settings and background images are stored in your browser profile. Export and restore a JSON backup from Settings. Tabibe has no account, cloud sync, ads or analytics, and does not send workspace content to the developer. Local data and exported files are not encrypted by Tabibe; keep backups safe. Web searches and links you open follow the destination service’s policies.
+
+Available in 13 languages, including English, Turkish, French, German, Italian and Arabic. Includes keyboard controls, reduced-motion support and layouts for narrower windows.
+
+Tabibe replaces the new-tab page. It does not read browsing history or other web pages. Read the privacy policy for storage, recovery-copy and optional-permission details.
 
 ## Single Purpose
 
-Tabibe replaces the browser's new tab page with a personal productivity workspace for managing shortcuts, folders, notes, search preferences, appearance, and lightweight local status widgets.
-
-## Permissions
+Replace the new-tab page with a personal workspace for saved shortcuts and notes, with appearance preferences and browser-default search on that page.
 
 Required permission: `storage`
 
-Used only to keep the user's workspace data and preferences in the local Chrome profile between sessions.
+Stores shortcuts, folders, notes, tags, notebooks, settings, background images and local recovery copies between sessions in chrome.storage.local.
+
+Required permission: `search`
+
+Sends only a user-submitted query through Chrome Search API to the browser’s default search provider. Does not change default search settings.
 
 Optional permission: `favicon`
 
-Requested only when the user enables site icons. It allows Tabibe to use Chrome's built-in favicon provider for addresses already known by the browser. The permission can be revoked in Tabibe.
+Requested only when the user enables site icons. Uses Chrome’s built-in favicon provider; can be revoked in Settings.
 
 Optional permission: `system.memory`
 
-Requested only when the user enables the memory indicator. The value is displayed locally and is not stored or transmitted.
+Requested only when the user enables the memory indicator. Displays local memory values temporarily without storing or transmitting them.
 
-## Privacy Declarations
+## URL
 
-- No remotely hosted JavaScript or WebAssembly is loaded or executed.
-- No analytics, telemetry, advertising, profiling, or data sale is included.
-- Saved addresses are not sent to Google S2, Iconify, Simple Icons CDN, or another external icon service.
-- Network navigation occurs only after a visible user action, such as opening a site, searching, or following a project link.
+[Tabibe](https://tercan.github.io/tabibe/)
 
-## Listing Details
+[GitHub](https://github.com/tercan/tabibe/issues)
 
-- Category: Workflow & Planning
-- Homepage: <https://tercan.github.io/tabibe/>
-- Support: <https://github.com/tercan/tabibe/issues>
-- Privacy policy: <https://tercan.github.io/tabibe/privacy-policy>
+[Privacy](https://tercan.github.io/tabibe/privacy/?lang=en)

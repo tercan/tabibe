@@ -6,6 +6,32 @@ Bu dosya, projede yapılan tüm önemli değişiklikleri belgelemektedir.
 Format [Keep a Changelog](https://keepachangelog.com/tr/1.0.0/) standardına dayanmaktadır.
 Versiyon numaralandırması [Semantic Versioning](https://semver.org/lang/tr/) prensiplerine uymaktadır.
 
+## [1.5.0] - 2026-09-06 00:30
+
+### Added
+
+- Defterler, etiketler, yerel kurtarma taslakları ve örnek notlar içeren Not Kütüphanesi ve Hızlı Yakalama akışı eklendi.
+- Fransızca, Almanca ve İtalyanca desteğiyle arayüz dili sayısı 13 oldu.
+- Çevrimdışı çok dilli gizlilik politikası ve eşitlenen herkese açık politika sayfaları eklendi.
+
+### Changed
+
+- Not kontrolleri sadeleştirildi; yeni sekme yüzeyleri, klavye eylemleri ve RTL düzenleri iyileştirildi.
+- İngilizce ve Türkçe GitHub Pages sitesi gerçek ekran görüntüleri, güncel özellikler, sürüm indirmeleri, kurulum adımları ve yerel veri sınırlarıyla yenilendi.
+- Site ortak yerelleştirme kaynağından üretiliyor; yerel görseller, metadata, sitemap ve responsive erişilebilirlik kontrolleri eklendi.
+- Güncel Lighthouse araç zinciri için geliştirme ortamı gereksinimi Node.js 22.19+ oldu.
+
+### Fixed
+
+- Varsayılan arama Chrome Search API ile tarayıcı tercihini izliyor; sürümsüz eski tercihler bir kez taşınırken sonraki açık seçimler korunuyor.
+- Arama sağlayıcısı hedef boyutu ve klavye odağı düzeltildi.
+- Release ZIP içeriği üretim derlemesiyle karşılaştırılıyor ve proje lisansı pakete ekleniyor.
+
+### Security
+
+- Lighthouse ve yardımcı geliştirme bağımlılıkları güncellendi; tam npm denetiminde bilinen açık bulunmadı.
+- Şifreleme veya kesin veri kurtarma vaadi vermeden depolama, yedekleme, kurtarma kopyaları, destek ve Limited Use açıklamaları netleştirildi.
+
 ## [1.4.0] - 2026-07-18 00:48
 
 ### Added
